@@ -1,0 +1,54 @@
+name: AWS Build and Deploy
+on:
+  push:
+    branches:
+      - stage
+
+jobs:
+  Build-Deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checking out code
+        uses: actions/checkout@v3
+
+      - name: Installing Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Installing Dependencies
+        run: npm install
+
+      - name: Building App
+        run: npm run build
+
+      - name: Deleting devDependencies
+        run: npm prune --omit dev
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create .env file with GitHub secrets
+        run: |
+          echo "REGION=${{ secrets.AWS_REGION }}" >> .env
+
+      - name: Zip Build Package
+        run: zip -r function.zip package.json node_modules build .env index.js
+
+      - name: Deploy BackEnd to Lambda
+        run: aws lambda update-function-code --region ${{ secrets.AWS_REGION }} --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} --zip-file fileb://function.zip
+
+      - name: Deploy Static Files to S3 bucket
+        run: aws s3 sync ./public/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+
+      #- name: Get CloudFront Distribution URL
+      #  id: cloudfront
+      #  run: |
+      #    DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items[0]=='your-app-domain'].{Id:Id}" --output text)
+      #    CLOUDFRONT_URL=$(aws cloudfront list-distributions --query "DistributionList.Items[?Id=='$DISTRIBUTION_ID'].{DomainName:DomainName}" --output text)
+      #    echo "CloudFront URL: https://${CLOUDFRONT_URL}"
