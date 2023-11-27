@@ -11,35 +11,47 @@ datasource db {
 }
 
 model User {
-  // General fields
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Model-specific fields
   email    String @unique
   fullName String
-
-  // Relations
+  firstname String
+  lastname String
+  avatar String
   Credential Credential?
-
-  // Indexes
+  RefreshToken RefreshToken[]
+  Post Post[]
   @@index([email])
 }
 
 model Credential {
-  // General fields
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Model-specific fields
   passwordHash String?
   userId       String  @db.Uuid
-
-  // Relations
   user User @relation(fields: [userId], references: [id])
-
-  // Constraints
   @@unique([userId])
+}
+
+model RefreshToken {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId  String  @db.Uuid
+  token   String
+  revoked Boolean @default(false)
+  user    User    @relation(fields: [userId], references: [id])
+  @@unique([userId])
+}
+
+model Post {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId  String    @db.Uuid
+  title     String
+  category  String    @default("empty")
+  content   String
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author User         @relation(fields: [authorId], references: [id])
 }

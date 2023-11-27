@@ -32,11 +32,8 @@ export default function App() {
             <NavLink to="portfolio" prefetch="intent">
               PORTFOLIO
             </NavLink>
-            <NavLink to="music" prefetch="intent">
-              MUSIC
-            </NavLink>
-            <NavLink to="contact" prefetch="intent">
-              CONTACT
+            <NavLink to="profil" prefetch="intent">
+              PROFIL
             </NavLink>
           </nav>
         </header>

@@ -5,6 +5,7 @@ import type {
   IUserService,
   ServerContext,
 } from "~/server/interfaces";
+import bcrypt from "bcryptjs";
 
 export class UserService implements IUserService, Dependency<ServerContext> {
   private _loggerService!: ILoggerService;
@@ -28,13 +29,75 @@ export class UserService implements IUserService, Dependency<ServerContext> {
       where: {
         email,
       },
+      include: {
+        Credential: true,
+      },
     });
   }
 
-  getByEmailPasswordCombination(
+  async getByEmailPasswordCombination(
     email: string,
-    password: string,
+    password: string
   ): Promise<User | null> {
-    throw new Error("Method not implemented.");
+    const user = await this._db.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) throw new Error("Incorrect email or password.");
+
+    const credential = await this._db.credential.findUnique({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        passwordHash: true,
+      },
+    });
+
+    if (!credential) throw new Error("Credential not found for user.");
+
+    const match = bcrypt.compare(password, credential.passwordHash!);
+
+    if (!match) throw new Error("Incorrect email or password.");
+
+    return user;
+  }
+
+  async putRefreshToken(userId: string, token: string): Promise<string | null> {
+    const existingRefreshToken = await this._db.refreshToken.findFirst({
+      where: {
+        userId: userId,
+        revoked: false,
+      },
+    });
+
+    if (existingRefreshToken) {
+      return existingRefreshToken.token;
+    } else {
+      const newRefreshToken = await this._db.refreshToken.create({
+        data: {
+          userId: userId,
+          token: token,
+          revoked: false,
+        },
+      });
+
+      return newRefreshToken.token;
+    }
+  }
+
+  async getRefreshToken(userId: string, token: string): Promise<string | null> {
+    const refresh = await this._db.refreshToken.findFirst({
+      where: {
+        userId: userId,
+        token: token,
+        revoked: false,
+      },
+    });
+    if (!refresh) return null;
+
+    return refresh!.token;
   }
 }

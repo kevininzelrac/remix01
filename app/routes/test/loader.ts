@@ -4,6 +4,6 @@ import { serverContext } from "~/server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({
-    data: await serverContext.userService.getByEmail("alice@prisma.io"),
+    data: await serverContext.userService.getByEmail("kevin@prisma.io"),
   });
 };

@@ -5,6 +5,8 @@ export interface IUserService {
   getByEmail(email: string): Promise<User | null>;
   getByEmailPasswordCombination(
     email: string,
-    password: string,
+    password: string
   ): Promise<User | null>;
+  putRefreshToken(userId: string, token: string): Promise<string | null>;
+  getRefreshToken(userId: string, token: string): Promise<string | null>;
 }
