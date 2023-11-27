@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 33890:5432
+    volumes:
+    - postgres_db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=remix_secret
+      - POSTGRES_USER=remix_user
+      - POSTGRES_DB=remix_db
+
+volumes:
+  postgres_db:
+    driver: local

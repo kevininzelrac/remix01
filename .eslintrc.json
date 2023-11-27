@@ -1,0 +1,9 @@
+{
+    "plugins": ["prettier"],
+    "extends": ["@remix-run/eslint-config", "plugin:prettier/recommended"],
+    "rules": {
+        "@typescript-eslint/no-useless-constructor": "error",
+        "no-useless-constructor": "off",
+        "prettier/prettier": "error"
+    }
+}
