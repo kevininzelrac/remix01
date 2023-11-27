@@ -1,9 +1,14 @@
 {
     "plugins": ["prettier"],
-    "extends": ["@remix-run/eslint-config", "plugin:prettier/recommended"],
+    "extends": [
+        "@remix-run/eslint-config",
+        "@remix-run/eslint-config/jest-testing-library",
+        "plugin:prettier/recommended"
+    ],
     "rules": {
         "@typescript-eslint/no-useless-constructor": "error",
         "no-useless-constructor": "off",
-        "prettier/prettier": "error"
+        "prettier/prettier": "error",
+        "testing-library/no-await-sync-query": "off"
     }
 }
