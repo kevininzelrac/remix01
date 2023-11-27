@@ -1,4 +1,4 @@
-import type { PrismaClient, User } from "~/server/db/interfaces";
+import type { PrismaClient, User } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
 import type {
   ILoggerService,

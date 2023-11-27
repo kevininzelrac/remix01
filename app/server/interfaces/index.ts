@@ -1,3 +1,3 @@
-export * from "./ILoggerService";
-export * from "./IUserService";
-export * from "./ServerContext";
+export * from "./ILoggerService.server";
+export * from "./IUserService.server";
+export * from "./ServerContext.server";

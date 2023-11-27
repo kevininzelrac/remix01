@@ -61,6 +61,6 @@
   },
   "prisma": {
     "schema": "app/server/db/schema.prisma",
-    "seed": "ts-node --esm app/server/db/seed.ts"
+    "seed": "ts-node --esm app/server/db/seed.server.ts"
   }
 }

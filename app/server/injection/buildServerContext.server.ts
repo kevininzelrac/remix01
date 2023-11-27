@@ -1,4 +1,4 @@
-import type { Dependency } from "./Dependency";
+import type { Dependency } from "./Dependency.server";
 
 export function buildServerContext<S extends { [key: string]: Dependency<S> }>(
   context: S,

@@ -1,4 +1,4 @@
-import type { User } from "~/server/db/interfaces";
+import type { User } from "~/server/db/interfaces.server";
 
 export interface IUserService {
   getById(id: string): Promise<User | null>;

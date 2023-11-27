@@ -1,10 +1,10 @@
 import type { ServerContext } from "~/server/interfaces";
 import { buildServerContext } from "~/server/injection";
-import { LoggerService } from "./LoggerService";
-import { UserService } from "./UserService";
+import { LoggerService } from "./LoggerService.server";
+import { UserService } from "./UserService.server";
 import { PrismaClient } from "@prisma/client";
 import { readReplicas } from "@prisma/extension-read-replicas";
-import { READ_DB_URL } from "../constants";
+import { READ_DB_URL } from "../constants.server";
 
 const prisma = new PrismaClient().$extends(
   readReplicas({

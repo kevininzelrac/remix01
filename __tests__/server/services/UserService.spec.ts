@@ -1,6 +1,6 @@
 import { database, clearDatabase } from "__tests__/utils/database";
 import { mockServerContext } from "__tests__/utils/mocks";
-import { UserService } from "~/server/services/UserService";
+import { UserService } from "~/server/services/UserService.server";
 
 describe("UserService", () => {
   let userService: UserService;
