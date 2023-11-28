@@ -65,6 +65,34 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     return user;
   }
 
+  async putNewUser(
+    firstname: string,
+    lastname: string,
+    email: string,
+    passwordHash: string
+  ): Promise<{ email: String; passwordHash: string } | null> {
+    await this._db.user.upsert({
+      where: { email: email },
+      update: {},
+      create: {
+        email: email,
+        fullName: firstname + " " + lastname,
+        firstname: firstname,
+        lastname: lastname,
+        avatar: "https://picsum.photos/50",
+        Credential: {
+          create: {
+            passwordHash: passwordHash,
+          },
+        },
+      },
+    });
+    return {
+      email,
+      passwordHash,
+    };
+  }
+
   async putRefreshToken(userId: string, token: string): Promise<string | null> {
     const existingRefreshToken = await this._db.refreshToken.findFirst({
       where: {
@@ -99,5 +127,17 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     if (!refresh) return null;
 
     return refresh!.token;
+  }
+
+  async revokeRefreshToken(userId: string, token: string): Promise<void> {
+    await this._db.refreshToken.update({
+      where: {
+        userId: userId,
+        token: token,
+      },
+      data: {
+        revoked: true,
+      },
+    });
   }
 }

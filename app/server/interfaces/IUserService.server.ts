@@ -7,6 +7,13 @@ export interface IUserService {
     email: string,
     password: string
   ): Promise<User | null>;
+  putNewUser(
+    firstname: string,
+    lastname: string,
+    email: string,
+    passwordHash: string
+  ): Promise<{ email: String; passwordHash: string } | null>;
   putRefreshToken(userId: string, token: string): Promise<string | null>;
   getRefreshToken(userId: string, token: string): Promise<string | null>;
+  revokeRefreshToken(userId: string, token: string): Promise<void>;
 }
