@@ -57,7 +57,7 @@ CREATE INDEX "User_email_idx" ON "User"("email");
 CREATE UNIQUE INDEX "Credential_userId_key" ON "Credential"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_userId_key" ON "RefreshToken"("userId");
+CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
 
 -- AddForeignKey
 ALTER TABLE "Credential" ADD CONSTRAINT "Credential_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

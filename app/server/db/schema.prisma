@@ -41,7 +41,7 @@ model RefreshToken {
   token   String
   revoked Boolean @default(false)
   user    User    @relation(fields: [userId], references: [id])
-  @@unique([userId])
+  @@unique([token])
 }
 
 model Post {
