@@ -1,7 +1,8 @@
 import type { MetaFunction } from "@remix-run/node";
 
+import { loader } from "./loader";
 import ErrorBoundary from "~/components/errorBoundary";
-export { ErrorBoundary };
+export { loader, ErrorBoundary };
 
 export const meta: MetaFunction = () => {
   return [{ title: "Home" }, { name: "description", content: "Home" }];

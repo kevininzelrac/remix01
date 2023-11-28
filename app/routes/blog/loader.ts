@@ -1,17 +1,11 @@
 import { LoaderFunction, LoaderFunctionArgs, defer } from "@remix-run/node";
-import { postType } from "./posts";
+import { auth } from "~/services/auth.server";
+import { serverContext as prisma } from "~/server";
 
-const getPosts = async (): Promise<{ posts: postType[] }> => {
-  const { posts } = await import("./posts");
-  await new Promise<void>((resolve) => setTimeout(resolve, 500));
-  return { posts: posts };
-};
-
-export const loader: LoaderFunction = ({
+export const loader: LoaderFunction = async ({
   request,
-  context,
-  params,
 }: LoaderFunctionArgs) => {
-  //const response = getPosts();
-  return defer({ response: getPosts() });
+  const response = prisma.postService.getPosts();
+  const { headers } = await auth(request);
+  return defer({ response }, { headers });
 };
