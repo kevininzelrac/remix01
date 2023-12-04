@@ -23,7 +23,8 @@
     "bcryptjs": "^2.4.3",
     "google-auth-library": "^9.4.1",
     "isbot": "^3.6.8",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.7"
   },
   "devDependencies": {
     "@aws-sdk/client-apigatewayv2": "^3.454.0",
@@ -42,6 +43,7 @@
     "@types/express": "^4.17.20",
     "@types/jest": "^29.5.10",
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/nodemailer": "^6.4.14",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "cross-env": "^7.0.3",
