@@ -35,6 +35,9 @@ export default function App() {
             <NavLink to="profil" prefetch="intent">
               PROFIL
             </NavLink>
+            <NavLink to="upload" prefetch="intent">
+              UPLOAD
+            </NavLink>
           </nav>
         </header>
         <Outlet />
