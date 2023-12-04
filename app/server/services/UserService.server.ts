@@ -140,4 +140,26 @@ export class UserService implements IUserService, Dependency<ServerContext> {
       },
     });
   }
+
+  async signGoogleUser(
+    id: string,
+    email: string,
+    firstname: string,
+    lastname: string,
+    avatar: string
+  ): Promise<User | null> {
+    const user = await this._db.user.upsert({
+      where: { email: email },
+      update: { avatar: avatar },
+      create: {
+        email: email,
+        fullName: firstname + " " + lastname,
+        firstname: firstname,
+        lastname: lastname,
+        avatar: avatar,
+      },
+    });
+
+    return user;
+  }
 }
