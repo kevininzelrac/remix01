@@ -6,11 +6,30 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
 import "./styles/root.css";
+import "./styles/nav.css";
+import "./styles/dialog.css";
+import "./styles/slate.css";
+
+import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { auth } from "./services/auth.server";
+import Nav from "./components/nav";
+
+import { serverContext as prisma } from "./server";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { id, headers } = await auth(request);
+
+  const nav = await prisma.postService.getNav();
+
+  return json({ id, nav }, { headers });
+};
 
 export default function App() {
+  const { id, nav } = useLoaderData<typeof loader>();
   return (
     <html lang="en">
       <head>
@@ -22,27 +41,36 @@ export default function App() {
       <body>
         <header>
           <h1>Remix v.01</h1>
-          <nav>
-            <NavLink to="/" prefetch="intent">
-              HOME
-            </NavLink>
-            <NavLink to="blog" prefetch="intent">
-              BLOG
-            </NavLink>
-            <NavLink to="portfolio" prefetch="intent">
-              PORTFOLIO
-            </NavLink>
-            <NavLink to="profil" prefetch="intent">
-              PROFIL
-            </NavLink>
-            <NavLink to="upload" prefetch="intent">
-              UPLOAD
-            </NavLink>
-            <NavLink to="contact" prefetch="intent">
-              CONTACT
-            </NavLink>
-          </nav>
         </header>
+        <nav>
+          <NavLink to="/" prefetch="intent">
+            HOME
+          </NavLink>
+          <Nav data={nav} id={id ? true : false} />
+          <NavLink to="blog" prefetch="intent">
+            BLOG
+          </NavLink>
+          <NavLink to="contact" prefetch="intent">
+            CONTACT
+          </NavLink>
+          {id ? (
+            <>
+              <NavLink to="upload" prefetch="intent">
+                UPLOAD
+              </NavLink>
+              <NavLink to="profil" prefetch="intent">
+                PROFIL
+              </NavLink>
+              <NavLink to="add" prefetch="intent">
+                +
+              </NavLink>
+            </>
+          ) : (
+            <NavLink to="signin" prefetch="intent">
+              SIGN IN
+            </NavLink>
+          )}
+        </nav>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

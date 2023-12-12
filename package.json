@@ -24,7 +24,10 @@
     "google-auth-library": "^9.4.1",
     "isbot": "^3.6.8",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "slate": "^0.101.1",
+    "slate-history": "^0.100.0",
+    "slate-react": "^0.101.3"
   },
   "devDependencies": {
     "@aws-sdk/client-apigatewayv2": "^3.454.0",

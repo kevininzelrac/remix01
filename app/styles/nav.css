@@ -1,0 +1,60 @@
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: fit-content;
+  position: sticky;
+  top: 10px;
+  z-index: 1;
+}
+
+nav a,
+nav div > label,
+nav div > a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+  font-weight: bold;
+  color: #323232;
+  text-transform: uppercase;
+  width: 80px;
+  height: fit-content;
+  background-color: white;
+}
+
+nav a:hover,
+nav label:hover {
+  background-color: ghostwhite;
+  color: #323232;
+}
+nav a.pending {
+  color: crimson;
+}
+nav a.active {
+  color: #336699;
+}
+
+nav > div {
+  position: relative;
+}
+
+nav div > div {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+}
+nav div > div > div {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 100%;
+  flex-direction: column;
+}
+nav div:hover > div {
+  display: flex;
+}

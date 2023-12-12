@@ -1,0 +1,128 @@
+.slate > div::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.slate > nav.toolbar {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.slate button {
+  width: fit-content;
+  height: fit-content;
+  margin: 0;
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid gainsboro;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.slate button.active {
+  background-color: #336699;
+  color: ghostwhite;
+}
+
+.slate .tools {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background-color: transparent;
+}
+
+.slate .resize {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  cursor: nwse-resize;
+}
+
+.slate dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background-color: transparent;
+}
+
+.slate dialog > div.opaque {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #323232;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+.slate dialog > div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: ghostwhite;
+  width: 40%;
+  height: 40%;
+  padding: 10px;
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.slate dialog > div > button.close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  color: ghostwhite;
+  background-color: #336699;
+}
+
+.slate dialog > div > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+}
+
+.slate dialog > div > form > input {
+  width: 100%;
+  height: fit-content;
+}
+
+.slate dialog > div > form > button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+  color: ghostwhite;
+  background-color: #336699;
+}

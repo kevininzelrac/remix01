@@ -1,5 +1,11 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Await, NavLink, useAsyncValue, useLoaderData } from "@remix-run/react";
+import {
+  Await,
+  NavLink,
+  useAsyncValue,
+  useLoaderData,
+  useParams,
+} from "@remix-run/react";
 import { Suspense } from "react";
 
 import ErrorElement from "~/components/errorElement";
@@ -16,9 +22,10 @@ import ReadOnly from "~/components/slate/readOnly";
 
 export default function Blog() {
   const { response } = useLoaderData<typeof loader>();
+  const { category } = useParams();
   return (
     <main>
-      <h2>Blog</h2>
+      <h2>Category : {category}</h2>
       <Suspense fallback={<div>Loading</div>}>
         <Await resolve={response} errorElement={<ErrorElement />}>
           <Section />
@@ -35,23 +42,12 @@ const Section = () => {
       {posts.map(({ id, title, category, content, author }: any) => (
         <article key={id}>
           <header>
-            <NavLink
-              to={
-                category.replaceAll(" ", "_") + "/" + title.replaceAll(" ", "_")
-              }
-            >
-              {title}
-            </NavLink>
+            <NavLink to={title.replaceAll(" ", "_")}>{title}</NavLink>
             <br />
-            category :{" "}
-            <NavLink to={category.replaceAll(" ", "_")}>
-              {category}
-            </NavLink>{" "}
-            <NavLink to={category.replaceAll(" ", "_") + "/Edit"}>edit</NavLink>
+            category : {category} <NavLink to="Edit">edit</NavLink>
             <Badge profil={author} />
           </header>
           <ReadOnly>{content}</ReadOnly>
-          <br />
         </article>
       ))}
     </section>

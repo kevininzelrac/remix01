@@ -1,0 +1,76 @@
+dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background-color: transparent;
+  border: none;
+}
+
+dialog > div.opaque {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #323232;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+dialog > div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: ghostwhite;
+  width: fit-content;
+  height: fit-content;
+  padding: 100px;
+  z-index: 1;
+  border-radius: 8px;
+}
+
+dialog > div > button.close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  color: ghostwhite;
+  background-color: #336699;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+dialog > div > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+}
+
+dialog > div > form > input {
+  width: 100%;
+  height: fit-content;
+}
+
+dialog > div > form > button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+  color: ghostwhite;
+  background-color: #336699;
+}

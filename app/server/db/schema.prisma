@@ -48,6 +48,7 @@ model Post {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   authorId  String    @db.Uuid
   title     String
+  type      String    @default("")
   category  String    @default("empty")
   content   String
   published Boolean   @default(false)
