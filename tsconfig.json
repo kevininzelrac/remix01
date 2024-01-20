@@ -1,12 +1,12 @@
 {
-  "include": ["env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["env.d.ts", "**/*.ts", "**/*.mts", "**/*.tsx"],
   "compilerOptions": {
+    "skipLibCheck": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "CommonJS",
     "resolveJsonModule": true,
     "target": "ES2022",
     "strict": true,
@@ -19,5 +19,9 @@
 
     // Remix takes care of building everything in `remix build`.
     "noEmit": true
+  },
+  "ts-node": {
+    // Do not forget to `npm i -D tsconfig-paths`
+    "require": ["tsconfig-paths/register"]
   }
 }
