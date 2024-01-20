@@ -1,13 +1,14 @@
-import { ActionFunction, ActionFunctionArgs, redirect } from "@remix-run/node";
+import type { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { newUserSession } from "~/services/session.server";
 import bcrypt from "bcryptjs";
-import { serverContext as prisma } from "~/server";
 
 export const action: ActionFunction = async ({
   request,
+  context,
 }: ActionFunctionArgs) => {
   const _newUser = await newUserSession.getSession(
-    request.headers.get("Cookie")
+    request.headers.get("Cookie"),
   );
   const newUser = _newUser.get("newUser");
   const { code } = Object.fromEntries(await request.formData()) as {
@@ -18,11 +19,11 @@ export const action: ActionFunction = async ({
   if (!match) throw new Error("Wooops Something Weird just happened !!");
 
   try {
-    await prisma.userService.putNewUser(
+    await context.userService.putNewUser(
       newUser.firstname,
       newUser.lastname,
       newUser.email,
-      newUser.passwordHash
+      newUser.passwordHash,
     );
 
     return redirect("/SignIn", {

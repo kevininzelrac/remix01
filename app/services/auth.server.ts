@@ -1,4 +1,5 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { userSession } from "./session.server";
 import { serverContext as prisma } from "~/server";
 
@@ -18,27 +19,27 @@ export const auth = async (request: Request): Promise<authType> => {
 
   const verifiedAccess = verifyToken(
     accessToken,
-    process.env.ACCESS_SECRET as string
+    process.env.ACCESS_SECRET as string,
   );
 
   if (!verifiedAccess) {
     const verifiedRefresh = verifyToken(
       user.get("refreshToken"),
-      process.env.REFRESH_SECRET as string
+      process.env.REFRESH_SECRET as string,
     );
 
     if (!verifiedRefresh) return await REDIRECT(user);
 
     const matchToken = await prisma.userService.getRefreshToken(
       verifiedRefresh.id,
-      user.get("refreshToken")
+      user.get("refreshToken"),
     );
 
     if (!matchToken) return await REDIRECT(user);
 
     const verifiedMatch = verifyToken(
       matchToken,
-      process.env.REFRESH_SECRET as string
+      process.env.REFRESH_SECRET as string,
     );
 
     if (!verifiedMatch) return await REDIRECT(user);
@@ -48,7 +49,7 @@ export const auth = async (request: Request): Promise<authType> => {
     const newAccessToken = jwt.sign(
       { id, email, firstname, avatar },
       process.env.ACCESS_SECRET as string,
-      { expiresIn: process.env.ACCESS_TOKEN_DURATION }
+      { expiresIn: process.env.ACCESS_TOKEN_DURATION },
     );
 
     user.set("accessToken", newAccessToken);

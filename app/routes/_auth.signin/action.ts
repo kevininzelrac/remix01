@@ -1,17 +1,17 @@
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 import jwt from "jsonwebtoken";
 import { userSession } from "~/services/session.server";
-import { serverContext as prisma } from "~/server";
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   try {
-    const user = await prisma.userService.getByEmailPasswordCombination(
+    const user = await context.userService.getByEmailPasswordCombination(
       email,
-      password
+      password,
     );
 
     const newUser = {
@@ -23,12 +23,13 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const refreshToken = jwt.sign(
       newUser,
-      process.env.REFRESH_SECRET as string
+      process.env.REFRESH_SECRET as string,
     );
 
-    const verifiedRefresh = await prisma.userService.putRefreshToken(
+    const verifiedRefresh = await context.userService.putRefreshToken(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
       user?.id!,
-      refreshToken
+      refreshToken,
     );
 
     const accessToken = jwt.sign(newUser, process.env.ACCESS_SECRET as string, {

@@ -1,9 +1,9 @@
-import { LoaderFunctionArgs, redirect } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { userSession } from "~/services/session.server";
-import { serverContext as prisma } from "~/server";
 import { auth } from "~/services/auth.server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const user = await userSession.getSession(request.headers.get("Cookie"));
   const { id, headers } = await auth(request);
 
@@ -12,7 +12,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       headers,
     });
 
-  await prisma.userService.revokeRefreshToken(id, user.get("refreshToken"));
+  await context.userService.revokeRefreshToken(id, user.get("refreshToken"));
 
   return redirect("/", {
     headers: {

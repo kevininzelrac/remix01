@@ -1,14 +1,14 @@
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { userSession } from "~/services/session.server";
-import { serverContext as prisma } from "~/server";
 
 const googleClient = new OAuth2Client({
   clientId: process.env.GOOGLE_CLIENT_ID,
 });
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, context }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const accessToken = formData.get("accessToken") as string;
 
@@ -21,12 +21,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     verifiedToken.getPayload();
 
   try {
-    const googleUser = await prisma.userService.signGoogleUser(
+    const googleUser = await context.userService.signGoogleUser(
       sub,
       email,
       given_name,
       family_name,
-      picture
+      picture,
     );
 
     const newUser = {
@@ -38,12 +38,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     const refreshToken = jwt.sign(
       newUser,
-      process.env.REFRESH_SECRET as string
+      process.env.REFRESH_SECRET as string,
     );
 
-    const verifiedRefresh = await prisma.userService.putRefreshToken(
+    const verifiedRefresh = await context.userService.putRefreshToken(
       googleUser!.id,
-      refreshToken
+      refreshToken,
     );
 
     const accessToken = jwt.sign(newUser, process.env.ACCESS_SECRET as string, {
