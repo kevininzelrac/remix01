@@ -2,7 +2,6 @@ import {
   Links,
   LiveReload,
   Meta,
-  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -25,29 +24,6 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <header>
-          <h1>Remix v.01</h1>
-          <nav>
-            <NavLink to="/" prefetch="intent">
-              HOME
-            </NavLink>
-            <NavLink to="blog" prefetch="intent">
-              BLOG
-            </NavLink>
-            <NavLink to="portfolio" prefetch="intent">
-              PORTFOLIO
-            </NavLink>
-            <NavLink to="profil" prefetch="intent">
-              PROFIL
-            </NavLink>
-            <NavLink to="upload" prefetch="intent">
-              UPLOAD
-            </NavLink>
-            <NavLink to="contact" prefetch="intent">
-              CONTACT
-            </NavLink>
-          </nav>
-        </header>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

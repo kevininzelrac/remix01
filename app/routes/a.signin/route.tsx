@@ -1,8 +1,8 @@
 import { Label, Input, Button } from "~/components";
 
-export default function Component() {
+export default function SignInPage() {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full md:w-1/2 p-8">
         <img
           alt="Sign In Illustration"
@@ -19,7 +19,7 @@ export default function Component() {
       <div className="w-full md:w-1/2 p-8 space-y-6">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Sign In</h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500">
             Enter your information to sign in to your account
           </p>
         </div>
@@ -37,9 +37,7 @@ export default function Component() {
           </Button>
         </div>
         <div className="space-y-4">
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            Or sign in with
-          </p>
+          <p className="text-center text-gray-500">Or sign in with</p>
           <div className="flex space-x-4 justify-center">
             <Button className="w-1/3 bg-[#4285F4] text-white">Google</Button>
             <Button className="w-1/3 bg-[#333] text-white">GitHub</Button>
