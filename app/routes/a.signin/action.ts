@@ -1,13 +1,26 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-
 import jwt from "jsonwebtoken";
+import { z } from "zod";
+
 import { userSession } from "~/services/session.server";
+
+const schema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
 
 export async function action({ request, context }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const rawData = Object.fromEntries(formData.entries());
+  const result = schema.safeParse(rawData);
+  if (!result.success) {
+    throw new Error("Email/password required."); // FIXME: MANAGE THIS BETTER
+  }
+  const {
+    data: { email, password },
+  } = result;
+
   try {
     const user = await context.userService.getByEmailPasswordCombination(
       email,
