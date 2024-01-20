@@ -4,7 +4,5 @@
 import type { ServerContext } from "~/server/interfaces";
 
 declare module "@remix-run/server-runtime" {
-  export interface AppLoadContext {
-    serverContext: ServerContext;
-  }
+  export interface AppLoadContext extends ServerContext {}
 }

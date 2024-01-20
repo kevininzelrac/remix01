@@ -20,7 +20,7 @@ async function main() {
 
       getLoadContext(req, res) {
         // this becomes the loader context
-        return { serverContext };
+        return serverContext;
       },
     }),
   );
