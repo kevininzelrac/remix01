@@ -2,8 +2,6 @@ import { Form } from "@remix-run/react";
 
 import { action } from "./action";
 
-import "./style.css";
-
 import { type MetaFunction } from "@remix-run/node";
 import type { SetStateAction } from "react";
 import { useState } from "react";
