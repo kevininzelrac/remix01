@@ -1,4 +1,6 @@
+import { Link } from "@remix-run/react";
 import { Label, Input, Button } from "~/components";
+import { pages } from "~/constants";
 
 export default function SignInPage() {
   return (
@@ -19,7 +21,9 @@ export default function SignInPage() {
       <div className="w-full md:w-1/2 p-8 space-y-6">
         <div className="flex flex-row justify-end items-center gap-3 mb-10">
           <p className="text-center text-gray-500">Don't have an account?</p>
-          <Button className="w-1/4 !bg-green-500 text-white">Sign Up</Button>
+          <Link to={pages.SIGN_UP}>
+            <Button className="w-full !bg-green-500 text-white">Sign Up</Button>
+          </Link>
         </div>
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Sign In</h1>
