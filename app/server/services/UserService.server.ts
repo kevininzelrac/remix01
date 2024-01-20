@@ -37,7 +37,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
 
   async getByEmailPasswordCombination(
     email: string,
-    password: string
+    password: string,
   ): Promise<User | null> {
     const user = await this._db.user.findUnique({
       where: {
@@ -69,7 +69,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     firstname: string,
     lastname: string,
     email: string,
-    passwordHash: string
+    passwordHash: string,
   ): Promise<{ email: String; passwordHash: string } | null> {
     await this._db.user.upsert({
       where: { email: email },
@@ -146,7 +146,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     email: string,
     firstname: string,
     lastname: string,
-    avatar: string
+    avatar: string,
   ): Promise<User | null> {
     const user = await this._db.user.upsert({
       where: { email: email },

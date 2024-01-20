@@ -5,13 +5,13 @@ export interface IUserService {
   getByEmail(email: string): Promise<User | null>;
   getByEmailPasswordCombination(
     email: string,
-    password: string
+    password: string,
   ): Promise<User | null>;
   putNewUser(
     firstname: string,
     lastname: string,
     email: string,
-    passwordHash: string
+    passwordHash: string,
   ): Promise<{ email: String; passwordHash: string } | null>;
   putRefreshToken(userId: string, token: string): Promise<string | null>;
   getRefreshToken(userId: string, token: string): Promise<string | null>;
@@ -21,6 +21,6 @@ export interface IUserService {
     email: string,
     firstname: string,
     lastname: string,
-    avatar: string
+    avatar: string,
   ): Promise<User | null>;
 }

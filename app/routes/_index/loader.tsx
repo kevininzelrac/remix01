@@ -1,4 +1,6 @@
-import { LoaderFunction, LoaderFunctionArgs, json } from "@remix-run/node";
+import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+
 import { auth } from "~/services/auth.server";
 
 export const loader: LoaderFunction = async ({
