@@ -5,13 +5,13 @@ import { Suspense } from "react";
 import ErrorElement from "~/components/errorElement";
 import { loader } from "./loader";
 import Badge from "~/components/badge";
+import "./blog.css";
+import type { Post } from "@prisma/client";
 export { loader };
 
 export const meta: MetaFunction = () => {
   return [{ title: "Blog" }, { name: "description", content: "Blog" }];
 };
-import "./blog.css";
-import { Post } from "@prisma/client";
 
 export default function Blog() {
   const { response } = useLoaderData<typeof loader>();

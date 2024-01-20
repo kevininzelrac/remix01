@@ -1,12 +1,13 @@
 import { Form } from "@remix-run/react";
 
 import { action } from "./action";
-export { action };
 
 import "./style.css";
 
 import { type MetaFunction } from "@remix-run/node";
-import { SetStateAction, useState } from "react";
+import type { SetStateAction } from "react";
+import { useState } from "react";
+export { action };
 export const meta: MetaFunction = () => {
   return [{ title: "Sign Up" }, { name: "description", content: "Sign Up" }];
 };

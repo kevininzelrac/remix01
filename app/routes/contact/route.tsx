@@ -14,9 +14,9 @@ import ReCaptchaEnterprise from "~/components/reCaptchaEntreprise";
 
 import { loader } from "./loader";
 import { action } from "./action";
-export { loader, action };
 
 import "./styles.css";
+export { loader, action };
 
 export default function Contact() {
   const { siteKey } = useLoaderData<typeof loader>();
