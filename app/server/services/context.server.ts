@@ -10,7 +10,7 @@ import { PostService } from "./PostService.server";
 const prisma = new PrismaClient().$extends(
   readReplicas({
     url: READ_DB_URL,
-  })
+  }),
 ) as any as PrismaClient;
 
 export const serverContext = buildServerContext<ServerContext>({
