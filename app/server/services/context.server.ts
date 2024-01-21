@@ -8,6 +8,7 @@ import { UserService } from "./UserService.server";
 import { READ_DB_URL } from "../constants.server";
 import { PostService } from "./PostService.server";
 import { SessionService } from "./session/SessionService.server";
+import { OAuthProviderFactoryService } from "./session/OAuthProviderFactoryService.server";
 
 const prisma = new PrismaClient().$extends(
   readReplicas({
@@ -19,5 +20,6 @@ export const serverContext = buildServerContext<ServerContext>({
   loggerService: new LoggerService(),
   userService: new UserService(prisma),
   postService: new PostService(prisma),
-  sessionService: new SessionService(),
+  sessionService: new SessionService(prisma),
+  oauthProviderFactoryService: new OAuthProviderFactoryService(),
 });

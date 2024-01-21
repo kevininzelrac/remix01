@@ -4,7 +4,12 @@ export type AuthorizationRedirect = {
 };
 
 export type AuthorizationResult<Profile = unknown> = {
-  id: string;
+  user: {
+    id: string;
+    provider: string;
+    email: string;
+    emailVerified: boolean;
+  };
   profile: Profile;
 };
 

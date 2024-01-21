@@ -1,10 +1,6 @@
-export type RedirectToOAuthProviderResult = {
-  url: string;
-  stateCookie: string;
-};
-
 export interface ISessionService {
-  redirectToOAuthProvider(
-    providerName: string,
-  ): Promise<RedirectToOAuthProviderResult>;
+  handleCredentialSignIn(request: Request): Promise<Response>;
+  handleCredentialSignUp(request: Request): Promise<Response>;
+  redirectToOAuthProvider(providerName: string): Promise<Response>;
+  handleOAuthResult(request: Request, providerName: string): Promise<Response>;
 }

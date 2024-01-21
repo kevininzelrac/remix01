@@ -14,25 +14,25 @@ import type {
 export class GoogleOAuthProviderService
   implements IOAuthProviderService, Dependency<ServerContext>
 {
-  private provider: GoogleAuth;
+  private _provider: GoogleAuth;
 
   constructor(
-    providerName: string,
+    private _providerName: string,
     clientId: string,
     clientSecret: string,
     auth: Auth,
   ) {
-    this.provider = google(auth, {
+    this._provider = google(auth, {
       clientId,
       clientSecret,
-      redirectUri: pages.AUTH_CALLBACK_API(providerName),
+      redirectUri: pages.AUTH_CALLBACK_API(_providerName),
     });
   }
 
   init(context: ServerContext): void {}
 
   async getAuthorizationRedirect(): Promise<AuthorizationRedirect> {
-    const [url, state] = await this.provider.getAuthorizationUrl();
+    const [url, state] = await this._provider.getAuthorizationUrl();
     return {
       url: url.toString(),
       state,
@@ -42,9 +42,17 @@ export class GoogleOAuthProviderService
   async getAuthorizationResult(
     code: string,
   ): Promise<AuthorizationResult<GoogleUser>> {
-    const { googleUser } = await this.provider.validateCallback(code);
+    const { googleUser } = await this._provider.validateCallback(code);
+    if (!googleUser.email) {
+      throw new Error("Could not link account. Email not provider.");
+    }
     return {
-      id: googleUser.sub,
+      user: {
+        id: googleUser.sub,
+        provider: this._providerName,
+        email: googleUser.email,
+        emailVerified: googleUser.email_verified ?? false,
+      },
       profile: googleUser,
     };
   }

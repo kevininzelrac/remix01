@@ -14,25 +14,25 @@ import type {
 export class FacebookOAuthProviderService
   implements IOAuthProviderService, Dependency<ServerContext>
 {
-  private provider: FacebookAuth;
+  private _provider: FacebookAuth;
 
   constructor(
-    providerName: string,
+    private _providerName: string,
     clientId: string,
     clientSecret: string,
     auth: Auth,
   ) {
-    this.provider = facebook(auth, {
+    this._provider = facebook(auth, {
       clientId,
       clientSecret,
-      redirectUri: pages.AUTH_CALLBACK_API(providerName),
+      redirectUri: pages.AUTH_CALLBACK_API(_providerName),
     });
   }
 
   init(context: ServerContext): void {}
 
   async getAuthorizationRedirect(): Promise<AuthorizationRedirect> {
-    const [url, state] = await this.provider.getAuthorizationUrl();
+    const [url, state] = await this._provider.getAuthorizationUrl();
     return {
       url: url.toString(),
       state,
@@ -42,9 +42,17 @@ export class FacebookOAuthProviderService
   async getAuthorizationResult(
     code: string,
   ): Promise<AuthorizationResult<FacebookUser>> {
-    const { facebookUser } = await this.provider.validateCallback(code);
+    const { facebookUser } = await this._provider.validateCallback(code);
+    if (!facebookUser.email) {
+      throw new Error("Could not link account. Email not provider.");
+    }
     return {
-      id: facebookUser.id,
+      user: {
+        id: facebookUser.id,
+        provider: this._providerName,
+        email: facebookUser.email,
+        emailVerified: false,
+      },
       profile: facebookUser,
     };
   }
