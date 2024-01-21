@@ -4,4 +4,5 @@ export const pages = {
   AUTH_LOGIN_API: (providerName: string) => `/api/auth/login/${providerName}`,
   AUTH_CALLBACK_API: (providerName: string) =>
     `/api/auth/callback/${providerName}`,
+  HOME: "/",
 };

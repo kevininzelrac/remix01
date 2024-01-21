@@ -9,6 +9,20 @@ function getEnvironmentVariable(name: string): string {
 export const READ_DB_URL = getEnvironmentVariable("READ_DB_URL");
 export const WRITE_DB_URL = getEnvironmentVariable("WRITE_DB_URL");
 
+// Authentication
+export const ACCESS_TOKEN_SECRET = getEnvironmentVariable(
+  "ACCESS_TOKEN_SECRET",
+);
+export const ACCESS_TOKEN_DURATION = getEnvironmentVariable(
+  "ACCESS_TOKEN_DURATION",
+);
+export const REFRESH_TOKEN_SECRET = getEnvironmentVariable(
+  "REFRESH_TOKEN_SECRET",
+);
+export const REFRESH_TOKEN_DURATION = getEnvironmentVariable(
+  "REFRESH_TOKEN_DURATION",
+);
+
 // Facebook OAuth
 export const FACEBOOK_CLIENT_ID = getEnvironmentVariable("FACEBOOK_CLIENT_ID");
 export const FACEBOOK_CLIENT_SECRET = getEnvironmentVariable(

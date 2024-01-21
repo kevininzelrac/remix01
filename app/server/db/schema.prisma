@@ -21,7 +21,7 @@ model User {
   avatar String?
   credential Credential?
   oauthProviders OAuthProvider[]
-  refreshToken RefreshToken[]
+  tokens Token[]
   post Post[]
   @@index([email])
 }
@@ -48,11 +48,14 @@ model OAuthProvider {
   @@index([providerName, providerId])
 }
 
-model RefreshToken {
+model Token {
   id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   userId  String  @db.Uuid
+  type    String
   token   String
-  revoked Boolean @default(false)
+  revoked DateTime?
   user    User    @relation(fields: [userId], references: [id])
   @@unique([token])
 }

@@ -1,5 +1,6 @@
 import { parseCookie, serializeCookie } from "lucia/utils";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 
 import type {
@@ -10,10 +11,22 @@ import type {
 } from "~/server/interfaces";
 import type { PrismaClient, User } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
+import {
+  ACCESS_TOKEN_DURATION,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_DURATION,
+  REFRESH_TOKEN_SECRET,
+} from "~/server/constants.server";
+import { pages } from "~/constants";
 
 const credentialSchema = z.object({
   email: z.string(),
   password: z.string(),
+});
+
+const authCookieSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
 });
 
 export class SessionService
@@ -146,11 +159,73 @@ export class SessionService
     return this._authenticateUser(user);
   }
 
+  _getAuthCookieName(): string {
+    return "webapp_auth";
+  }
+
   _getStateCookieName(providerName: string): string {
     return `${providerName}_oauth_state`;
   }
 
-  _authenticateUser(user: User): Promise<Response> {
-    throw new Error("Not implemented yet!");
+  async _authenticateUser(user: User): Promise<Response> {
+    const userProps = {
+      uid: user.id,
+    };
+
+    const accessToken = jwt.sign(userProps, ACCESS_TOKEN_SECRET, {
+      expiresIn: ACCESS_TOKEN_DURATION,
+    });
+
+    const refreshToken = jwt.sign(userProps, REFRESH_TOKEN_SECRET, {
+      expiresIn: REFRESH_TOKEN_DURATION,
+    });
+
+    await this._db.$transaction(async (tx) => {
+      tx.token.updateMany({
+        data: {
+          revoked: new Date(),
+        },
+        where: {
+          userId: user.id,
+        },
+      });
+
+      tx.token.createMany({
+        data: [
+          {
+            type: "access",
+            userId: user.id,
+            token: accessToken,
+          },
+          {
+            type: "refresh",
+            userId: user.id,
+            token: accessToken,
+          },
+        ],
+      });
+    });
+
+    const authCookie = serializeCookie(
+      this._getAuthCookieName(),
+      JSON.stringify({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      }),
+      {
+        httpOnly: true,
+        secure: false, // `true` for production
+        path: "/",
+        maxAge: 60 * 60,
+      },
+    );
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: pages.HOME,
+        "Set-Cookie": authCookie,
+      },
+    });
   }
 }
