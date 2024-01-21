@@ -228,4 +228,22 @@ export class SessionService
       },
     });
   }
+
+  handleSignOut(): Response {
+    const authCookie = serializeCookie(this._getAuthCookieName(), "", {
+      httpOnly: true,
+      secure: false, // `true` for production
+      path: "/",
+      maxAge: 60 * 60,
+      expires: new Date(),
+    });
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: pages.SIGN_IN,
+        "Set-Cookie": authCookie,
+      },
+    });
+  }
 }

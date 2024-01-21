@@ -9,14 +9,4 @@ export interface IUserService {
     providerName: string,
     providerId: string,
   ): Promise<User>;
-  putRefreshToken(userId: string, token: string): Promise<string | null>;
-  getRefreshToken(userId: string, token: string): Promise<string | null>;
-  revokeRefreshToken(userId: string, token: string): Promise<void>;
-  signGoogleUser(
-    id: string,
-    email: string,
-    firstname: string,
-    lastname: string,
-    avatar: string,
-  ): Promise<User | null>;
 }
