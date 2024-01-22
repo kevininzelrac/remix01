@@ -1,8 +1,10 @@
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
 import { pages } from "~/constants";
+
+export { action } from "./action";
 
 export default function SignInPage() {
   return (
@@ -33,19 +35,19 @@ export default function SignInPage() {
             Enter your information to sign in to your account
           </p>
         </div>
-        <div className="space-y-4">
+        <Form method="POST" className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input id="username" required />
+            <Label htmlFor="email">Email</Label>
+            <Input name="email" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <PasswordInput id="password" required />
+            <PasswordInput name="password" required />
           </div>
           <Button className="w-full" type="submit">
             Sign In
           </Button>
-        </div>
+        </Form>
         <div className="space-y-4">
           <p className="text-center text-gray-500">Or sign in with</p>
           <OAuthMenu />

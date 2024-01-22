@@ -35,7 +35,7 @@ export default function SignInPage() {
         </div>
         <Form method="POST" className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="email">Email</Label>
             <Input name="email" required />
           </div>
           <div className="space-y-2">

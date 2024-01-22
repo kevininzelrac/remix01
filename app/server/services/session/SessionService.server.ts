@@ -239,4 +239,27 @@ export class SessionService
       },
     });
   }
+
+  verifyCredentials(request: Request): boolean {
+    const cookies = parseCookie(request.headers.get("Cookie") ?? "");
+    let data;
+    try {
+      data = JSON.parse(cookies[this._getAuthCookieName()]);
+    } catch (error) {
+      return false;
+    }
+
+    const parseResult = authCookieSchema.safeParse(data);
+    if (!parseResult.success) return false;
+    const { accessToken } = parseResult.data;
+
+    try {
+      jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
+    } catch (error) {
+      return false;
+    }
+
+    // FIXME: SHOULD ALSO VALIDATE IF TOKEN IS REVOKED.
+    return true;
+  }
 }
