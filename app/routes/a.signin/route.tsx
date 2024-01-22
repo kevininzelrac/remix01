@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react";
 
-import { Label, Input, Button } from "~/components";
+import { Label, Input, Button, PasswordInput } from "~/components";
+import { OAuthMenu } from "~/components/auth";
 import { pages } from "~/constants";
 
 export default function SignInPage() {
@@ -39,7 +40,7 @@ export default function SignInPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" required type="password" />
+            <PasswordInput id="password" required />
           </div>
           <Button className="w-full" type="submit">
             Sign In
@@ -47,11 +48,7 @@ export default function SignInPage() {
         </div>
         <div className="space-y-4">
           <p className="text-center text-gray-500">Or sign in with</p>
-          <div className="flex space-x-4 justify-center">
-            <Button className="w-1/3 !bg-[#4285F4] text-white">Google</Button>
-            <Button className="w-1/3 !bg-[#333] text-white">GitHub</Button>
-            <Button className="w-1/3 !bg-[#3b5998] text-white">Facebook</Button>
-          </div>
+          <OAuthMenu />
         </div>
       </div>
     </div>
