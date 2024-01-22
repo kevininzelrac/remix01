@@ -4,10 +4,10 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "email" TEXT NOT NULL,
-    "fullName" TEXT NOT NULL,
-    "firstname" TEXT NOT NULL,
-    "lastname" TEXT NOT NULL,
-    "avatar" TEXT NOT NULL,
+    "fullName" TEXT,
+    "firstname" TEXT,
+    "lastname" TEXT,
+    "avatar" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -17,20 +17,35 @@ CREATE TABLE "Credential" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "passwordHash" TEXT,
+    "passwordHash" TEXT NOT NULL,
     "userId" UUID NOT NULL,
 
     CONSTRAINT "Credential_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RefreshToken" (
+CREATE TABLE "OAuthProvider" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" UUID NOT NULL,
-    "token" TEXT NOT NULL,
-    "revoked" BOOLEAN NOT NULL DEFAULT false,
+    "providerName" TEXT NOT NULL,
+    "providerId" TEXT NOT NULL,
 
-    CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "OAuthProvider_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Token" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" UUID NOT NULL,
+    "type" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "revoked" TIMESTAMP(3),
+
+    CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -57,13 +72,22 @@ CREATE INDEX "User_email_idx" ON "User"("email");
 CREATE UNIQUE INDEX "Credential_userId_key" ON "Credential"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
+CREATE INDEX "OAuthProvider_providerName_providerId_idx" ON "OAuthProvider"("providerName", "providerId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "OAuthProvider_userId_providerName_key" ON "OAuthProvider"("userId", "providerName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Token_token_key" ON "Token"("token");
 
 -- AddForeignKey
 ALTER TABLE "Credential" ADD CONSTRAINT "Credential_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OAuthProvider" ADD CONSTRAINT "OAuthProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -13,7 +13,7 @@ async function main() {
       lastname: "The Dude",
       avatar:
         "https://fastly.picsum.photos/id/962/200/200.jpg?hmac=XehF7z9JYkgC-2ZfSP05h7eyumIq9wNKUDoCLklIhr4",
-      Credential: {
+      credential: {
         create: {
           passwordHash:
             "$2a$10$evty0xZrO8I5pJ5HpBPWKelvbigrb5LWG4D3U1xShRRI.rjB03u6y",
@@ -31,7 +31,7 @@ async function main() {
       lastname: "El Patron",
       avatar:
         "https://fastly.picsum.photos/id/249/200/200.jpg?hmac=75zqoHvrxGGVnJnS8h0gUzZ3zniIk6PggG38GjmyOto",
-      Credential: {
+      credential: {
         create: {
           passwordHash:
             "$2a$10$evty0xZrO8I5pJ5HpBPWKelvbigrb5LWG4D3U1xShRRI.rjB03u6y",
