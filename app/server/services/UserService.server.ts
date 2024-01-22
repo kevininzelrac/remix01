@@ -40,10 +40,24 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     });
   }
 
-  async createUserWithPassword(
-    email: string,
-    passwordHash: string,
-  ): Promise<User> {
+  getByOAuthProvider(
+    providerName: string,
+    providerId: string,
+  ): Promise<User | null> {
+    // Guaranteed unique
+    return this._db.user.findFirst({
+      where: {
+        oauthProviders: {
+          some: {
+            providerName,
+            providerId,
+          },
+        },
+      },
+    });
+  }
+
+  createUserWithPassword(email: string, passwordHash: string): Promise<User> {
     return this._db.user.create({
       data: {
         email: email,

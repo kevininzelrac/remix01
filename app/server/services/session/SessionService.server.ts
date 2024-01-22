@@ -138,17 +138,10 @@ export class SessionService
     const {
       user: { id: providerId, email },
     } = await provider.getAuthorizationResult(code);
-    // Guaranteed unique
-    const existingUser = await this._db.user.findFirst({
-      where: {
-        oauthProviders: {
-          some: {
-            providerId,
-            providerName,
-          },
-        },
-      },
-    });
+    const existingUser = await this._userService.getByOAuthProvider(
+      providerName,
+      providerId,
+    );
     if (existingUser) return this._authenticateUser(existingUser);
 
     const user = await this._userService.createUserWithOAuthProvider(

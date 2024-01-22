@@ -3,6 +3,10 @@ import type { User } from "~/server/db/interfaces.server";
 export interface IUserService {
   getById(id: string): Promise<User | null>;
   getByEmail(email: string): Promise<User | null>;
+  getByOAuthProvider(
+    providerName: string,
+    providerId: string,
+  ): Promise<User | null>;
   createUserWithPassword(email: string, passwordHash: string): Promise<User>;
   createUserWithOAuthProvider(
     email: string,
