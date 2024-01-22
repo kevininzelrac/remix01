@@ -16,6 +16,7 @@ export function PasswordInput({ className, ...props }: PasswordInputProps) {
     <div className={`relative w-full ${className}`}>
       <Input type={visibility ? "text" : "password"} {...props} />
       <Button
+        type="button"
         className="absolute bottom-1 right-1 h-7 w-7 !bg-transparent !text-black !block"
         onClick={toggleVisibility}
       >

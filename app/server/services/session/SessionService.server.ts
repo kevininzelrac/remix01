@@ -73,7 +73,7 @@ export class SessionService
       throw new Error("Invalid username/password.");
     }
 
-    const passwordHash = await bcrypt.hash(password, email);
+    const passwordHash = await bcrypt.hash(password, 10);
     const user = await this._userService.createUserWithPassword(
       email,
       passwordHash,

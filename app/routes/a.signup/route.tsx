@@ -4,6 +4,8 @@ import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
 import { pages } from "~/constants";
 
+export { action } from "./action";
+
 export default function SignInPage() {
   return (
     <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100">
@@ -31,14 +33,14 @@ export default function SignInPage() {
           <h1 className="text-3xl font-bold">Sign Up</h1>
           <p className="text-gray-500">Enter your information to sign up</p>
         </div>
-        <Form className="space-y-4">
+        <Form method="POST" className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
-            <Input id="username" required />
+            <Input name="email" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <PasswordInput id="password" required />
+            <PasswordInput name="password" required />
           </div>
           <Button className="w-full" type="submit">
             Sign up
