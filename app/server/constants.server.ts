@@ -9,6 +9,9 @@ function getEnvironmentVariable(name: string): string {
 export const READ_DB_URL = getEnvironmentVariable("READ_DB_URL");
 export const WRITE_DB_URL = getEnvironmentVariable("WRITE_DB_URL");
 
+// General
+export const BASE_URL = getEnvironmentVariable("BASE_URL");
+
 // Authentication
 export const ACCESS_TOKEN_SECRET = getEnvironmentVariable(
   "ACCESS_TOKEN_SECRET",

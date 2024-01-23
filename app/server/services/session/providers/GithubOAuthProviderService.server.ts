@@ -10,6 +10,7 @@ import type {
   IOAuthProviderService,
   ServerContext,
 } from "~/server/interfaces";
+import { BASE_URL } from "~/server/constants.server";
 
 export class GithubOAuthProviderService
   implements IOAuthProviderService, Dependency<ServerContext>
@@ -25,7 +26,10 @@ export class GithubOAuthProviderService
     this._provider = github(auth, {
       clientId,
       clientSecret,
-      redirectUri: pages.AUTH_CALLBACK_API(_providerName),
+      redirectUri: new URL(
+        pages.AUTH_CALLBACK_API(_providerName),
+        BASE_URL,
+      ).toString(),
     });
   }
 
