@@ -8,7 +8,6 @@ async function main() {
     update: {},
     create: {
       email: "kevin@prisma.io",
-      fullName: "Kevin The Dude",
       firstname: "Kevin",
       lastname: "The Dude",
       avatar:
@@ -26,7 +25,6 @@ async function main() {
     update: {},
     create: {
       email: "sebastian@prisma.io",
-      fullName: "Sebastian eL Patron",
       firstname: "Sebastian",
       lastname: "El Patron",
       avatar:

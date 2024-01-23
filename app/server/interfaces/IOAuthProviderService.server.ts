@@ -9,6 +9,8 @@ export type OAuthResult<Profile = unknown> = {
     provider: string;
     email: string;
     emailVerified: boolean;
+    firstName?: string;
+    lastName?: string;
   };
   profile: Profile;
 };
