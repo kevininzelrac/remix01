@@ -97,7 +97,7 @@ export class SessionService
   async redirectToOAuthProvider(providerName: string): Promise<Response> {
     const provider =
       this._oauthProviderFactoryService.getProvider(providerName);
-    const { url, state } = await provider.getAuthorizationRedirect();
+    const { url, state } = await provider.getOAuthRedirect();
     const stateCookie = serializeCookie(
       this._getStateCookieName(providerName),
       state,
@@ -137,7 +137,7 @@ export class SessionService
 
     const {
       user: { id: providerId, email },
-    } = await provider.getAuthorizationResult(code);
+    } = await provider.getOAuthResult(code);
     const existingUser = await this._userService.getByOAuthProvider(
       providerName,
       providerId,

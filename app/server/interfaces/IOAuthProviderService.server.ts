@@ -1,9 +1,9 @@
-export type AuthorizationRedirect = {
+export type OAuthRedirect = {
   url: string;
   state: string;
 };
 
-export type AuthorizationResult<Profile = unknown> = {
+export type OAuthResult<Profile = unknown> = {
   user: {
     id: string;
     provider: string;
@@ -14,6 +14,6 @@ export type AuthorizationResult<Profile = unknown> = {
 };
 
 export interface IOAuthProviderService<Profile = unknown> {
-  getAuthorizationRedirect(): Promise<AuthorizationRedirect>;
-  getAuthorizationResult(code: string): Promise<AuthorizationResult<Profile>>;
+  getOAuthRedirect(): Promise<OAuthRedirect>;
+  getOAuthResult(code: string): Promise<OAuthResult<Profile>>;
 }

@@ -5,8 +5,8 @@ import { github } from "@lucia-auth/oauth/providers";
 import { pages } from "~/constants";
 import type { Dependency } from "~/server/injection";
 import type {
-  AuthorizationRedirect,
-  AuthorizationResult,
+  OAuthRedirect,
+  OAuthResult,
   IOAuthProviderService,
   ServerContext,
 } from "~/server/interfaces";
@@ -35,7 +35,7 @@ export class GithubOAuthProviderService
 
   init(context: ServerContext): void {}
 
-  async getAuthorizationRedirect(): Promise<AuthorizationRedirect> {
+  async getOAuthRedirect(): Promise<OAuthRedirect> {
     const [url, state] = await this._provider.getAuthorizationUrl();
     return {
       url: url.toString(),
@@ -43,9 +43,7 @@ export class GithubOAuthProviderService
     };
   }
 
-  async getAuthorizationResult(
-    code: string,
-  ): Promise<AuthorizationResult<GithubUser>> {
+  async getOAuthResult(code: string): Promise<OAuthResult<GithubUser>> {
     const { githubUser } = await this._provider.validateCallback(code);
     if (!githubUser.email) {
       throw new Error("Could not link account. Email not provider.");

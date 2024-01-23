@@ -5,8 +5,8 @@ import { google } from "@lucia-auth/oauth/providers";
 import { pages } from "~/constants";
 import type { Dependency } from "~/server/injection";
 import type {
-  AuthorizationRedirect,
-  AuthorizationResult,
+  OAuthRedirect,
+  OAuthResult,
   IOAuthProviderService,
   ServerContext,
 } from "~/server/interfaces";
@@ -35,7 +35,7 @@ export class GoogleOAuthProviderService
 
   init(context: ServerContext): void {}
 
-  async getAuthorizationRedirect(): Promise<AuthorizationRedirect> {
+  async getOAuthRedirect(): Promise<OAuthRedirect> {
     const [url, state] = await this._provider.getAuthorizationUrl();
     return {
       url: url.toString(),
@@ -43,9 +43,7 @@ export class GoogleOAuthProviderService
     };
   }
 
-  async getAuthorizationResult(
-    code: string,
-  ): Promise<AuthorizationResult<GoogleUser>> {
+  async getOAuthResult(code: string): Promise<OAuthResult<GoogleUser>> {
     const { googleUser } = await this._provider.validateCallback(code);
     if (!googleUser.email) {
       throw new Error("Could not link account. Email not provider.");
