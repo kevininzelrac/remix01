@@ -1,6 +1,6 @@
 import { redirect, type LoaderFunctionArgs, json } from "@remix-run/node";
 
-import { PAGES, WIZARD_STEP } from "~/constants";
+import { PAGES } from "~/constants";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const userId = context.sessionService.getAuthenticatedUserId(request);
@@ -14,9 +14,5 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return redirect(PAGES.SIGN_IN);
   }
 
-  if (user.wizardStep != WIZARD_STEP.COMPLETE) {
-    return redirect(PAGES.ONBOARDING);
-  }
-
-  return json({});
+  return json({ user });
 }

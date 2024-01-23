@@ -5,6 +5,7 @@ export const PAGES = {
   AUTH_CALLBACK_API: (providerName: string) =>
     `/api/auth/callback/${providerName}`,
   HOME: "/",
+  ONBOARDING: "/h/onboarding",
 };
 
 export const WIZARD_STEP = {

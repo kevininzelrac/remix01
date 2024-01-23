@@ -38,11 +38,11 @@ export default function SignInPage() {
         <Form method="POST" className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input name="email" required />
+            <Input id="email" name="email" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <PasswordInput name="password" required />
+            <PasswordInput id="password" name="password" required />
           </div>
           <Button className="w-full" type="submit">
             Sign In
