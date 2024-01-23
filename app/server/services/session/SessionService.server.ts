@@ -29,6 +29,10 @@ const authCookieSchema = z.object({
   refreshToken: z.string(),
 });
 
+const jwtContentsSchema = z.object({
+  uid: z.string(),
+});
+
 export class SessionService
   implements ISessionService, Dependency<ServerContext>
 {
@@ -241,26 +245,29 @@ export class SessionService
     });
   }
 
-  verifyCredentials(request: Request): boolean {
+  getAuthenticatedUserId(request: Request): string | null {
     const cookies = parseCookie(request.headers.get("Cookie") ?? "");
     let data;
     try {
       data = JSON.parse(cookies[this._getAuthCookieName()]);
     } catch (error) {
-      return false;
+      return null;
     }
 
     const parseResult = authCookieSchema.safeParse(data);
-    if (!parseResult.success) return false;
+    if (!parseResult.success) return null;
     const { accessToken } = parseResult.data;
 
     try {
       jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
     } catch (error) {
-      return false;
+      return null;
     }
 
     // FIXME: SHOULD ALSO VALIDATE IF TOKEN IS REVOKED.
-    return true;
+    const jwtResult = jwtContentsSchema.safeParse(jwt.decode(accessToken));
+    if (!jwtResult.success) return null;
+
+    return jwtResult.data.uid;
   }
 }

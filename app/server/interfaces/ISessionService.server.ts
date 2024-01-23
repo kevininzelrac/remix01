@@ -4,5 +4,5 @@ export interface ISessionService {
   redirectToOAuthProvider(providerName: string): Promise<Response>;
   handleOAuthResult(request: Request, providerName: string): Promise<Response>;
   handleSignOut(): Response;
-  verifyCredentials(request: Request): boolean;
+  getAuthenticatedUserId(request: Request): string | null;
 }
