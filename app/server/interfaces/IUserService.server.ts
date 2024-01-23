@@ -12,5 +12,6 @@ export interface IUserService {
     email: string,
     providerName: string,
     providerId: string,
+    attributes: Pick<User, "fullName" | "avatar">,
   ): Promise<User>;
 }

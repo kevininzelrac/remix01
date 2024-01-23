@@ -2,7 +2,7 @@ import type { Auth } from "lucia";
 import type { FacebookAuth, FacebookUser } from "@lucia-auth/oauth/providers";
 import { facebook } from "@lucia-auth/oauth/providers";
 
-import { pages } from "~/constants";
+import { PAGES } from "~/constants";
 import type { Dependency } from "~/server/injection";
 import type {
   OAuthRedirect,
@@ -27,7 +27,7 @@ export class FacebookOAuthProviderService
       clientId,
       clientSecret,
       redirectUri: new URL(
-        pages.AUTH_CALLBACK_API(_providerName),
+        PAGES.AUTH_CALLBACK_API(_providerName),
         BASE_URL,
       ).toString(),
     });
@@ -54,6 +54,8 @@ export class FacebookOAuthProviderService
         provider: this._providerName,
         email: facebookUser.email,
         emailVerified: false,
+        fullName: facebookUser.name,
+        avatar: facebookUser.picture.data.url,
       },
       profile: facebookUser,
     };

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { WIZARD_STEP } from "~/constants";
 
 const prisma = new PrismaClient();
 
@@ -8,8 +9,7 @@ async function main() {
     update: {},
     create: {
       email: "kevin@prisma.io",
-      firstname: "Kevin",
-      lastname: "The Dude",
+      fullName: "Kevin The Dude",
       avatar:
         "https://fastly.picsum.photos/id/962/200/200.jpg?hmac=XehF7z9JYkgC-2ZfSP05h7eyumIq9wNKUDoCLklIhr4",
       credential: {
@@ -18,6 +18,7 @@ async function main() {
             "$2a$10$evty0xZrO8I5pJ5HpBPWKelvbigrb5LWG4D3U1xShRRI.rjB03u6y",
         },
       },
+      wizardStep: WIZARD_STEP.INITIAL,
     },
   });
   await prisma.user.upsert({
@@ -25,8 +26,7 @@ async function main() {
     update: {},
     create: {
       email: "sebastian@prisma.io",
-      firstname: "Sebastian",
-      lastname: "El Patron",
+      fullName: "Sebastian El Patron",
       avatar:
         "https://fastly.picsum.photos/id/249/200/200.jpg?hmac=75zqoHvrxGGVnJnS8h0gUzZ3zniIk6PggG38GjmyOto",
       credential: {
@@ -35,6 +35,7 @@ async function main() {
             "$2a$10$evty0xZrO8I5pJ5HpBPWKelvbigrb5LWG4D3U1xShRRI.rjB03u6y",
         },
       },
+      wizardStep: WIZARD_STEP.INITIAL,
     },
   });
 

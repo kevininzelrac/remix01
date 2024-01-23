@@ -1,3 +1,4 @@
+import { WIZARD_STEP } from "~/constants";
 import type {
   Credential,
   PrismaClient,
@@ -66,6 +67,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
             passwordHash,
           },
         },
+        wizardStep: WIZARD_STEP.INITIAL,
       },
     });
   }
@@ -74,9 +76,11 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     email: string,
     providerName: string,
     providerId: string,
+    attributes: Pick<User, "fullName" | "avatar">,
   ): Promise<User> {
     return this._db.user.create({
       data: {
+        ...attributes,
         email: email,
         oauthProviders: {
           create: {
@@ -84,6 +88,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
             providerName,
           },
         },
+        wizardStep: WIZARD_STEP.INITIAL,
       },
     });
   }

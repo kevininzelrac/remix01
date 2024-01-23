@@ -2,7 +2,7 @@ import type { Auth } from "lucia";
 import type { GoogleAuth, GoogleUser } from "@lucia-auth/oauth/providers";
 import { google } from "@lucia-auth/oauth/providers";
 
-import { pages } from "~/constants";
+import { PAGES } from "~/constants";
 import type { Dependency } from "~/server/injection";
 import type {
   OAuthRedirect,
@@ -27,7 +27,7 @@ export class GoogleOAuthProviderService
       clientId,
       clientSecret,
       redirectUri: new URL(
-        pages.AUTH_CALLBACK_API(_providerName),
+        PAGES.AUTH_CALLBACK_API(_providerName),
         BASE_URL,
       ).toString(),
     });
@@ -54,6 +54,8 @@ export class GoogleOAuthProviderService
         provider: this._providerName,
         email: googleUser.email,
         emailVerified: googleUser.email_verified ?? false,
+        fullName: googleUser.name,
+        avatar: googleUser.picture,
       },
       profile: googleUser,
     };

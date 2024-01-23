@@ -17,7 +17,7 @@ import {
   REFRESH_TOKEN_DURATION,
   REFRESH_TOKEN_SECRET,
 } from "~/server/constants.server";
-import { pages } from "~/constants";
+import { PAGES } from "~/constants";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -136,7 +136,7 @@ export class SessionService
     }
 
     const {
-      user: { id: providerId, email },
+      user: { id: providerId, email, fullName, avatar },
     } = await provider.getOAuthResult(code);
     const existingUser = await this._userService.getByOAuthProvider(
       providerName,
@@ -148,6 +148,7 @@ export class SessionService
       email,
       providerName,
       providerId,
+      { fullName: fullName ?? null, avatar: avatar ?? null },
     );
     return this._authenticateUser(user);
   }
@@ -216,7 +217,7 @@ export class SessionService
     return new Response(null, {
       status: 302,
       headers: {
-        Location: pages.HOME,
+        Location: PAGES.HOME,
         "Set-Cookie": authCookie,
       },
     });
@@ -234,7 +235,7 @@ export class SessionService
     return new Response(null, {
       status: 302,
       headers: {
-        Location: pages.SIGN_IN,
+        Location: PAGES.SIGN_IN,
         "Set-Cookie": authCookie,
       },
     });

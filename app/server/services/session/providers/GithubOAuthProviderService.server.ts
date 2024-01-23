@@ -2,7 +2,7 @@ import type { Auth } from "lucia";
 import type { GithubAuth, GithubUser } from "@lucia-auth/oauth/providers";
 import { github } from "@lucia-auth/oauth/providers";
 
-import { pages } from "~/constants";
+import { PAGES } from "~/constants";
 import type { Dependency } from "~/server/injection";
 import type {
   OAuthRedirect,
@@ -27,7 +27,7 @@ export class GithubOAuthProviderService
       clientId,
       clientSecret,
       redirectUri: new URL(
-        pages.AUTH_CALLBACK_API(_providerName),
+        PAGES.AUTH_CALLBACK_API(_providerName),
         BASE_URL,
       ).toString(),
     });
@@ -54,6 +54,8 @@ export class GithubOAuthProviderService
         provider: this._providerName,
         email: githubUser.email,
         emailVerified: false,
+        fullName: githubUser.name ?? undefined,
+        avatar: githubUser.avatar_url,
       },
       profile: githubUser,
     };

@@ -2,7 +2,7 @@ import { Form, Link } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
-import { pages } from "~/constants";
+import { PAGES } from "~/constants";
 
 export { action } from "./action";
 
@@ -25,7 +25,7 @@ export default function SignInPage() {
       <div className="w-full md:w-1/2 p-8 space-y-6">
         <div className="flex flex-row justify-end items-center gap-3 mb-10">
           <p className="text-center text-gray-500">Already have an account?</p>
-          <Link to={pages.SIGN_IN}>
+          <Link to={PAGES.SIGN_IN}>
             <Button className="!bg-green-500 text-white">Sign In</Button>
           </Link>
         </div>
