@@ -62,7 +62,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     return this._db.user.create({
       data: {
         email: email,
-        emailVerified: false,
+        emailVerifiedAt: null,
         credential: {
           create: {
             passwordHash,
@@ -77,7 +77,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     email: string,
     providerName: string,
     providerId: string,
-    attributes: Pick<User, "fullName" | "avatar" | "emailVerified">,
+    attributes: Pick<User, "fullName" | "avatar" | "emailVerifiedAt">,
   ): Promise<User> {
     return this._db.user.create({
       data: {

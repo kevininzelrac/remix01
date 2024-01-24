@@ -39,7 +39,7 @@ export const loader = withMiddleware([], async (args: LoaderFunctionArgs) => {
 });
 
 const handleInitial = ({ context }: LoaderFunctionArgs, user: User) => {
-  const nextStep = user.emailVerified
+  const nextStep = user.emailVerifiedAt
     ? WIZARD_STEP.PROFILE
     : WIZARD_STEP.VERIFY;
   context.userService.updateUser(user.id, {

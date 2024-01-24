@@ -9,6 +9,7 @@ import type {
   IUserService,
   ServerContext,
   IMailService,
+  IClockService,
 } from "~/server/interfaces";
 import type { PrismaClient, User } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
@@ -19,6 +20,7 @@ import {
   REFRESH_TOKEN_SECRET,
 } from "~/server/constants.server";
 import { PAGES } from "~/constants";
+import { add } from "date-fns";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -37,6 +39,7 @@ const jwtContentsSchema = z.object({
 export class SessionService
   implements ISessionService, Dependency<ServerContext>
 {
+  _clockService!: IClockService;
   _mailService!: IMailService;
   _oauthProviderFactoryService!: IOAuthProviderFactoryService;
   _userService!: IUserService;
@@ -44,6 +47,7 @@ export class SessionService
   constructor(private _db: PrismaClient) {}
 
   init(context: ServerContext): void {
+    this._clockService = context.clockService;
     this._mailService = context.mailService;
     this._oauthProviderFactoryService = context.oauthProviderFactoryService;
     this._userService = context.userService;
@@ -158,7 +162,9 @@ export class SessionService
       {
         fullName: fullName ?? null,
         avatar: avatar ?? null,
-        emailVerified,
+        emailVerifiedAt: emailVerified
+          ? this._clockService.getCurrentDateTime()
+          : null,
       },
     );
     return this._authenticateUser(user);
@@ -188,7 +194,7 @@ export class SessionService
     await this._db.$transaction(async (tx) => {
       tx.token.updateMany({
         data: {
-          revoked: new Date(),
+          revoked: this._clockService.getCurrentDateTime(),
         },
         where: {
           userId: user.id,
@@ -278,7 +284,81 @@ export class SessionService
     return jwtResult.data.uid;
   }
 
-  async sendVerificationEmail(id: string): Promise<void> {}
+  async sendVerificationEmail(user: User): Promise<void> {
+    const verificationCode = await this._db.verificationCode.upsert({
+      create: {
+        ...this._getNewVerificationCode(),
+        userId: user.id,
+      },
+      update: {},
+      where: {
+        userId: user.id,
+      },
+    });
 
-  async verifyEmail(id: string, code: string): Promise<boolean> {}
+    if (verificationCode.expiresAt <= this._clockService.getCurrentDateTime()) {
+      const newVerificationCode = this._getNewVerificationCode();
+      Object.assign(verificationCode, newVerificationCode);
+      await this._db.verificationCode.update({
+        data: newVerificationCode,
+        where: {
+          userId: user.id,
+        },
+      });
+    }
+
+    return this._mailService.sendEmail({
+      destination: {
+        toAddresses: [user.email],
+      },
+      message: {
+        subject: `${verificationCode.code} - Verification Code`,
+        body: "...",
+      },
+    });
+  }
+
+  _getNewVerificationCode(): { code: string; expiresAt: Date } {
+    return {
+      code: Math.floor(Math.random() * 1000000)
+        .toString()
+        .padStart(6, "0"),
+      expiresAt: add(this._clockService.getCurrentDateTime(), { hours: 1 }),
+    };
+  }
+
+  async verifyEmail(user: User, code: string): Promise<boolean> {
+    if (user.emailVerifiedAt) return true;
+
+    const verificationCode = await this._db.verificationCode.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (
+      !verificationCode ||
+      verificationCode.expiresAt <= this._clockService.getCurrentDateTime() ||
+      verificationCode.code != code
+    )
+      return false;
+
+    await this._db.$transaction([
+      this._db.verificationCode.delete({
+        where: {
+          userId: user.id,
+        },
+      }),
+      this._db.user.update({
+        data: {
+          emailVerifiedAt: this._clockService.getCurrentDateTime(),
+        },
+        where: {
+          id: user.id,
+        },
+      }),
+    ]);
+
+    return false;
+  }
 }

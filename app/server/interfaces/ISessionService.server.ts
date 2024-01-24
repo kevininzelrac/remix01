@@ -1,3 +1,5 @@
+import type { User } from "@prisma/client";
+
 export interface ISessionService {
   handleCredentialSignIn(request: Request): Promise<Response>;
   handleCredentialSignUp(request: Request): Promise<Response>;
@@ -5,6 +7,6 @@ export interface ISessionService {
   handleOAuthResult(request: Request, providerName: string): Promise<Response>;
   handleSignOut(): Response;
   getAuthenticatedUserId(request: Request): string | null;
-  sendVerificationEmail(id: string): Promise<void>;
-  verifyEmail(id: string, code: string): Promise<boolean>;
+  sendVerificationEmail(user: User): Promise<void>;
+  verifyEmail(user: User, code: string): Promise<boolean>;
 }

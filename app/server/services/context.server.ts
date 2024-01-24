@@ -9,6 +9,7 @@ import { READ_DB_URL } from "../constants.server";
 import { SessionService } from "./session/SessionService.server";
 import { OAuthProviderFactoryService } from "./session/OAuthProviderFactoryService.server";
 import { MailService } from "./MailService.server";
+import { ClockService } from "./IClockService.server";
 
 const prisma = new PrismaClient().$extends(
   readReplicas({
@@ -17,9 +18,10 @@ const prisma = new PrismaClient().$extends(
 ) as any as PrismaClient;
 
 export const serverContext = buildServerContext<ServerContext>({
+  clockService: new ClockService(),
   loggerService: new LoggerService(),
-  userService: new UserService(prisma),
-  sessionService: new SessionService(prisma),
-  oauthProviderFactoryService: new OAuthProviderFactoryService(),
   mailService: new MailService(),
+  oauthProviderFactoryService: new OAuthProviderFactoryService(),
+  sessionService: new SessionService(prisma),
+  userService: new UserService(prisma),
 });

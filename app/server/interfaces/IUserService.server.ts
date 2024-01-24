@@ -12,7 +12,7 @@ export interface IUserService {
     email: string,
     providerName: string,
     providerId: string,
-    attributes: Pick<User, "fullName" | "avatar" | "emailVerified">,
+    attributes: Pick<User, "fullName" | "avatar" | "emailVerifiedAt">,
   ): Promise<User>;
   updateUser(
     id: string,

@@ -4,7 +4,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "email" TEXT NOT NULL,
-    "emailVerified" BOOLEAN NOT NULL,
+    "emailVerifiedAt" TIMESTAMP(3),
     "fullName" TEXT,
     "avatar" TEXT,
     "wizardStep" TEXT NOT NULL,
@@ -54,6 +54,8 @@ CREATE TABLE "VerificationCode" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" UUID NOT NULL,
+    "code" VARCHAR(6) NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "VerificationCode_pkey" PRIMARY KEY ("id")
 );

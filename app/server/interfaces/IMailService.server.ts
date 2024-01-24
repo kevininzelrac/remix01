@@ -1,5 +1,5 @@
 export type EmailProps = {
-  source: string;
+  source?: string;
   destination: {
     toAddresses: string[];
   };

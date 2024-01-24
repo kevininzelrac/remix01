@@ -9,7 +9,7 @@ async function main() {
     update: {},
     create: {
       email: "kevin@prisma.io",
-      emailVerified: true,
+      emailVerifiedAt: new Date(),
       fullName: "Kevin The Dude",
       avatar:
         "https://fastly.picsum.photos/id/962/200/200.jpg?hmac=XehF7z9JYkgC-2ZfSP05h7eyumIq9wNKUDoCLklIhr4",
@@ -27,7 +27,7 @@ async function main() {
     update: {},
     create: {
       email: "sebastian@prisma.io",
-      emailVerified: true,
+      emailVerifiedAt: new Date(),
       fullName: "Sebastian El Patron",
       avatar:
         "https://fastly.picsum.photos/id/249/200/200.jpg?hmac=75zqoHvrxGGVnJnS8h0gUzZ3zniIk6PggG38GjmyOto",
