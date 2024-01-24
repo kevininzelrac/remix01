@@ -8,6 +8,7 @@ import type {
   ISessionService,
   IUserService,
   ServerContext,
+  IMailService,
 } from "~/server/interfaces";
 import type { PrismaClient, User } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
@@ -36,12 +37,14 @@ const jwtContentsSchema = z.object({
 export class SessionService
   implements ISessionService, Dependency<ServerContext>
 {
+  _mailService!: IMailService;
   _oauthProviderFactoryService!: IOAuthProviderFactoryService;
   _userService!: IUserService;
 
   constructor(private _db: PrismaClient) {}
 
   init(context: ServerContext): void {
+    this._mailService = context.mailService;
     this._oauthProviderFactoryService = context.oauthProviderFactoryService;
     this._userService = context.userService;
   }
@@ -274,4 +277,8 @@ export class SessionService
 
     return jwtResult.data.uid;
   }
+
+  async sendVerificationEmail(id: string): Promise<void> {}
+
+  async verifyEmail(id: string, code: string): Promise<boolean> {}
 }

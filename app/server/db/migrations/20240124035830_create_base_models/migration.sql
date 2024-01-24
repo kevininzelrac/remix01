@@ -49,17 +49,13 @@ CREATE TABLE "Token" (
 );
 
 -- CreateTable
-CREATE TABLE "Post" (
+CREATE TABLE "VerificationCode" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "authorId" UUID NOT NULL,
-    "title" TEXT NOT NULL,
-    "category" TEXT NOT NULL DEFAULT 'empty',
-    "content" TEXT NOT NULL,
-    "published" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" UUID NOT NULL,
 
-    CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "VerificationCode_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -80,6 +76,9 @@ CREATE UNIQUE INDEX "OAuthProvider_userId_providerName_key" ON "OAuthProvider"("
 -- CreateIndex
 CREATE UNIQUE INDEX "Token_token_key" ON "Token"("token");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationCode_userId_key" ON "VerificationCode"("userId");
+
 -- AddForeignKey
 ALTER TABLE "Credential" ADD CONSTRAINT "Credential_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -90,4 +89,4 @@ ALTER TABLE "OAuthProvider" ADD CONSTRAINT "OAuthProvider_userId_fkey" FOREIGN K
 ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "VerificationCode" ADD CONSTRAINT "VerificationCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

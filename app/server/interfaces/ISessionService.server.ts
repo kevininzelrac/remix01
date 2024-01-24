@@ -5,4 +5,6 @@ export interface ISessionService {
   handleOAuthResult(request: Request, providerName: string): Promise<Response>;
   handleSignOut(): Response;
   getAuthenticatedUserId(request: Request): string | null;
+  sendVerificationEmail(id: string): Promise<void>;
+  verifyEmail(id: string, code: string): Promise<boolean>;
 }

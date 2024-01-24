@@ -11,63 +11,65 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique
-  emailVerified Boolean
-  fullName      String?
-  avatar        String?
-  wizardStep    String
-  credential    Credential?
-  oauthProviders OAuthProvider[]
-  tokens Token[]
-  post Post[]
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  email            String            @unique
+  emailVerified    Boolean
+  fullName         String?
+  avatar           String?
+  wizardStep       String
+  credential       Credential?
+  oauthProviders   OAuthProvider[]
+  tokens           Token[]
+  verificationCode VerificationCode?
+
   @@index([email])
 }
 
 model Credential {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   passwordHash String
-  userId       String  @db.Uuid
-  user User @relation(fields: [userId], references: [id])
+  userId       String   @db.Uuid
+  user         User     @relation(fields: [userId], references: [id])
+
   @@unique([userId])
 }
 
 model OAuthProvider {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId       String  @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId       String   @db.Uuid
   providerName String
   providerId   String
-  user User @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+
   @@unique([userId, providerName])
   @@index([providerName, providerId])
 }
 
 model Token {
-  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId  String  @db.Uuid
-  type    String
-  token   String
-  revoked DateTime?
-  user    User    @relation(fields: [userId], references: [id])
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String    @db.Uuid
+  type      String
+  token     String
+  revoked   DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+
   @@unique([token])
 }
 
-model Post {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  authorId  String    @db.Uuid
-  title     String
-  category  String    @default("empty")
-  content   String
-  published Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  author User         @relation(fields: [authorId], references: [id])
+model VerificationCode {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId])
 }

@@ -6,9 +6,9 @@ import { buildServerContext } from "~/server/injection";
 import { LoggerService } from "./LoggerService.server";
 import { UserService } from "./UserService.server";
 import { READ_DB_URL } from "../constants.server";
-import { PostService } from "./PostService.server";
 import { SessionService } from "./session/SessionService.server";
 import { OAuthProviderFactoryService } from "./session/OAuthProviderFactoryService.server";
+import { MailService } from "./MailService.server";
 
 const prisma = new PrismaClient().$extends(
   readReplicas({
@@ -19,7 +19,7 @@ const prisma = new PrismaClient().$extends(
 export const serverContext = buildServerContext<ServerContext>({
   loggerService: new LoggerService(),
   userService: new UserService(prisma),
-  postService: new PostService(prisma),
   sessionService: new SessionService(prisma),
   oauthProviderFactoryService: new OAuthProviderFactoryService(),
+  mailService: new MailService(),
 });
