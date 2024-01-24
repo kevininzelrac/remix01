@@ -10,6 +10,7 @@ import type {
   ServerContext,
   IMailService,
   IClockService,
+  ILoggerService,
 } from "~/server/interfaces";
 import type { PrismaClient, User } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
@@ -41,6 +42,7 @@ export class SessionService
   implements ISessionService, Dependency<ServerContext>
 {
   _clockService!: IClockService;
+  _loggerService!: ILoggerService;
   _mailService!: IMailService;
   _oauthProviderFactoryService!: IOAuthProviderFactoryService;
   _userService!: IUserService;
@@ -49,6 +51,7 @@ export class SessionService
 
   init(context: ServerContext): void {
     this._clockService = context.clockService;
+    this._loggerService = context.loggerService;
     this._mailService = context.mailService;
     this._oauthProviderFactoryService = context.oauthProviderFactoryService;
     this._userService = context.userService;
@@ -358,5 +361,17 @@ export class SessionService
     ]);
 
     return false;
+  }
+
+  async getAuthenticatedUser(request: Request): Promise<User | null> {
+    const userId = this.getAuthenticatedUserId(request);
+    if (!userId) return null;
+
+    const user = await this._userService.getById(userId);
+    if (!user) {
+      this._loggerService.error("Could not find user.", { userId });
+    }
+
+    return user;
   }
 }

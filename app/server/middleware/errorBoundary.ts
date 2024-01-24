@@ -1,7 +1,7 @@
 import { BaseError } from "../errors";
-import type { Middleware } from "./utils";
+import type { Middleware, RouteFunction } from "./utils";
 
-export const errorBoundary: Middleware = (f) => async (args) => {
+export const errorBoundary: Middleware<RouteFunction> = (f) => async (args) => {
   try {
     return f(args);
   } catch (error) {
