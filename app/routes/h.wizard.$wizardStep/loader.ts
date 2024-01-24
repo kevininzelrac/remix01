@@ -4,6 +4,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { PAGES, WIZARD_STEP } from "~/constants";
 import { withMiddleware } from "~/server/middleware/utils";
+import type { TypedResponseData } from "~/server/types";
 
 export const loader = withMiddleware([], async (args: LoaderFunctionArgs) => {
   const { request, context } = args;
@@ -49,21 +50,29 @@ const handleInitial = ({ context }: LoaderFunctionArgs, user: User) => {
 };
 
 const handleVerify = ({ context }: LoaderFunctionArgs, user: User) => {
-  throw new Error("Not implemented yet");
+  return json({
+    step: WIZARD_STEP.VERIFY,
+  });
 };
+export type VerifyProps = TypedResponseData<ReturnType<typeof handleVerify>>;
 
 const handleProfile = (user: User) => {
   return json({
     step: WIZARD_STEP.PROFILE,
-    user,
+    user: {
+      fullName: user.fullName,
+      avatar: user.avatar,
+    },
   });
 };
+export type ProfileProps = TypedResponseData<ReturnType<typeof handleProfile>>;
 
 const handlePlans = () => {
   return json({
     step: WIZARD_STEP.PLANS,
   });
 };
+export type PlansProps = TypedResponseData<ReturnType<typeof handlePlans>>;
 
 const handleComplete = () => {
   return redirect(PAGES.HOME);
