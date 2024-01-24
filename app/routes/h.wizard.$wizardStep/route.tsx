@@ -15,6 +15,7 @@ import {
   Label,
 } from "~/components";
 import { WIZARD_STEP } from "~/constants";
+import { RESEND_CODE, SUBMIT_CODE } from "./action";
 
 export { loader };
 
@@ -33,7 +34,11 @@ export default function OnboardingPage() {
 export function VerificationPage(data: VerifyProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+      <Form
+        method="POST"
+        className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md dark:bg-gray-800"
+      >
+        <input type="hidden" value={SUBMIT_CODE} />
         <h2 className="text-3xl font-bold text-center">
           Enter Verification Code
         </h2>
@@ -42,6 +47,8 @@ export function VerificationPage(data: VerifyProps) {
         </p>
         <div className="flex justify-center">
           <Input
+            id="code"
+            name="code"
             className="text-center text-lg w-full"
             maxLength={6}
             placeholder="Enter code"
@@ -49,10 +56,13 @@ export function VerificationPage(data: VerifyProps) {
           />
         </div>
         <Button className="w-full">Verify</Button>
+      </Form>
+      <Form method="POST">
+        <input type="hidden" value={RESEND_CODE} />
         <Button className="border border-input bg-background hover:bg-accent hover:text-accent-foreground w-full">
           Resend Code
         </Button>
-      </div>
+      </Form>
     </div>
   );
 }

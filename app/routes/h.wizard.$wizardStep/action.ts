@@ -4,8 +4,8 @@ import { PAGES, WIZARD_STEP } from "~/constants";
 
 import { withMiddleware } from "~/server/middleware/utils";
 
-const SUBMIT_CODE = "submit-code";
-const RESEND_CODE = "resend-code";
+export const SUBMIT_CODE = "submit-code";
+export const RESEND_CODE = "resend-code";
 
 const schema = z.union([
   z.object({
