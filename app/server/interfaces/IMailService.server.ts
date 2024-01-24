@@ -1,14 +1,10 @@
-export type EmailProps = {
+export type MailProps = {
   source?: string;
-  destination: {
-    toAddresses: string[];
-  };
-  message: {
-    subject: string;
-    body: string;
-  };
+  destination: string[];
+  subject: string;
+  body: string;
 };
 
 export interface IMailService {
-  sendEmail(props: EmailProps): Promise<void>;
+  sendEmail(props: MailProps): Promise<void>;
 }

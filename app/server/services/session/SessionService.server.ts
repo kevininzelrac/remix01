@@ -21,6 +21,7 @@ import {
 } from "~/server/constants.server";
 import { PAGES } from "~/constants";
 import { add } from "date-fns";
+import { VerificationEmailTemplate } from "../mail/templates";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -307,15 +308,12 @@ export class SessionService
       });
     }
 
-    return this._mailService.sendEmail({
-      destination: {
-        toAddresses: [user.email],
-      },
-      message: {
-        subject: `${verificationCode.code} - Verification Code`,
-        body: "...",
-      },
-    });
+    const template = new VerificationEmailTemplate(verificationCode.code);
+    return this._mailService.sendEmail(
+      template.getProps({
+        destination: [user.email],
+      }),
+    );
   }
 
   _getNewVerificationCode(): { code: string; expiresAt: Date } {

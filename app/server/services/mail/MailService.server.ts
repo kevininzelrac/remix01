@@ -2,7 +2,7 @@ import type { Transporter } from "nodemailer";
 
 import type { Dependency } from "~/server/injection";
 import type {
-  EmailProps,
+  MailProps,
   IMailService,
   ServerContext,
 } from "~/server/interfaces";
@@ -15,12 +15,12 @@ export class MailService implements IMailService, Dependency<ServerContext> {
 
   init(context: ServerContext): void {}
 
-  async sendEmail(props: EmailProps): Promise<void> {
+  async sendEmail(props: MailProps): Promise<void> {
     await this._transport.sendMail({
       from: props.source ?? this._defaultFrom,
-      to: props.destination.toAddresses,
-      subject: props.message.subject,
-      html: props.message.body,
+      to: props.destination,
+      subject: props.subject,
+      html: props.body,
     });
   }
 }
