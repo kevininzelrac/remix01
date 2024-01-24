@@ -12,6 +12,10 @@ export interface IUserService {
     email: string,
     providerName: string,
     providerId: string,
-    attributes: Pick<User, "fullName" | "avatar">,
+    attributes: Pick<User, "fullName" | "avatar" | "emailVerified">,
+  ): Promise<User>;
+  updateUser(
+    id: string,
+    attrs: Partial<Omit<User, "id" | "createdAt" | "updatedAt">>,
   ): Promise<User>;
 }

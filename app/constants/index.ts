@@ -11,6 +11,7 @@ export const PAGES = {
 
 export const WIZARD_STEP = {
   INITIAL: "initial",
+  VERIFY: "verify",
   PROFILE: "profile",
   PLANS: "plans",
   COMPLETE: "complete",

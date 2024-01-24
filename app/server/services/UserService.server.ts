@@ -62,6 +62,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     return this._db.user.create({
       data: {
         email: email,
+        emailVerified: false,
         credential: {
           create: {
             passwordHash,
@@ -76,7 +77,7 @@ export class UserService implements IUserService, Dependency<ServerContext> {
     email: string,
     providerName: string,
     providerId: string,
-    attributes: Pick<User, "fullName" | "avatar">,
+    attributes: Pick<User, "fullName" | "avatar" | "emailVerified">,
   ): Promise<User> {
     return this._db.user.create({
       data: {
@@ -89,6 +90,18 @@ export class UserService implements IUserService, Dependency<ServerContext> {
           },
         },
         wizardStep: WIZARD_STEP.INITIAL,
+      },
+    });
+  }
+
+  async updateUser(
+    id: string,
+    attrs: Partial<Omit<User, "id" | "createdAt" | "updatedAt">>,
+  ): Promise<User> {
+    return this._db.user.update({
+      data: attrs,
+      where: {
+        id,
       },
     });
   }

@@ -140,7 +140,7 @@ export class SessionService
     }
 
     const {
-      user: { id: providerId, email, fullName, avatar },
+      user: { id: providerId, email, emailVerified, fullName, avatar },
     } = await provider.getOAuthResult(code);
     const existingUser = await this._userService.getByOAuthProvider(
       providerName,
@@ -152,7 +152,11 @@ export class SessionService
       email,
       providerName,
       providerId,
-      { fullName: fullName ?? null, avatar: avatar ?? null },
+      {
+        fullName: fullName ?? null,
+        avatar: avatar ?? null,
+        emailVerified,
+      },
     );
     return this._authenticateUser(user);
   }
