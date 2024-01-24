@@ -1,5 +1,9 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
+import { withMiddleware } from "~/server/middleware/utils";
 
-export async function action({ request, context }: ActionFunctionArgs) {
-  return context.sessionService.handleCredentialSignUp(request);
-}
+export const action = withMiddleware(
+  [],
+  ({ request, context }: ActionFunctionArgs) => {
+    return context.sessionService.handleCredentialSignUp(request);
+  },
+);
