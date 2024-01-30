@@ -1,4 +1,4 @@
-import { redirect, type ActionFunctionArgs } from "@remix-run/node";
+import { redirect, type ActionFunctionArgs, json } from "@remix-run/node";
 import { z } from "zod";
 import { PAGES, WIZARD_STEP } from "~/constants";
 
@@ -10,7 +10,7 @@ export const RESEND_CODE = "resend-code";
 const schema = z.union([
   z.object({
     type: z.literal(SUBMIT_CODE),
-    code: z.string(),
+    code: z.string().trim(),
   }),
   z.object({
     type: z.literal(RESEND_CODE),
@@ -43,10 +43,9 @@ export const action = withMiddleware(
         } else {
           throw new Error("Invalid code.");
         }
-        break;
       case RESEND_CODE:
         await context.sessionService.sendVerificationEmail(user);
-        break;
+        return json({});
     }
   },
 );
