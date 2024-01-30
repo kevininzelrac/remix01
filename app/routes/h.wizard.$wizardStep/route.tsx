@@ -14,9 +14,14 @@ import {
 } from "~/components";
 import { WIZARD_STEP } from "~/constants";
 
-import { action, RESEND_CODE, SUBMIT_CODE, UPDATE_PROFILE } from "./action";
-import type { ProfileProps, VerifyProps } from "./loader";
-import { loader } from "./loader";
+import {
+  action,
+  RESEND_CODE,
+  SUBMIT_CODE,
+  UPDATE_PROFILE,
+} from "./action.server";
+import type { ProfileProps, VerifyProps } from "./loader.server";
+import { loader } from "./loader.server";
 import { useCallback } from "react";
 
 export { action, loader };

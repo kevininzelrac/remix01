@@ -4,7 +4,7 @@ import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
 import { PAGES } from "~/constants";
 
-export { action } from "./action";
+export { action } from "./action.server";
 
 export default function SignInPage() {
   return (

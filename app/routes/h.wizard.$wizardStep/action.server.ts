@@ -60,6 +60,7 @@ export const action = withMiddleware(
         await context.fileSystemService.saveFile(avatarPath, avatarBinaryData);
         await context.userService.updateUser(user.id, {
           fullName: data.fullName,
+          wizardStep: WIZARD_STEP.PLANS,
         });
         return redirect(PAGES.WIZARD(WIZARD_STEP.PLANS));
     }
