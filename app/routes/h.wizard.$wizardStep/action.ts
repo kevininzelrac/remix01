@@ -1,11 +1,13 @@
 import { redirect, type ActionFunctionArgs, json } from "@remix-run/node";
 import { z } from "zod";
-import { PAGES, WIZARD_STEP } from "~/constants";
+import mime from "mime-types";
 
+import { PAGES, WIZARD_STEP } from "~/constants";
 import { withMiddleware } from "~/server/middleware/utils";
 
 export const SUBMIT_CODE = "submit-code";
 export const RESEND_CODE = "resend-code";
+export const UPDATE_PROFILE = "update-profile";
 
 const schema = z.union([
   z.object({
@@ -14,6 +16,11 @@ const schema = z.union([
   }),
   z.object({
     type: z.literal(RESEND_CODE),
+  }),
+  z.object({
+    type: z.literal(UPDATE_PROFILE),
+    fullName: z.string().trim(),
+    avatar: z.instanceof(Blob),
   }),
 ]);
 
@@ -46,6 +53,15 @@ export const action = withMiddleware(
       case RESEND_CODE:
         await context.sessionService.sendVerificationEmail(user);
         return json({});
+      case UPDATE_PROFILE:
+        const avatarExtension = mime.extension(data.avatar.type);
+        const avatarPath = `/avatars/${user.id}.${avatarExtension}`;
+        const avatarBinaryData = await data.avatar.arrayBuffer();
+        await context.fileSystemService.saveFile(avatarPath, avatarBinaryData);
+        await context.userService.updateUser(user.id, {
+          fullName: data.fullName,
+        });
+        return redirect(PAGES.WIZARD(WIZARD_STEP.PLANS));
     }
   },
 );

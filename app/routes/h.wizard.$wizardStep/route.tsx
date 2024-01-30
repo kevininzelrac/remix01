@@ -1,4 +1,4 @@
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useSubmit } from "@remix-run/react";
 
 import {
   AvatarInput,
@@ -14,9 +14,10 @@ import {
 } from "~/components";
 import { WIZARD_STEP } from "~/constants";
 
-import { action, RESEND_CODE, SUBMIT_CODE } from "./action";
+import { action, RESEND_CODE, SUBMIT_CODE, UPDATE_PROFILE } from "./action";
 import type { ProfileProps, VerifyProps } from "./loader";
 import { loader } from "./loader";
+import { useCallback } from "react";
 
 export { action, loader };
 
@@ -78,11 +79,25 @@ export function VerificationPage(data: VerifyProps) {
 }
 
 export function ProfilePage(data: ProfileProps) {
+  const submit = useSubmit();
+
   const { user } = data;
+
+  const onSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      const formData = new FormData();
+      formData.append("type", (event.target as any).type.value);
+      formData.append("fullName", (event.target as any).fullName.value);
+      formData.append("avatar", (event.target as any).avatar.files[0]);
+      submit(formData);
+    },
+    [submit],
+  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <Form>
+      <Form method="POST" encType="multipart/form-data" onSubmit={onSubmit}>
+        <input type="hidden" name="type" value={UPDATE_PROFILE} />
         <Card className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Profile Settings</CardTitle>
