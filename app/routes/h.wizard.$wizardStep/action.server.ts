@@ -4,10 +4,7 @@ import mime from "mime-types";
 
 import { PAGES, WIZARD_STEP } from "~/constants";
 import { withMiddleware } from "~/server/middleware/utils";
-
-export const SUBMIT_CODE = "submit-code";
-export const RESEND_CODE = "resend-code";
-export const UPDATE_PROFILE = "update-profile";
+import { RESEND_CODE, SUBMIT_CODE, UPDATE_PROFILE } from "./constants";
 
 const schema = z.union([
   z.object({
