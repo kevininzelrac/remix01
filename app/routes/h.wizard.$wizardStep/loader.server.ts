@@ -39,11 +39,11 @@ export const loader = withMiddleware([], async (args: LoaderFunctionArgs) => {
   }
 });
 
-const handleInitial = ({ context }: LoaderFunctionArgs, user: User) => {
+const handleInitial = async ({ context }: LoaderFunctionArgs, user: User) => {
   const nextStep = user.emailVerifiedAt
     ? WIZARD_STEP.PROFILE
     : WIZARD_STEP.VERIFY;
-  context.userService.updateUser(user.id, {
+  await context.userService.updateUser(user.id, {
     wizardStep: nextStep,
   });
   return redirect(PAGES.WIZARD(nextStep));

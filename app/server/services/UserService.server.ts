@@ -1,7 +1,7 @@
 import { WIZARD_STEP } from "~/constants";
 import type {
   Credential,
-  PrismaClient,
+  DatabaseClient,
   User,
 } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
@@ -14,7 +14,7 @@ import type {
 export class UserService implements IUserService, Dependency<ServerContext> {
   private _loggerService!: ILoggerService;
 
-  constructor(private _db: PrismaClient) {}
+  constructor(private _db: DatabaseClient) {}
 
   init(context: ServerContext): void {
     this._loggerService = context.loggerService;

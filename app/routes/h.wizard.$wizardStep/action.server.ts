@@ -40,7 +40,7 @@ export const action = withMiddleware(
     switch (data.type) {
       case SUBMIT_CODE:
         if (await context.sessionService.verifyEmail(user, data.code)) {
-          context.userService.updateUser(user.id, {
+          await context.userService.updateUser(user.id, {
             wizardStep: WIZARD_STEP.PROFILE,
           });
           return redirect(PAGES.WIZARD(WIZARD_STEP.PROFILE));

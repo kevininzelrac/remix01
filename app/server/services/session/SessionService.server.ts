@@ -12,7 +12,7 @@ import type {
   IClockService,
   ILoggerService,
 } from "~/server/interfaces";
-import type { PrismaClient, User } from "~/server/db/interfaces.server";
+import type { DatabaseClient, User } from "~/server/db/interfaces.server";
 import type { Dependency } from "~/server/injection";
 import {
   ACCESS_TOKEN_DURATION,
@@ -47,7 +47,7 @@ export class SessionService
   _oauthProviderFactoryService!: IOAuthProviderFactoryService;
   _userService!: IUserService;
 
-  constructor(private _db: PrismaClient) {}
+  constructor(private _db: DatabaseClient) {}
 
   init(context: ServerContext): void {
     this._clockService = context.clockService;
@@ -195,17 +195,16 @@ export class SessionService
       expiresIn: REFRESH_TOKEN_DURATION,
     });
 
-    await this._db.$transaction(async (tx) => {
-      tx.token.updateMany({
+    await Promise.all([
+      this._db.token.updateMany({
         data: {
           revoked: this._clockService.getCurrentDateTime(),
         },
         where: {
           userId: user.id,
         },
-      });
-
-      tx.token.createMany({
+      }),
+      this._db.token.createMany({
         data: [
           {
             type: "access",
@@ -215,11 +214,11 @@ export class SessionService
           {
             type: "refresh",
             userId: user.id,
-            token: accessToken,
+            token: refreshToken,
           },
         ],
-      });
-    });
+      }),
+    ]);
 
     const authCookie = serializeCookie(
       this._getAuthCookieName(),
@@ -344,7 +343,7 @@ export class SessionService
     )
       return false;
 
-    await this._db.$transaction([
+    await Promise.all([
       this._db.verificationCode.delete({
         where: {
           userId: user.id,
@@ -360,7 +359,7 @@ export class SessionService
       }),
     ]);
 
-    return false;
+    return true;
   }
 
   async getAuthenticatedUser(request: Request): Promise<User | null> {

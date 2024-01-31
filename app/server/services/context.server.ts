@@ -6,16 +6,18 @@ import { SessionService } from "./session/SessionService.server";
 import { OAuthProviderFactoryService } from "./session/OAuthProviderFactoryService.server";
 import { MailService } from "./mail/MailService.server";
 import { ClockService } from "./IClockService.server";
-import { prisma, transport } from "./dependencies.server";
+import { transport } from "./dependencies.server";
 import { DEFAULT_MAIL_FROM } from "../constants.server";
 import { LocalFileSystemService } from "./fs/LocalFileSystemService.server";
+import type { DatabaseClient } from "../db/interfaces.server";
 
-export const serverContext = buildServerContext<ServerContext>({
-  clockService: new ClockService(),
-  fileSystemService: new LocalFileSystemService("./.data"),
-  loggerService: new LoggerService(),
-  mailService: new MailService(transport, DEFAULT_MAIL_FROM),
-  oauthProviderFactoryService: new OAuthProviderFactoryService(),
-  sessionService: new SessionService(prisma),
-  userService: new UserService(prisma),
-});
+export const createServerContext = (db: DatabaseClient) =>
+  buildServerContext<ServerContext>({
+    clockService: new ClockService(),
+    fileSystemService: new LocalFileSystemService("./.data"),
+    loggerService: new LoggerService(),
+    mailService: new MailService(transport, DEFAULT_MAIL_FROM),
+    oauthProviderFactoryService: new OAuthProviderFactoryService(),
+    sessionService: new SessionService(db),
+    userService: new UserService(db),
+  });
