@@ -8,10 +8,11 @@ import type { HandledError } from "~/types";
 export { action } from "./action.server";
 
 export default function SignInPage() {
-  const actionData = useActionData<HandledError>();
+  const data = useActionData<HandledError>();
 
-  if (actionData && actionData.error.type != ERROR_TYPES.BAD_REQUEST) {
-    throw new Error(`Unexpected BE error ${actionData.error.type}`);
+  const error = data?.error;
+  if (error && error.type != ERROR_TYPES.BAD_REQUEST) {
+    throw new Error(`Unexpected BE error ${error.type}`);
   }
 
   return (
@@ -54,9 +55,7 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign In
           </Button>
-          {actionData?.error?.messages.map((message) => (
-            <em key={message}>{message}</em>
-          ))}
+          {error?.messages.map((message) => <em key={message}>{message}</em>)}
         </Form>
         <div className="space-y-4">
           <p className="text-center text-gray-500">Or sign in with</p>
