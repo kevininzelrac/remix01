@@ -1,12 +1,19 @@
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
-import { PAGES } from "~/constants";
+import { ERROR_TYPES, PAGES } from "~/constants";
+import type { HandledError } from "~/types";
 
 export { action } from "./action.server";
 
 export default function SignInPage() {
+  const actionData = useActionData<HandledError>();
+
+  if (actionData && actionData.error.type != ERROR_TYPES.BAD_REQUEST) {
+    throw new Error(`Unexpected BE error ${actionData.error.type}`);
+  }
+
   return (
     <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full md:w-1/2 p-8">
@@ -47,6 +54,9 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign In
           </Button>
+          {actionData?.error?.messages.map((message) => (
+            <em key={message}>{message}</em>
+          ))}
         </Form>
         <div className="space-y-4">
           <p className="text-center text-gray-500">Or sign in with</p>

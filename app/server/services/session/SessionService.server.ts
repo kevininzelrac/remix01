@@ -23,6 +23,7 @@ import {
 import { PAGES } from "~/constants";
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "../mail/templates";
+import { getBadRequest } from "~/server/errors";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -71,10 +72,10 @@ export class SessionService
         },
       },
     });
-    if (!credential) throw new Error("Credential not found for user.");
+    if (!credential) throw getBadRequest("Credential not found for user.");
 
-    const match = bcrypt.compare(password, credential.passwordHash!);
-    if (!match) throw new Error("Incorrect email or password.");
+    const match = await bcrypt.compare(password, credential.passwordHash!);
+    if (!match) throw getBadRequest("Incorrect email or password.");
 
     return this._authenticateUser(credential.user);
   }
@@ -85,7 +86,7 @@ export class SessionService
 
     const existingUser = await this._userService.getByEmail(email);
     if (existingUser) {
-      throw new Error("Invalid username/password.");
+      throw getBadRequest("Invalid username/password.");
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -104,7 +105,7 @@ export class SessionService
     const rawData = Object.fromEntries(formData.entries());
     const result = credentialSchema.safeParse(rawData);
     if (!result.success) {
-      throw new Error("Email/password required."); // FIXME: MANAGE THIS BETTER
+      throw getBadRequest("Email/password required.");
     }
     return result.data;
   }

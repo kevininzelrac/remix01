@@ -6,7 +6,6 @@ import { createRequestHandler, installGlobals } from "@remix-run/node";
 import express from "express";
 
 import { createServerContext } from "~/server";
-import { BaseError } from "~/server/errors";
 import { prisma } from "~/server/services/dependencies.server";
 
 async function main() {
@@ -45,12 +44,14 @@ function getRemixHandler(): RequestHandler {
         let request = createRemixRequest(req, res);
         let loadContext = await createServerContext(tx);
         let response = await handleRequest(request, loadContext);
+        if (response.status >= 400) {
+          throw response;
+        }
         await sendRemixResponse(res, response);
       });
     } catch (error: unknown) {
-      if (error instanceof BaseError) {
-        const response = error.getResponse();
-        await sendRemixResponse(res, response);
+      if (error instanceof Response) {
+        await sendRemixResponse(res, error);
         return;
       }
       // Express doesn't support async functions, so we have to pass along the
