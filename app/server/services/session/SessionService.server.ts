@@ -17,6 +17,7 @@ import type { Dependency } from "~/server/injection";
 import {
   ACCESS_TOKEN_DURATION,
   ACCESS_TOKEN_SECRET,
+  NODE_ENV,
   REFRESH_TOKEN_DURATION,
   REFRESH_TOKEN_SECRET,
 } from "~/server/constants.server";
@@ -119,9 +120,10 @@ export class SessionService
       state,
       {
         httpOnly: true,
-        secure: false, // `true` for production
+        secure: NODE_ENV === "production",
         path: "/",
         maxAge: 60 * 60,
+        sameSite: "strict",
       },
     );
     return new Response(null, {
@@ -229,9 +231,10 @@ export class SessionService
       }),
       {
         httpOnly: true,
-        secure: false, // `true` for production
+        secure: NODE_ENV === "production",
         path: "/",
         maxAge: 60 * 60,
+        sameSite: "strict",
       },
     );
 
@@ -247,10 +250,11 @@ export class SessionService
   handleSignOut(): Response {
     const authCookie = serializeCookie(this._getAuthCookieName(), "", {
       httpOnly: true,
-      secure: false, // `true` for production
+      secure: NODE_ENV === "production",
       path: "/",
       maxAge: 60 * 60,
       expires: new Date(),
+      sameSite: "strict",
     });
 
     return new Response(null, {

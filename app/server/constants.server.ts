@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 const schema = z.object({
+  NODE_ENV: z.union([z.literal("development"), z.literal("production")]),
+  PORT: z.string().transform(Number),
   READ_DB_URL: z.string(),
   WRITE_DB_URL: z.string(),
   BASE_URL: z.string(),
@@ -26,6 +28,8 @@ export const READ_DB_URL = data.READ_DB_URL;
 export const WRITE_DB_URL = data.WRITE_DB_URL;
 
 // General
+export const NODE_ENV = data.NODE_ENV;
+export const PORT = data.PORT;
 export const BASE_URL = data.BASE_URL;
 
 // Authentication
