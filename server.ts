@@ -120,7 +120,7 @@ async function main() {
  * to not be sent to a remix errorboundary.
  */
 function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
-  const handleRequest = createRequestHandler(initialBuild);
+  const handleRequest = createRequestHandler(initialBuild, NODE_ENV);
 
   return async (req, reply) => {
     try {
