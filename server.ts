@@ -20,6 +20,7 @@ import url from "node:url";
 import { createServerContext } from "~/server";
 import { prisma } from "~/server/services/dependencies.server";
 import { NODE_ENV, PORT } from "~/server/constants.server";
+import { StandardError } from "~/server/errors/StandardError.server";
 
 type RouteHandler = (
   request: FastifyRequest,
@@ -129,13 +130,14 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
         let loadContext = await createServerContext(tx);
         response = await handleRequest(request, loadContext);
         if (response.status >= 400) {
+          // Rollback the transaction
           throw response;
         }
       });
       await sendStandardResponse(reply, response!);
     } catch (error: unknown) {
-      if (error instanceof Response) {
-        // If a response is thrown, then it is intentional and the FE should handle it.
+      if (error instanceof StandardError) {
+        // If a standard error is thrown, then it is intentional and the FE should handle it.
         error.headers.set("X-Remix-Response", "yes");
         error.headers.delete("X-Remix-Catch");
         await sendStandardResponse(reply, error);
