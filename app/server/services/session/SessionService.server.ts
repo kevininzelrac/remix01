@@ -13,7 +13,6 @@ import type {
   ILoggerService,
 } from "~/server/interfaces";
 import type { DatabaseClient, User } from "~/server/db/interfaces.server";
-import type { Dependency } from "~/server/injection";
 import {
   ACCESS_TOKEN_DURATION,
   ACCESS_TOKEN_SECRET,
@@ -40,9 +39,7 @@ const jwtContentsSchema = z.object({
   uid: z.string(),
 });
 
-export class SessionService
-  implements ISessionService, Dependency<ServerContext>
-{
+export class SessionService implements ISessionService {
   _clockService!: IClockService;
   _loggerService!: ILoggerService;
   _mailService!: IMailService;

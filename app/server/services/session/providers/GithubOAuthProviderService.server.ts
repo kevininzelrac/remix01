@@ -3,18 +3,14 @@ import type { GithubAuth, GithubUser } from "@lucia-auth/oauth/providers";
 import { github } from "@lucia-auth/oauth/providers";
 
 import { PAGES } from "~/constants";
-import type { Dependency } from "~/server/injection";
 import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-  ServerContext,
 } from "~/server/interfaces";
 import { BASE_URL } from "~/server/constants.server";
 
-export class GithubOAuthProviderService
-  implements IOAuthProviderService, Dependency<ServerContext>
-{
+export class GithubOAuthProviderService implements IOAuthProviderService {
   private _provider: GithubAuth;
 
   constructor(
@@ -32,8 +28,6 @@ export class GithubOAuthProviderService
       ).toString(),
     });
   }
-
-  init(context: ServerContext): void {}
 
   async getOAuthRedirect(): Promise<OAuthRedirect> {
     const [url, state] = await this._provider.getAuthorizationUrl();

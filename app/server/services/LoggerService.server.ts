@@ -1,11 +1,6 @@
-import type { Dependency } from "~/server/injection";
-import type { ILoggerService, ServerContext } from "~/server/interfaces";
+import type { ILoggerService } from "~/server/interfaces";
 
-export class LoggerService
-  implements ILoggerService, Dependency<ServerContext>
-{
-  init(context: ServerContext): void {}
-
+export class LoggerService implements ILoggerService {
   debug(message: string, params?: object | undefined): void {
     console.debug({ message, params });
   }

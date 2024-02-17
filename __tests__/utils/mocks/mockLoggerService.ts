@@ -1,8 +1,6 @@
-import type { Dependency } from "~/server/injection";
-import type { ILoggerService, ServerContext } from "~/server/interfaces";
+import type { ILoggerService } from "~/server/interfaces";
 
-export const mockLoggerService: ILoggerService & Dependency<ServerContext> = {
-  init: jest.fn(),
+export const mockLoggerService: ILoggerService = {
   debug: jest.fn(),
   info: jest.fn(),
   warning: jest.fn(),

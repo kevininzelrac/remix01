@@ -1,9 +1,6 @@
-import type { Dependency } from "~/server/injection";
-import type { IUserService, ServerContext } from "~/server/interfaces";
+import type { IUserService } from "~/server/interfaces";
 
-export const mockUserService: IUserService & Dependency<ServerContext> = {
-  init: jest.fn(),
+export const mockUserService: IUserService = {
   getById: jest.fn(),
   getByEmail: jest.fn(),
-  getByEmailPasswordCombination: jest.fn(),
 };

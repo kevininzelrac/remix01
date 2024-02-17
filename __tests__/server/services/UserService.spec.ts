@@ -6,8 +6,7 @@ describe("UserService", () => {
   let userService: UserService;
 
   beforeAll(() => {
-    userService = new UserService(database);
-    userService.init(mockServerContext);
+    userService = new UserService(database, mockServerContext.loggerService);
   });
 
   beforeEach(async () => {

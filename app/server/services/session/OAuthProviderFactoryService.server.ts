@@ -2,11 +2,9 @@ import type { Auth, KeySchema } from "lucia";
 import { lucia } from "lucia";
 import { web } from "lucia/middleware";
 
-import type { Dependency } from "~/server/injection";
 import type {
   IOAuthProviderFactoryService,
   IOAuthProviderService,
-  ServerContext,
 } from "~/server/interfaces";
 import {
   FacebookOAuthProviderService,
@@ -54,7 +52,7 @@ const adapter = {
 };
 
 export class OAuthProviderFactoryService
-  implements IOAuthProviderFactoryService, Dependency<ServerContext>
+  implements IOAuthProviderFactoryService
 {
   private auth: Auth;
   private providers: Record<string, IOAuthProviderService | undefined>;
@@ -86,8 +84,6 @@ export class OAuthProviderFactoryService
       ),
     };
   }
-
-  init(context: ServerContext) {}
 
   getProvider(providerName: string): IOAuthProviderService {
     const provider = this.providers[providerName];

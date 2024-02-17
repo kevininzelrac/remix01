@@ -1,9 +1,6 @@
-import type { Dependency } from "~/server/injection";
-import type { IClockService, ServerContext } from "~/server/interfaces";
+import type { IClockService } from "~/server/interfaces";
 
-export class ClockService implements IClockService, Dependency<ServerContext> {
-  init(context: ServerContext): void {}
-
+export class ClockService implements IClockService {
   getCurrentDateTime(): Date {
     return new Date();
   }

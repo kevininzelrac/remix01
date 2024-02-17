@@ -4,21 +4,13 @@ import type {
   DatabaseClient,
   User,
 } from "~/server/db/interfaces.server";
-import type { Dependency } from "~/server/injection";
-import type {
-  ILoggerService,
-  IUserService,
-  ServerContext,
-} from "~/server/interfaces";
+import type { ILoggerService, IUserService } from "~/server/interfaces";
 
-export class UserService implements IUserService, Dependency<ServerContext> {
-  private _loggerService!: ILoggerService;
-
-  constructor(private _db: DatabaseClient) {}
-
-  init(context: ServerContext): void {
-    this._loggerService = context.loggerService;
-  }
+export class UserService implements IUserService {
+  constructor(
+    private _db: DatabaseClient,
+    private _loggerService: ILoggerService,
+  ) {}
 
   getById(id: string): Promise<User | null> {
     return this._db.user.findUnique({

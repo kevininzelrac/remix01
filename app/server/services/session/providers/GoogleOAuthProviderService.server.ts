@@ -3,18 +3,14 @@ import type { GoogleAuth, GoogleUser } from "@lucia-auth/oauth/providers";
 import { google } from "@lucia-auth/oauth/providers";
 
 import { PAGES } from "~/constants";
-import type { Dependency } from "~/server/injection";
 import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-  ServerContext,
 } from "~/server/interfaces";
 import { BASE_URL } from "~/server/constants.server";
 
-export class GoogleOAuthProviderService
-  implements IOAuthProviderService, Dependency<ServerContext>
-{
+export class GoogleOAuthProviderService implements IOAuthProviderService {
   private _provider: GoogleAuth;
 
   constructor(
@@ -32,8 +28,6 @@ export class GoogleOAuthProviderService
       ).toString(),
     });
   }
-
-  init(context: ServerContext): void {}
 
   async getOAuthRedirect(): Promise<OAuthRedirect> {
     const [url, state] = await this._provider.getAuthorizationUrl();

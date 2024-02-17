@@ -1,19 +1,12 @@
 import type { Transporter } from "nodemailer";
 
-import type { Dependency } from "~/server/injection";
-import type {
-  MailProps,
-  IMailService,
-  ServerContext,
-} from "~/server/interfaces";
+import type { MailProps, IMailService } from "~/server/interfaces";
 
-export class MailService implements IMailService, Dependency<ServerContext> {
+export class MailService implements IMailService {
   constructor(
     private _transport: Transporter,
     private _defaultFrom: string,
   ) {}
-
-  init(context: ServerContext): void {}
 
   async sendEmail(props: MailProps): Promise<void> {
     await this._transport.sendMail({

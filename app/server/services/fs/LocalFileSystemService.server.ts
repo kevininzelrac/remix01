@@ -1,15 +1,10 @@
-import type { Dependency } from "~/server/injection";
-import type { IFileSystemService, ServerContext } from "~/server/interfaces";
+import type { IFileSystemService } from "~/server/interfaces";
 
 import fs from "fs";
 import path from "path";
 
-export class LocalFileSystemService
-  implements IFileSystemService, Dependency<ServerContext>
-{
+export class LocalFileSystemService implements IFileSystemService {
   constructor(private _basePath: string) {}
-
-  init(context: ServerContext): void {}
 
   saveFile(key: string, binary: ArrayBuffer): Promise<void> {
     const buffer = Buffer.from(binary);

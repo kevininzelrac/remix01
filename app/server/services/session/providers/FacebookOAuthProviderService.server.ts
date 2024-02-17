@@ -3,18 +3,14 @@ import type { FacebookAuth, FacebookUser } from "@lucia-auth/oauth/providers";
 import { facebook } from "@lucia-auth/oauth/providers";
 
 import { PAGES } from "~/constants";
-import type { Dependency } from "~/server/injection";
 import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-  ServerContext,
 } from "~/server/interfaces";
 import { BASE_URL } from "~/server/constants.server";
 
-export class FacebookOAuthProviderService
-  implements IOAuthProviderService, Dependency<ServerContext>
-{
+export class FacebookOAuthProviderService implements IOAuthProviderService {
   private _provider: FacebookAuth;
 
   constructor(
@@ -32,8 +28,6 @@ export class FacebookOAuthProviderService
       ).toString(),
     });
   }
-
-  init(context: ServerContext): void {}
 
   async getOAuthRedirect(): Promise<OAuthRedirect> {
     const [url, state] = await this._provider.getAuthorizationUrl();
