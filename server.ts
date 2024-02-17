@@ -1,34 +1,108 @@
+import type { ServerBuild } from "@remix-run/node";
+import { fastifyEarlyHints } from "@fastify/early-hints";
+import { fastifyStatic } from "@fastify/static";
+import { getEarlyHintLinks } from "@mcansh/remix-fastify";
 import {
-  createRemixRequest,
-  sendRemixResponse,
-} from "@remix-run/express/dist/server";
-import { createRequestHandler, installGlobals } from "@remix-run/node";
-import express from "express";
+  broadcastDevReady,
+  createRequestHandler,
+  installGlobals,
+} from "@remix-run/node";
+import path from "path";
+import type { FastifyRequest, FastifyReply } from "fastify";
+import fastify from "fastify";
+import {
+  createStandardRequest,
+  sendStandardResponse,
+} from "fastify-standard-request-reply";
+import fs from "node:fs";
+import url from "node:url";
 
 import { createServerContext } from "~/server";
 import { prisma } from "~/server/services/dependencies.server";
+import { NODE_ENV, PORT } from "~/server/constants.server";
+
+type RouteHandler = (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => Promise<void>;
+
+const BUILD_PATH = "./build/index.js";
+const VERSION_PATH = "./build/version.txt";
+
+main();
 
 async function main() {
+  const initialBuild: ServerBuild = await import(BUILD_PATH);
+
+  let handler: RouteHandler;
+  if (NODE_ENV === "production") {
+    handler = getRequestHandler(initialBuild);
+  } else {
+    handler = await getDevRequestHandler(initialBuild);
+  }
+
   installGlobals();
 
-  const app = express();
+  const app = fastify();
+  await app.register(fastifyEarlyHints, { warn: true });
+  await app.register(fastifyStatic, {
+    root: path.join(__dirname, "public"),
+    prefix: "/",
+    wildcard: false,
+    cacheControl: true,
+    dotfiles: "allow",
+    etag: true,
+    maxAge: "1h",
+    serveDotFiles: true,
+    lastModified: true,
+  });
 
-  // handle asset requests
-  app.use(express.static("public", { maxAge: "1h" }));
+  await app.register(fastifyStatic, {
+    root: path.join(__dirname, "public", "build"),
+    prefix: "/build",
+    wildcard: true,
+    decorateReply: false,
+    cacheControl: true,
+    dotfiles: "allow",
+    etag: true,
+    maxAge: "1y",
+    immutable: true,
+    serveDotFiles: true,
+    lastModified: true,
+  });
 
-  const handler = getRemixHandler();
-  // handle SSR requests
-  app.all("*", handler);
+  app.register(async function (childServer) {
+    childServer.removeAllContentTypeParsers();
 
-  const port = 3000;
-  app.listen(port, () => console.log("http://localhost:" + port));
+    // allow all content types
+    childServer.addContentTypeParser("*", (_request, payload, done) => {
+      done(null, payload);
+    });
+
+    // handle SSR requests
+    childServer.all("*", async (request, reply) => {
+      if (NODE_ENV === "production") {
+        let links = getEarlyHintLinks(request, initialBuild);
+        await reply.writeEarlyHintsLinks(links);
+      }
+
+      try {
+        return handler(request, reply);
+      } catch (error) {
+        console.error(error);
+        return reply.status(500).send(error);
+      }
+    });
+  });
+
+  const port = PORT ?? 3000;
+  const address = await app.listen({ port, host: "0.0.0.0" });
+  console.log(`✅ app ready: ${address}`);
+
+  if (NODE_ENV === "development") {
+    await broadcastDevReady(initialBuild);
+  }
 }
-
-type RequestHandler = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) => Promise<void>;
 
 /**
  * Wanted to ensure that a single request/response cycle was atomic. But Prisma
@@ -45,40 +119,70 @@ type RequestHandler = (
  * We also wanted thrown error responses (4xx errors) from actions and loaders
  * to not be sent to a remix errorboundary.
  */
-function getRemixHandler(): RequestHandler {
-  const build = require("./build");
-  const handleRequest = createRequestHandler(build);
+function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
+  const handleRequest = createRequestHandler(initialBuild);
 
-  const handler = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
+  return async (req, reply) => {
     try {
+      let response: Response;
       await prisma.$transaction(async (tx) => {
-        let request = createRemixRequest(req, res);
+        const request = createStandardRequest(req, reply);
         let loadContext = await createServerContext(tx);
-        let response = await handleRequest(request, loadContext);
+        response = await handleRequest(request, loadContext);
         if (response.status >= 400) {
           throw response;
         }
-        await sendRemixResponse(res, response);
       });
+      await sendStandardResponse(reply, response!);
     } catch (error: unknown) {
       if (error instanceof Response) {
         // If a response is thrown, then it is intentional and the FE should handle it.
         error.headers.set("X-Remix-Response", "yes");
         error.headers.delete("X-Remix-Catch");
-        await sendRemixResponse(res, error);
+        await sendStandardResponse(reply, error);
         return;
       }
-      // Express doesn't support async functions, so we have to pass along the
-      // error manually using next().
-      next(error);
+
+      console.log(error);
+
+      throw error;
     }
   };
-
-  return handler;
 }
 
-main();
+async function getDevRequestHandler(
+  initialBuild: ServerBuild,
+): Promise<RouteHandler> {
+  const handler = getRequestHandler(initialBuild);
+  let build = initialBuild;
+
+  async function handleServerUpdate() {
+    // 1. re-import the server build
+    build = await reimportServer();
+    // 2. tell Remix that this app server is now up-to-date and ready
+    await broadcastDevReady(build);
+  }
+
+  let chokidar = await import("chokidar");
+  chokidar
+    .watch(VERSION_PATH, { ignoreInitial: true })
+    .on("add", handleServerUpdate)
+    .on("change", handleServerUpdate);
+
+  return async (request, reply) => {
+    let links = getEarlyHintLinks(request, build);
+    await reply.writeEarlyHintsLinks(links);
+    return handler(request, reply);
+  };
+}
+
+/** @returns {Promise<ServerBuild>} */
+async function reimportServer() {
+  const stat = fs.statSync(BUILD_PATH);
+
+  // convert build path to URL for Windows compatibility with dynamic `import`
+  const BUILD_URL = url.pathToFileURL(BUILD_PATH).href;
+
+  // use a timestamp query parameter to bust the import cache
+  return import(BUILD_URL + "?t=" + stat.mtimeMs);
+}
