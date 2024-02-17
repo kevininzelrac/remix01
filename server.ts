@@ -140,6 +140,9 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
         // If a standard error is thrown, then it is intentional and the FE should handle it.
         error.headers.set("X-Remix-Response", "yes");
         error.headers.delete("X-Remix-Catch");
+      }
+
+      if (error instanceof Response) {
         await sendStandardResponse(reply, error);
         return;
       }
