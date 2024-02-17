@@ -89,7 +89,6 @@ async function main() {
       try {
         return handler(request, reply);
       } catch (error) {
-        console.error(error);
         return reply.status(500).send(error);
       }
     });
@@ -142,8 +141,6 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
         await sendStandardResponse(reply, error);
         return;
       }
-
-      console.log(error);
 
       throw error;
     }
