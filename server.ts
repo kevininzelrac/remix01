@@ -7,6 +7,8 @@ import {
   createRequestHandler,
   installGlobals,
 } from "@remix-run/node";
+import type { AwilixContainer } from "awilix";
+import * as awilix from "awilix";
 import path from "path";
 import type { FastifyRequest, FastifyReply } from "fastify";
 import fastify from "fastify";
@@ -17,10 +19,11 @@ import {
 import fs from "node:fs";
 import url from "node:url";
 
-import { createServerContext } from "~/server";
+import { container } from "~/server/services/context.server";
 import { prisma } from "~/server/services/dependencies.server";
 import { NODE_ENV, PORT } from "~/server/constants.server";
 import { StandardError } from "~/server/errors/StandardError.server";
+import type { ServerContext } from "~/server/interfaces";
 
 type RouteHandler = (
   request: FastifyRequest,
@@ -125,10 +128,13 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
   return async (req, reply) => {
     try {
       let response: Response;
+      let loadContext: AwilixContainer<ServerContext>;
       await prisma.$transaction(async (tx) => {
         const request = createStandardRequest(req, reply);
-        let loadContext = await createServerContext(tx);
-        response = await handleRequest(request, loadContext);
+        loadContext = container.createScope();
+        loadContext.register({ db: awilix.asValue(tx) });
+        response = await handleRequest(request, loadContext.cradle);
+        loadContext.dispose();
         if (response.status >= 400) {
           // Rollback the transaction
           throw response;

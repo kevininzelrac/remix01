@@ -1,4 +1,4 @@
-import awilix from "awilix";
+import * as awilix from "awilix";
 
 import type { ServerContext } from "~/server/interfaces";
 import { LoggerService } from "./LoggerService.server";
@@ -11,12 +11,11 @@ import { transport } from "./dependencies.server";
 import { DEFAULT_MAIL_FROM } from "../constants.server";
 import { LocalFileSystemService } from "./fs/LocalFileSystemService.server";
 
-const container = awilix.createContainer<ServerContext>({
+export const container = awilix.createContainer<ServerContext>({
   injectionMode: awilix.InjectionMode.PROXY,
   strict: true,
 });
 
-// FIXME: MISSING db in container
 container.register({
   clockService: awilix.asValue(new ClockService()),
   fileSystemService: awilix.asValue(new LocalFileSystemService("./.data")),
@@ -27,7 +26,14 @@ container.register({
   ),
   sessionService: awilix
     .asFunction((context: ServerContext) => {
-      return new SessionService(context.db);
+      return new SessionService(
+        context.db,
+        context.clockService,
+        context.loggerService,
+        context.mailService,
+        context.oauthProviderFactoryService,
+        context.userService,
+      );
     })
     .scoped(),
   userService: awilix

@@ -7,7 +7,6 @@ import type {
   IOAuthProviderFactoryService,
   ISessionService,
   IUserService,
-  ServerContext,
   IMailService,
   IClockService,
   ILoggerService,
@@ -40,21 +39,14 @@ const jwtContentsSchema = z.object({
 });
 
 export class SessionService implements ISessionService {
-  _clockService!: IClockService;
-  _loggerService!: ILoggerService;
-  _mailService!: IMailService;
-  _oauthProviderFactoryService!: IOAuthProviderFactoryService;
-  _userService!: IUserService;
-
-  constructor(private _db: DatabaseClient) {}
-
-  init(context: ServerContext): void {
-    this._clockService = context.clockService;
-    this._loggerService = context.loggerService;
-    this._mailService = context.mailService;
-    this._oauthProviderFactoryService = context.oauthProviderFactoryService;
-    this._userService = context.userService;
-  }
+  constructor(
+    private _db: DatabaseClient,
+    private _clockService: IClockService,
+    private _loggerService: ILoggerService,
+    private _mailService: IMailService,
+    private _oauthProviderFactoryService: IOAuthProviderFactoryService,
+    private _userService: IUserService,
+  ) {}
 
   async handleCredentialSignIn(request: Request): Promise<Response> {
     const { email, password } =
