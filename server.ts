@@ -7,7 +7,6 @@ import {
   createRequestHandler,
   installGlobals,
 } from "@remix-run/node";
-import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 import path from "path";
 import type { FastifyRequest, FastifyReply } from "fastify";
@@ -23,7 +22,6 @@ import { container } from "~/server/services/context.server";
 import { prisma } from "~/server/services/dependencies.server";
 import { NODE_ENV, PORT } from "~/server/constants.server";
 import { StandardError } from "~/server/errors/StandardError.server";
-import type { ServerContext } from "~/server/interfaces";
 
 type RouteHandler = (
   request: FastifyRequest,
@@ -128,10 +126,9 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
   return async (req, reply) => {
     try {
       let response: Response;
-      let loadContext: AwilixContainer<ServerContext>;
+      const request = createStandardRequest(req, reply);
+      const loadContext = container.createScope();
       await prisma.$transaction(async (tx) => {
-        const request = createStandardRequest(req, reply);
-        loadContext = container.createScope();
         loadContext.register({ db: awilix.asValue(tx) });
         response = await handleRequest(request, loadContext.cradle);
         loadContext.dispose();
