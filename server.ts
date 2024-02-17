@@ -175,8 +175,7 @@ async function getDevRequestHandler(
   };
 }
 
-/** @returns {Promise<ServerBuild>} */
-async function reimportServer() {
+async function reimportServer(): Promise<ServerBuild> {
   const stat = fs.statSync(BUILD_PATH);
 
   // convert build path to URL for Windows compatibility with dynamic `import`
