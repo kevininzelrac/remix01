@@ -6,7 +6,7 @@ export class StandardError extends Response {
       );
     }
 
-    const body = JSON.stringify(data);
+    const body = JSON.stringify({ error: data });
     const headers = new Headers();
     headers.set("Content-Type", "application/json; charset=utf-8");
 

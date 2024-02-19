@@ -10,7 +10,7 @@ export class BadRequestError extends StandardError {
   constructor(messages: string | string[]) {
     super(STATUS, STATUS_TEXT, {
       type: ERROR_TYPES.BAD_REQUEST,
-      messages,
+      messages: Array.isArray(messages) ? messages : [messages],
     });
   }
 }
