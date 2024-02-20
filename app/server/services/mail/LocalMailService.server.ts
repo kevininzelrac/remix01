@@ -28,16 +28,16 @@ export class LocalMailService implements IMailService {
   }
 }
 
-export const getLocalMailService = (context: ServerContext) => {
-  const transport = createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: GMAIL_USER,
-      pass: GMAIL_SECRET,
-    },
-  });
+const transport = createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: GMAIL_USER,
+    pass: GMAIL_SECRET,
+  },
+});
 
+export const getLocalMailService = (context: ServerContext) => {
   return new LocalMailService(transport, DEFAULT_MAIL_FROM);
 };

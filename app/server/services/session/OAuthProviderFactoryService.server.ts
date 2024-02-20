@@ -69,33 +69,33 @@ export class OAuthProviderFactoryService
   }
 }
 
+const auth = lucia({
+  env: NODE_ENV === "production" ? "PROD" : "DEV",
+  adapter: () => adapter,
+  middleware: web(),
+});
+
+const providers = {
+  facebook: new FacebookOAuthProviderService(
+    "facebook",
+    FACEBOOK_CLIENT_ID,
+    FACEBOOK_CLIENT_SECRET,
+    auth,
+  ),
+  github: new GithubOAuthProviderService(
+    "github",
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    auth,
+  ),
+  google: new GoogleOAuthProviderService(
+    "google",
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    auth,
+  ),
+};
+
 export const getOAuthProviderFactoryService = (context: ServerContext) => {
-  const auth = lucia({
-    env: NODE_ENV === "production" ? "PROD" : "DEV",
-    adapter: () => adapter,
-    middleware: web(),
-  });
-
-  const providers = {
-    facebook: new FacebookOAuthProviderService(
-      "facebook",
-      FACEBOOK_CLIENT_ID,
-      FACEBOOK_CLIENT_SECRET,
-      auth,
-    ),
-    github: new GithubOAuthProviderService(
-      "github",
-      GITHUB_CLIENT_ID,
-      GITHUB_CLIENT_SECRET,
-      auth,
-    ),
-    google: new GoogleOAuthProviderService(
-      "google",
-      GOOGLE_CLIENT_ID,
-      GOOGLE_CLIENT_SECRET,
-      auth,
-    ),
-  };
-
   return new OAuthProviderFactoryService(auth, providers);
 };
