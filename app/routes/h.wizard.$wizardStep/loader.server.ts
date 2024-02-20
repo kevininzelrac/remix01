@@ -3,10 +3,9 @@ import { redirect, json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { PAGES, WIZARD_STEP } from "~/constants";
-import { withMiddleware } from "~/server/middleware/utils";
 import type { TypedResponseData } from "~/server/types";
 
-export const loader = withMiddleware([], async (args: LoaderFunctionArgs) => {
+export const loader = async (args: LoaderFunctionArgs) => {
   const { request, context } = args;
 
   const userId = context.sessionService.getAuthenticatedUserId(request);
@@ -37,7 +36,7 @@ export const loader = withMiddleware([], async (args: LoaderFunctionArgs) => {
       });
       return redirect(PAGES.SIGN_OUT);
   }
-});
+};
 
 const handleInitial = async ({ context }: LoaderFunctionArgs, user: User) => {
   const nextStep = user.emailVerifiedAt
