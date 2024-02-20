@@ -1,12 +1,12 @@
 import * as awilix from "awilix";
 
 import type { ServerContext } from "~/server/interfaces";
-import { getConsoleLoggerService } from "./ConsoleLoggerService.server";
-import { getUserService } from "./UserService.server";
+import { getConsoleLoggerService } from "./logger/ConsoleLoggerService.server";
+import { getUserService } from "./models/UserService.server";
 import { getSessionService } from "./session/SessionService.server";
 import { getOAuthProviderFactoryService } from "./session/OAuthProviderFactoryService.server";
 import { getLocalMailService } from "./mail/LocalMailService.server";
-import { getClockService } from "./ClockService.server";
+import { getClockService } from "./clock/ClockService.server";
 import { getLocalFileSystemService } from "./fs/LocalFileSystemService.server";
 
 export const container = awilix.createContainer<ServerContext>({
