@@ -30,16 +30,18 @@ type RouteHandler = (
 const BUILD_PATH = "./build/index.js";
 const VERSION_PATH = "./build/version.txt";
 
-main();
+// Can use different containers based on environment at this point
+const serverContainer = new Container(container);
+main(serverContainer);
 
-async function main() {
+async function main(serverContainer: Container) {
   const initialBuild: ServerBuild = await import(BUILD_PATH);
 
   let handler: RouteHandler;
   if (NODE_ENV === "production") {
-    handler = getRequestHandler(initialBuild);
+    handler = getRequestHandler(initialBuild, serverContainer);
   } else {
-    handler = await getDevRequestHandler(initialBuild);
+    handler = await getDevRequestHandler(initialBuild, serverContainer);
   }
 
   installGlobals();
@@ -119,10 +121,12 @@ async function main() {
  * We also wanted thrown error responses (4xx errors) from actions and loaders
  * to not be sent to a remix errorboundary.
  */
-function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
+function getRequestHandler(
+  initialBuild: ServerBuild,
+  serverContainer: Container,
+): RouteHandler {
   const handleRequest = createRequestHandler(initialBuild, NODE_ENV);
 
-  const serverContainer = new Container(container);
   return async (req, reply) => {
     const request = createStandardRequest(req, reply);
     const requestContainer = serverContainer.createScope();
@@ -158,8 +162,9 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
 
 async function getDevRequestHandler(
   initialBuild: ServerBuild,
+  serverContainer: Container,
 ): Promise<RouteHandler> {
-  const handler = getRequestHandler(initialBuild);
+  const handler = getRequestHandler(initialBuild, serverContainer);
   let build = initialBuild;
 
   async function handleServerUpdate() {
