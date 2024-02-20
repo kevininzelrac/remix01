@@ -1,3 +1,5 @@
+import { MimeType } from "server-image-core";
+
 import { Image } from "~/components/image";
 
 const src =
@@ -15,6 +17,9 @@ export default function TestPage() {
           },
         },
       ]}
+      options={{
+        contentType: MimeType.WEBP,
+      }}
     />
   );
 }
