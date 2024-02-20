@@ -20,6 +20,7 @@ import url from "node:url";
 import { container } from "~/server/services/context.server";
 import { NODE_ENV, PORT } from "~/server/constants.server";
 import { StandardError } from "~/server/errors/StandardError.server";
+import { Container } from "~/server/services/container.server";
 
 type RouteHandler = (
   request: FastifyRequest,
@@ -121,21 +122,23 @@ async function main() {
 function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
   const handleRequest = createRequestHandler(initialBuild, NODE_ENV);
 
+  const serverContainer = new Container(container);
   return async (req, reply) => {
     const request = createStandardRequest(req, reply);
-    const loadContext = container.createScope();
+    const requestContainer = serverContainer.createScope();
     try {
       await container.cradle.databaseService.begin();
-      const response = await handleRequest(request, loadContext.cradle);
+      const response = await handleRequest(
+        request,
+        requestContainer.getContext(),
+      );
       if (response.status >= 400) {
         throw response;
       }
-      container.cradle.databaseService.commit();
-      loadContext.dispose();
+      await requestContainer.finalizeSuccess();
       await sendStandardResponse(reply, response);
     } catch (error: unknown) {
-      await container.cradle.databaseService.rollback();
-      loadContext.dispose();
+      await requestContainer.finalizeError();
 
       if (error instanceof StandardError) {
         // If a standard error is thrown, then it is intentional and the FE should handle it.
