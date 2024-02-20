@@ -1,6 +1,6 @@
-import type { ILoggerService } from "~/server/interfaces";
+import type { ILoggerService, ServerContext } from "~/server/interfaces";
 
-export class LoggerService implements ILoggerService {
+export class ConsoleLoggerService implements ILoggerService {
   debug(message: string, params?: object | undefined): void {
     console.debug({ message, params });
   }
@@ -17,3 +17,7 @@ export class LoggerService implements ILoggerService {
     console.error({ message, params });
   }
 }
+
+export const getConsoleLoggerService = (context: ServerContext) => {
+  return new ConsoleLoggerService();
+};

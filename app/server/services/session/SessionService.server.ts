@@ -10,6 +10,7 @@ import type {
   IMailService,
   IClockService,
   ILoggerService,
+  ServerContext,
 } from "~/server/interfaces";
 import type { DatabaseClient, User } from "~/server/db/interfaces.server";
 import {
@@ -369,3 +370,14 @@ export class SessionService implements ISessionService {
     return user;
   }
 }
+
+export const getSessionService = (context: ServerContext) => {
+  return new SessionService(
+    context.db,
+    context.clockService,
+    context.loggerService,
+    context.mailService,
+    context.oauthProviderFactoryService,
+    context.userService,
+  );
+};

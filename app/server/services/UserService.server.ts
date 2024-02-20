@@ -4,7 +4,11 @@ import type {
   DatabaseClient,
   User,
 } from "~/server/db/interfaces.server";
-import type { ILoggerService, IUserService } from "~/server/interfaces";
+import type {
+  ILoggerService,
+  IUserService,
+  ServerContext,
+} from "~/server/interfaces";
 
 export class UserService implements IUserService {
   constructor(
@@ -98,3 +102,7 @@ export class UserService implements IUserService {
     });
   }
 }
+
+export const getUserService = (context: ServerContext) => {
+  return new UserService(context.db, context.loggerService);
+};

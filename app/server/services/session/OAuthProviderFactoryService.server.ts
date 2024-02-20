@@ -5,6 +5,7 @@ import { web } from "lucia/middleware";
 import type {
   IOAuthProviderFactoryService,
   IOAuthProviderService,
+  ServerContext,
 } from "~/server/interfaces";
 import {
   FacebookOAuthProviderService,
@@ -18,6 +19,7 @@ import {
   GITHUB_CLIENT_SECRET,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+  NODE_ENV,
 } from "~/server/constants.server";
 
 const adapter = {
@@ -54,36 +56,10 @@ const adapter = {
 export class OAuthProviderFactoryService
   implements IOAuthProviderFactoryService
 {
-  private auth: Auth;
-  private providers: Record<string, IOAuthProviderService | undefined>;
-
-  constructor() {
-    this.auth = lucia({
-      env: "DEV",
-      adapter: () => adapter,
-      middleware: web(),
-    });
-    this.providers = {
-      facebook: new FacebookOAuthProviderService(
-        "facebook",
-        FACEBOOK_CLIENT_ID,
-        FACEBOOK_CLIENT_SECRET,
-        this.auth,
-      ),
-      github: new GithubOAuthProviderService(
-        "github",
-        GITHUB_CLIENT_ID,
-        GITHUB_CLIENT_SECRET,
-        this.auth,
-      ),
-      google: new GoogleOAuthProviderService(
-        "google",
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-        this.auth,
-      ),
-    };
-  }
+  constructor(
+    private auth: Auth,
+    private providers: Record<string, IOAuthProviderService | undefined>,
+  ) {}
 
   getProvider(providerName: string): IOAuthProviderService {
     const provider = this.providers[providerName];
@@ -92,3 +68,34 @@ export class OAuthProviderFactoryService
     return provider;
   }
 }
+
+export const getOAuthProviderFactoryService = (context: ServerContext) => {
+  const auth = lucia({
+    env: NODE_ENV === "production" ? "PROD" : "DEV",
+    adapter: () => adapter,
+    middleware: web(),
+  });
+
+  const providers = {
+    facebook: new FacebookOAuthProviderService(
+      "facebook",
+      FACEBOOK_CLIENT_ID,
+      FACEBOOK_CLIENT_SECRET,
+      auth,
+    ),
+    github: new GithubOAuthProviderService(
+      "github",
+      GITHUB_CLIENT_ID,
+      GITHUB_CLIENT_SECRET,
+      auth,
+    ),
+    google: new GoogleOAuthProviderService(
+      "google",
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      auth,
+    ),
+  };
+
+  return new OAuthProviderFactoryService(auth, providers);
+};

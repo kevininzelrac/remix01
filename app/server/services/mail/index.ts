@@ -1,1 +1,1 @@
-export * from "./MailService.server";
+export * from "./LocalMailService.server";
