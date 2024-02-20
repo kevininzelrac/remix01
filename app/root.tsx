@@ -8,9 +8,11 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
+import serverImageStylesheet from "server-image-react/dist/index.css";
 import stylesheet from "./styles/tailwind.css";
 
 export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: serverImageStylesheet },
   { rel: "stylesheet", href: stylesheet },
 ];
 
