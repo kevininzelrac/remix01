@@ -1,7 +1,8 @@
 import type { DatabaseClient } from "~/server/db/interfaces.server";
 
 export interface IDatabaseService {
-  getClient(): DatabaseClient;
+  begin(): Promise<void>;
+  transaction(): DatabaseClient;
   commit(): Promise<void>;
   rollback(): Promise<void>;
 }

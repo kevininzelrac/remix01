@@ -8,6 +8,7 @@ import { getOAuthProviderFactoryService } from "./session/OAuthProviderFactorySe
 import { getLocalMailService } from "./mail/LocalMailService.server";
 import { getClockService } from "./clock/ClockService.server";
 import { getLocalFileSystemService } from "./fs/LocalFileSystemService.server";
+import { getDatabaseService } from "./db/DatabaseService.server";
 
 export const container = awilix.createContainer<ServerContext>({
   injectionMode: awilix.InjectionMode.PROXY,
@@ -22,6 +23,7 @@ container.register({
   oauthProviderFactoryService: awilix
     .asFunction(getOAuthProviderFactoryService)
     .singleton(),
+  databaseService: awilix.asFunction(getDatabaseService).scoped(),
   sessionService: awilix.asFunction(getSessionService).scoped(),
   userService: awilix.asFunction(getUserService).scoped(),
 });

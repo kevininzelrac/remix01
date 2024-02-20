@@ -11,8 +11,9 @@ import type {
   IClockService,
   ILoggerService,
   ServerContext,
+  IDatabaseService,
 } from "~/server/interfaces";
-import type { DatabaseClient, User } from "~/server/db/interfaces.server";
+import type { User } from "~/server/db/interfaces.server";
 import {
   ACCESS_TOKEN_DURATION,
   ACCESS_TOKEN_SECRET,
@@ -41,7 +42,7 @@ const jwtContentsSchema = z.object({
 
 export class SessionService implements ISessionService {
   constructor(
-    private _db: DatabaseClient,
+    private _databaseService: IDatabaseService,
     private _clockService: IClockService,
     private _loggerService: ILoggerService,
     private _mailService: IMailService,
@@ -53,16 +54,18 @@ export class SessionService implements ISessionService {
     const { email, password } =
       await this._getEmailPasswordFromRequest(request);
 
-    const credential = await this._db.credential.findFirst({
-      include: {
-        user: true,
-      },
-      where: {
-        user: {
-          email,
+    const credential = await this._databaseService
+      .transaction()
+      .credential.findFirst({
+        include: {
+          user: true,
         },
-      },
-    });
+        where: {
+          user: {
+            email,
+          },
+        },
+      });
     if (!credential)
       throw new BadRequestError("Credential not found for user.");
 
@@ -190,7 +193,7 @@ export class SessionService implements ISessionService {
     });
 
     await Promise.all([
-      this._db.token.updateMany({
+      this._databaseService.transaction().token.updateMany({
         data: {
           revoked: this._clockService.getCurrentDateTime(),
         },
@@ -198,7 +201,7 @@ export class SessionService implements ISessionService {
           userId: user.id,
         },
       }),
-      this._db.token.createMany({
+      this._databaseService.transaction().token.createMany({
         data: [
           {
             type: "access",
@@ -284,21 +287,23 @@ export class SessionService implements ISessionService {
   }
 
   async sendVerificationEmail(user: User): Promise<void> {
-    const verificationCode = await this._db.verificationCode.upsert({
-      create: {
-        ...this._getNewVerificationCode(),
-        userId: user.id,
-      },
-      update: {},
-      where: {
-        userId: user.id,
-      },
-    });
+    const verificationCode = await this._databaseService
+      .transaction()
+      .verificationCode.upsert({
+        create: {
+          ...this._getNewVerificationCode(),
+          userId: user.id,
+        },
+        update: {},
+        where: {
+          userId: user.id,
+        },
+      });
 
     if (verificationCode.expiresAt <= this._clockService.getCurrentDateTime()) {
       const newVerificationCode = this._getNewVerificationCode();
       Object.assign(verificationCode, newVerificationCode);
-      await this._db.verificationCode.update({
+      await this._databaseService.transaction().verificationCode.update({
         data: newVerificationCode,
         where: {
           userId: user.id,
@@ -326,11 +331,13 @@ export class SessionService implements ISessionService {
   async verifyEmail(user: User, code: string): Promise<boolean> {
     if (user.emailVerifiedAt) return true;
 
-    const verificationCode = await this._db.verificationCode.findUnique({
-      where: {
-        userId: user.id,
-      },
-    });
+    const verificationCode = await this._databaseService
+      .transaction()
+      .verificationCode.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
     if (
       !verificationCode ||
@@ -340,12 +347,12 @@ export class SessionService implements ISessionService {
       return false;
 
     await Promise.all([
-      this._db.verificationCode.delete({
+      this._databaseService.transaction().verificationCode.delete({
         where: {
           userId: user.id,
         },
       }),
-      this._db.user.update({
+      this._databaseService.transaction().user.update({
         data: {
           emailVerifiedAt: this._clockService.getCurrentDateTime(),
         },
@@ -373,7 +380,7 @@ export class SessionService implements ISessionService {
 
 export const getSessionService = (context: ServerContext) => {
   return new SessionService(
-    context.db,
+    context.databaseService,
     context.clockService,
     context.loggerService,
     context.mailService,

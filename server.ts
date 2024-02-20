@@ -7,7 +7,6 @@ import {
   createRequestHandler,
   installGlobals,
 } from "@remix-run/node";
-import * as awilix from "awilix";
 import path from "path";
 import type { FastifyRequest, FastifyReply } from "fastify";
 import fastify from "fastify";
@@ -19,7 +18,6 @@ import fs from "node:fs";
 import url from "node:url";
 
 import { container } from "~/server/services/context.server";
-import { prisma } from "~/server/services/dependencies.server";
 import { NODE_ENV, PORT } from "~/server/constants.server";
 import { StandardError } from "~/server/errors/StandardError.server";
 
@@ -124,21 +122,21 @@ function getRequestHandler(initialBuild: ServerBuild): RouteHandler {
   const handleRequest = createRequestHandler(initialBuild, NODE_ENV);
 
   return async (req, reply) => {
+    const request = createStandardRequest(req, reply);
+    const loadContext = container.createScope();
     try {
-      let response: Response;
-      const request = createStandardRequest(req, reply);
-      const loadContext = container.createScope();
-      await prisma.$transaction(async (tx) => {
-        loadContext.register({ db: awilix.asValue(tx) });
-        response = await handleRequest(request, loadContext.cradle);
-        loadContext.dispose();
-        if (response.status >= 400) {
-          // Rollback the transaction
-          throw response;
-        }
-      });
-      await sendStandardResponse(reply, response!);
+      await container.cradle.databaseService.begin();
+      const response = await handleRequest(request, loadContext.cradle);
+      if (response.status >= 400) {
+        throw response;
+      }
+      container.cradle.databaseService.commit();
+      loadContext.dispose();
+      await sendStandardResponse(reply, response);
     } catch (error: unknown) {
+      await container.cradle.databaseService.rollback();
+      loadContext.dispose();
+
       if (error instanceof StandardError) {
         // If a standard error is thrown, then it is intentional and the FE should handle it.
         error.headers.set("X-Remix-Response", "yes");

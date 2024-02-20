@@ -1,23 +1,16 @@
 import { WIZARD_STEP } from "~/constants";
+import type { Credential, User } from "~/server/db/interfaces.server";
 import type {
-  Credential,
-  DatabaseClient,
-  User,
-} from "~/server/db/interfaces.server";
-import type {
-  ILoggerService,
+  IDatabaseService,
   IUserService,
   ServerContext,
 } from "~/server/interfaces";
 
 export class UserService implements IUserService {
-  constructor(
-    private _db: DatabaseClient,
-    private _loggerService: ILoggerService,
-  ) {}
+  constructor(private _databaseService: IDatabaseService) {}
 
   getById(id: string): Promise<User | null> {
-    return this._db.user.findUnique({
+    return this._databaseService.transaction().user.findUnique({
       where: {
         id,
       },
@@ -27,7 +20,7 @@ export class UserService implements IUserService {
   getByEmail(
     email: string,
   ): Promise<(User & { credential: Credential | null }) | null> {
-    return this._db.user.findUnique({
+    return this._databaseService.transaction().user.findUnique({
       where: {
         email,
       },
@@ -42,7 +35,7 @@ export class UserService implements IUserService {
     providerId: string,
   ): Promise<User | null> {
     // Guaranteed unique
-    return this._db.user.findFirst({
+    return this._databaseService.transaction().user.findFirst({
       where: {
         oauthProviders: {
           some: {
@@ -55,7 +48,7 @@ export class UserService implements IUserService {
   }
 
   createUserWithPassword(email: string, passwordHash: string): Promise<User> {
-    return this._db.user.create({
+    return this._databaseService.transaction().user.create({
       data: {
         email: email,
         emailVerifiedAt: null,
@@ -75,7 +68,7 @@ export class UserService implements IUserService {
     providerId: string,
     attributes: Pick<User, "fullName" | "avatar" | "emailVerifiedAt">,
   ): Promise<User> {
-    return this._db.user.create({
+    return this._databaseService.transaction().user.create({
       data: {
         ...attributes,
         email: email,
@@ -94,7 +87,7 @@ export class UserService implements IUserService {
     id: string,
     attrs: Partial<Omit<User, "id" | "createdAt" | "updatedAt">>,
   ): Promise<User> {
-    return this._db.user.update({
+    return this._databaseService.transaction().user.update({
       data: attrs,
       where: {
         id,
@@ -104,5 +97,5 @@ export class UserService implements IUserService {
 }
 
 export const getUserService = (context: ServerContext) => {
-  return new UserService(context.db, context.loggerService);
+  return new UserService(context.databaseService);
 };
