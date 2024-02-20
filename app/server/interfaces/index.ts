@@ -1,4 +1,5 @@
 export * from "./IClockService.server";
+export * from "./IDatabaseService.server";
 export * from "./IFileSystemService.server";
 export * from "./ILoggerService.server";
 export * from "./IMailService.server";

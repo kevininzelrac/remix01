@@ -5,10 +5,10 @@ import type { IOAuthProviderFactoryService } from "./IOAuthProviderFactoryServic
 import type { IMailService } from "./IMailService.server";
 import type { IClockService } from "./IClockService.server";
 import type { IFileSystemService } from "./IFileSystemService.server";
-import type { DatabaseClient } from "../db/interfaces.server";
+import type { IDatabaseService } from "./IDatabaseService.server";
 
 export type ServerContext = {
-  db: DatabaseClient;
+  databaseService: IDatabaseService;
   clockService: IClockService;
   fileSystemService: IFileSystemService;
   loggerService: ILoggerService;
