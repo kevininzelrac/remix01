@@ -1,6 +1,3 @@
-import * as awilix from "awilix";
-
-import type { ServerContext } from "~/server/interfaces";
 import { getConsoleLoggerService } from "./logger/ConsoleLoggerService.server";
 import { getUserService } from "./models/UserService.server";
 import { getSessionService } from "./session/SessionService.server";
@@ -9,21 +6,54 @@ import { getLocalMailService } from "./mail/LocalMailService.server";
 import { getClockService } from "./clock/ClockService.server";
 import { getLocalFileSystemService } from "./fs/LocalFileSystemService.server";
 import { getDatabaseService } from "./db/DatabaseService.server";
+import { Container, RegistrationLifetime } from "./container.server";
 
-export const container = awilix.createContainer<ServerContext>({
-  injectionMode: awilix.InjectionMode.PROXY,
-  strict: true,
-});
+export const serverContainer = new Container();
 
-container.register({
-  clockService: awilix.asFunction(getClockService).singleton(),
-  fileSystemService: awilix.asFunction(getLocalFileSystemService).singleton(),
-  loggerService: awilix.asFunction(getConsoleLoggerService).singleton(),
-  mailService: awilix.asFunction(getLocalMailService).singleton(),
-  oauthProviderFactoryService: awilix
-    .asFunction(getOAuthProviderFactoryService)
-    .singleton(),
-  databaseService: awilix.asFunction(getDatabaseService).scoped(),
-  sessionService: awilix.asFunction(getSessionService).scoped(),
-  userService: awilix.asFunction(getUserService).scoped(),
-});
+serverContainer.register(
+  "clockService",
+  getClockService,
+  RegistrationLifetime.SINGLETON,
+);
+
+serverContainer.register(
+  "fileSystemService",
+  getLocalFileSystemService,
+  RegistrationLifetime.SINGLETON,
+);
+
+serverContainer.register(
+  "loggerService",
+  getConsoleLoggerService,
+  RegistrationLifetime.SINGLETON,
+);
+
+serverContainer.register(
+  "mailService",
+  getLocalMailService,
+  RegistrationLifetime.SINGLETON,
+);
+
+serverContainer.register(
+  "oauthProviderFactoryService",
+  getOAuthProviderFactoryService,
+  RegistrationLifetime.SINGLETON,
+);
+
+serverContainer.register(
+  "databaseService",
+  getDatabaseService,
+  RegistrationLifetime.SCOPED,
+);
+
+serverContainer.register(
+  "sessionService",
+  getSessionService,
+  RegistrationLifetime.SCOPED,
+);
+
+serverContainer.register(
+  "userService",
+  getUserService,
+  RegistrationLifetime.SCOPED,
+);

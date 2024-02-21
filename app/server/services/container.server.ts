@@ -1,8 +1,25 @@
 import type { AwilixContainer } from "awilix";
+import * as awilix from "awilix";
+
 import type { ServerContext } from "../interfaces";
 
+export enum RegistrationLifetime {
+  SCOPED,
+  SINGLETON,
+  TRANSIENT,
+}
+
 export class Container {
-  constructor(private _container: AwilixContainer<ServerContext>) {}
+  private _container: AwilixContainer<ServerContext>;
+
+  constructor(_container?: AwilixContainer<ServerContext>) {
+    this._container =
+      _container ??
+      awilix.createContainer<ServerContext>({
+        injectionMode: awilix.InjectionMode.PROXY,
+        strict: true,
+      });
+  }
 
   createScope = (): Container => {
     return new Container(this._container.createScope());
@@ -10,6 +27,28 @@ export class Container {
 
   initialize = (): Promise<void> => {
     return this._container.cradle.databaseService.begin();
+  };
+
+  register = <K extends keyof ServerContext>(
+    name: K,
+    factory: (context: ServerContext) => ServerContext[K],
+    lifetime: RegistrationLifetime,
+  ): void => {
+    let registration = awilix.asFunction(factory);
+
+    if (lifetime === RegistrationLifetime.SCOPED) {
+      registration = registration.scoped();
+    } else if (lifetime === RegistrationLifetime.SINGLETON) {
+      registration = registration.singleton();
+    } else if (lifetime === RegistrationLifetime.TRANSIENT) {
+      registration = registration.transient();
+    } else {
+      throw new Error("Invalid registration lifetime");
+    }
+
+    this._container.register({
+      [name]: registration,
+    });
   };
 
   getContext = (): ServerContext => {

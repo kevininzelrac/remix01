@@ -1,7 +1,5 @@
 import { main } from "~/server/app";
-import { container } from "~/server/services";
-import { Container } from "~/server/services/container.server";
+import { serverContainer } from "~/server/services";
 
 // Can use different containers based on environment at this point
-const serverContainer = new Container(container);
 main(serverContainer);
