@@ -4,7 +4,7 @@ import { StandardError } from "./StandardError.server";
 const STATUS = 302;
 const STATUS_TEXT = "Redirect.";
 
-export class BadRequestError extends StandardError {
+export class RedirectError extends StandardError {
   constructor(location: string) {
     const headers = new Headers();
     headers.set("Location", location);
