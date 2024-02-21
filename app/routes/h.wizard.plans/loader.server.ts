@@ -1,32 +1,18 @@
-import { redirect, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { PAGES, WizardStep } from "~/constants";
+import { authGuard } from "~/server/permissions";
 import type { TypedResponseData } from "~/server/types";
 
 export const loader = async (args: LoaderFunctionArgs) => {
-  const { request, context } = args;
+  await authGuard(args);
 
-  const userId = context.sessionService.getAuthenticatedUserId(request);
-  if (!userId) {
-    return redirect(PAGES.SIGN_IN);
-  }
+  const { context } = args;
+  const productList = await context.productService.getProducts();
 
-  const user = await context.userService.getById(userId);
-  if (!user) {
-    context.loggerService.error("Could not find user.", { userId });
-    return redirect(PAGES.SIGN_OUT);
-  }
-
-  switch (user.wizardStep) {
-    case WizardStep.PLANS:
-      return handlePlans();
-  }
-};
-
-const handlePlans = () => {
   return json({
-    step: WizardStep.PLANS,
+    products: productList,
   });
 };
-export type PlansProps = TypedResponseData<ReturnType<typeof handlePlans>>;
+
+export type PlansProps = TypedResponseData<ReturnType<typeof loader>>;
