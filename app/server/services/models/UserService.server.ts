@@ -1,4 +1,4 @@
-import { WIZARD_STEP } from "~/constants";
+import { WizardStep } from "~/constants";
 import type { Credential, User } from "~/server/db/interfaces.server";
 import type {
   IDatabaseService,
@@ -57,7 +57,7 @@ export class UserService implements IUserService {
             passwordHash,
           },
         },
-        wizardStep: WIZARD_STEP.INITIAL,
+        wizardStep: WizardStep.INITIAL,
       },
     });
   }
@@ -78,7 +78,7 @@ export class UserService implements IUserService {
             providerName,
           },
         },
-        wizardStep: WIZARD_STEP.INITIAL,
+        wizardStep: WizardStep.INITIAL,
       },
     });
   }

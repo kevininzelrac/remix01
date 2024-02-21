@@ -13,8 +13,10 @@ import {
   Label,
 } from "~/components";
 
-import { UPDATE_PROFILE } from "../constants";
-import type { ProfileProps } from "../loader.server";
+import type { ProfileProps } from "./loader.server";
+
+export { action } from "./action.server";
+export { loader } from "./loader.server";
 
 export function ProfilePage(data: ProfileProps) {
   const { user } = data;
@@ -22,7 +24,6 @@ export function ProfilePage(data: ProfileProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <Form method="POST" encType="multipart/form-data">
-        <input type="hidden" name="type" value={UPDATE_PROFILE} />
         <Card className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Profile Settings</CardTitle>

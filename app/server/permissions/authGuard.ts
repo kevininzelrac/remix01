@@ -1,4 +1,4 @@
-import { PAGES, WIZARD_STEP } from "~/constants";
+import { PAGES, WizardStep } from "~/constants";
 import type { ServerContext } from "../interfaces";
 import { RedirectError } from "../errors";
 
@@ -13,7 +13,9 @@ export const authGuard = async (args: {
     throw new RedirectError(PAGES.SIGN_OUT);
   }
 
-  if (user.wizardStep != WIZARD_STEP.COMPLETE) {
-    throw new RedirectError(PAGES.WIZARD(user.wizardStep));
+  if (user.wizardStep != WizardStep.COMPLETE) {
+    throw new RedirectError(PAGES.WIZARD(user.wizardStep as WizardStep));
   }
+
+  return { user };
 };

@@ -1,5 +1,9 @@
 import { Link } from "@remix-run/react";
 
+import { loader } from "./loader.server";
+
+export { loader };
+
 export function PlansPage() {
   return (
     <div className="w-full py-12 lg:py-24 xl:py-32">

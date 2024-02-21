@@ -6,16 +6,16 @@ export const PAGES = {
   AUTH_CALLBACK_API: (providerName: string) =>
     `/api/auth/callback/${providerName}`,
   HOME: "/",
-  WIZARD: (wizardStep: string) => `/h/wizard/${wizardStep}`,
+  WIZARD: (wizardStep: WizardStep) => `/h/wizard/${wizardStep}`,
 };
 
-export const WIZARD_STEP = {
-  INITIAL: "initial",
-  VERIFY: "verify",
-  PROFILE: "profile",
-  PLANS: "plans",
-  COMPLETE: "complete",
-} as const;
+export enum WizardStep {
+  INITIAL = "initial",
+  VERIFY = "verify",
+  PROFILE = "profile",
+  PLANS = "plans",
+  COMPLETE = "complete",
+}
 
 export enum ERROR_TYPES {
   BAD_REQUEST,

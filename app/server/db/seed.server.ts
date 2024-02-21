@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { WIZARD_STEP } from "~/constants";
+import { WizardStep } from "~/constants";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ async function main() {
             "$2a$10$evty0xZrO8I5pJ5HpBPWKelvbigrb5LWG4D3U1xShRRI.rjB03u6y",
         },
       },
-      wizardStep: WIZARD_STEP.INITIAL,
+      wizardStep: WizardStep.INITIAL,
     },
   });
   await prisma.user.upsert({
@@ -37,7 +37,7 @@ async function main() {
             "$2a$10$evty0xZrO8I5pJ5HpBPWKelvbigrb5LWG4D3U1xShRRI.rjB03u6y",
         },
       },
-      wizardStep: WIZARD_STEP.INITIAL,
+      wizardStep: WizardStep.INITIAL,
     },
   });
 }

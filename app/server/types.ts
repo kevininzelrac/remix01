@@ -11,4 +11,8 @@ export type RouteFunction = (
 
 export type DataFunctionValue = ReturnType<RouteFunction>;
 
-export type TypedResponseData<T> = T extends TypedResponse<infer U> ? U : never;
+export type TypedResponseData<T> = T extends TypedResponse<infer U>
+  ? U
+  : T extends Promise<TypedResponse<infer U>>
+    ? U
+    : never;
