@@ -6,6 +6,7 @@
     "dev": "remix dev -c \"tsx ./server.ts\"",
     "format": "eslint . --ext .ts,.tsx --fix",
     "lint": "eslint . --ext .ts,.tsx",
+    "postinstall": "prisma generate",
     "start": "cross-env NODE_ENV=production node ./server.mjs",
     "test:env": "dotenv -e .env.test -- npx prisma migrate reset --force",
     "test:jest": "dotenv -e .env.test -- npx jest",

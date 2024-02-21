@@ -1,10 +1,12 @@
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 
-import type { PlansProps } from "./loader.server";
+import { loader } from "./loader.server";
 
-export { loader } from "./loader.server";
+export { loader };
 
-export default function PlansPage({ products }: PlansProps) {
+export default function PlansPage() {
+  const { products } = useLoaderData<typeof loader>();
+
   return (
     <div className="w-full py-12 lg:py-24 xl:py-32">
       <div className="container grid gap-8 px-4 md:px-6">

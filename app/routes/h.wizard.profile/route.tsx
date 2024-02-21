@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 
 import {
   AvatarInput,
@@ -13,13 +13,13 @@ import {
   Label,
 } from "~/components";
 
-import type { ProfileProps } from "./loader.server";
+import { loader } from "./loader.server";
 
+export { loader };
 export { action } from "./action.server";
-export { loader } from "./loader.server";
 
-export default function ProfilePage(data: ProfileProps) {
-  const { user } = data;
+export default function ProfilePage() {
+  const { user } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

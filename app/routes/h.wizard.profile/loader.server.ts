@@ -3,8 +3,6 @@ import { json } from "@remix-run/node";
 
 import { authGuard } from "~/server/permissions";
 
-import type { TypedResponseData } from "~/server/types";
-
 export const loader = async (args: LoaderFunctionArgs) => {
   const { user } = await authGuard(args);
 
@@ -15,5 +13,3 @@ export const loader = async (args: LoaderFunctionArgs) => {
     },
   });
 };
-
-export type ProfileProps = TypedResponseData<ReturnType<typeof loader>>;
