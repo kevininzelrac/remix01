@@ -49,6 +49,7 @@ const handleInitial = async ({ context }: LoaderFunctionArgs, user: User) => {
 };
 
 const handleVerify = ({ context }: LoaderFunctionArgs, user: User) => {
+  context.sessionService.sendVerificationEmail(user);
   return json({
     step: WIZARD_STEP.VERIFY,
   });

@@ -26,11 +26,10 @@ type RouteHandler = (
   reply: FastifyReply,
 ) => Promise<void>;
 
-export async function main(
-  buildPath: string,
-  versionPath: string,
-  serverContainer: Container,
-) {
+export async function main(root: string, serverContainer: Container) {
+  const buildPath = path.join(root, "./build/index.js");
+  const versionPath = path.join(root, "./build/version.txt");
+
   const initialBuild: ServerBuild = await import(buildPath);
 
   let handler: RouteHandler;
@@ -50,7 +49,7 @@ export async function main(
   const app = fastify();
   await app.register(fastifyEarlyHints, { warn: true });
   await app.register(fastifyStatic, {
-    root: path.join(__dirname, "public"),
+    root: path.join(root, "public"),
     prefix: "/",
     wildcard: false,
     cacheControl: true,
@@ -62,7 +61,7 @@ export async function main(
   });
 
   await app.register(fastifyStatic, {
-    root: path.join(__dirname, "public", "build"),
+    root: path.join(root, "public", "build"),
     prefix: "/build",
     wildcard: true,
     decorateReply: false,
