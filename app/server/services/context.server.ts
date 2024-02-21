@@ -62,5 +62,5 @@ serverContainer.register(
 serverContainer.register(
   "productService",
   getLocalProductService,
-  RegistrationLifetime.SINGLETON,
+  RegistrationLifetime.SCOPED,
 );

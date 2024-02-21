@@ -1,6 +1,7 @@
 import { add } from "date-fns";
 
 import { Plan, Recurrence, WizardStep } from "~/constants";
+import { BadRequestError } from "~/server/errors";
 import type {
   IClockService,
   IDatabaseService,
@@ -60,7 +61,7 @@ export class LocalProductService implements IProductService {
       }
     }
 
-    throw new Error("Product not found.");
+    throw new BadRequestError("Product not found.");
   };
 
   _getProductExpiration = (product: Product): Date | null => {

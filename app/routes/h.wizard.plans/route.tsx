@@ -1,12 +1,13 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 
 import { loader } from "./loader.server";
 import { Recurrence } from "~/constants";
 
+export { action } from "./action.server";
 export { loader };
 
 export default function PlansPage() {
-  const { products } = useLoaderData<typeof loader>();
+  const { products, successUrl, cancelUrl } = useLoaderData<typeof loader>();
 
   return (
     <div className="w-full py-12 lg:py-24 xl:py-32">
@@ -24,7 +25,14 @@ export default function PlansPage() {
         </div>
         <div className="grid max-w-sm gap-6 mx-auto lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-12">
           {products.map((item) => (
-            <div key={item.id} className="border rounded-lg divide-y">
+            <Form
+              key={item.id}
+              method="POST"
+              className="border rounded-lg divide-y"
+            >
+              <input type="hidden" name="productId" value={item.id} />
+              <input type="hidden" name="successUrl" value={successUrl} />
+              <input type="hidden" name="cancelUrl" value={cancelUrl} />
               <div className="grid items-center justify-between p-6">
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl">
@@ -55,14 +63,14 @@ export default function PlansPage() {
                 </div>
               </div>
               <div className="p-6">
-                <Link
-                  to="/"
+                <button
+                  type="submit"
                   className="w-full inline-flex items-center justify-center rounded-b-md border-t border-gray-200 bg-gray-50 h-11 font-medium transition-colors hover:bg-gray-50/90 hover:text-gray-900"
                 >
                   {item.cta}
-                </Link>
+                </button>
               </div>
-            </div>
+            </Form>
           ))}
         </div>
         <div className="mx-auto max-w-3xl grid gap-4 lg:grid-cols-2 lg:gap-8 xl:max-w-5xl">
