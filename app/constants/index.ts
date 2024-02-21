@@ -17,6 +17,7 @@ export const WIZARD_STEP = {
   COMPLETE: "complete",
 } as const;
 
-export const ERROR_TYPES = {
-  BAD_REQUEST: "bad-request",
-} as const;
+export enum ERROR_TYPES {
+  BAD_REQUEST,
+  REDIRECT,
+}
