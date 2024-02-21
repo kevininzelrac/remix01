@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { loader } from "./loader.server";
+import { Recurrence } from "~/constants";
 
 export { loader };
 
@@ -31,7 +32,15 @@ export default function PlansPage() {
                   </h3>
                   <p className="text-gray-500">{item.description}</p>
                 </div>
-                <div className="text-4xl font-semibold">$0</div>
+                <div className="text-4xl font-semibold">
+                  {item.currency} {item.values[item.recurrence]}/
+                  {item.recurrence}
+                </div>
+                {item.recurrence === Recurrence.YEARLY && (
+                  <div>
+                    {item.currency} {item.values.monthly}/{Recurrence.MONTHLY}
+                  </div>
+                )}
               </div>
               <div className="grid items-center p-6">
                 <div className="space-y-2">
