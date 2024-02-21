@@ -6,7 +6,7 @@ import { RESEND_CODE, SUBMIT_CODE } from "./constants";
 export { action } from "./action.server";
 export { loader } from "./loader.server";
 
-export function VerificationPage() {
+export default function VerificationPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">

@@ -18,7 +18,7 @@ import type { ProfileProps } from "./loader.server";
 export { action } from "./action.server";
 export { loader } from "./loader.server";
 
-export function ProfilePage(data: ProfileProps) {
+export default function ProfilePage(data: ProfileProps) {
   const { user } = data;
 
   return (

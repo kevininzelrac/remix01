@@ -4,7 +4,7 @@ import { loader } from "./loader.server";
 
 export { loader };
 
-export function PlansPage() {
+export default function PlansPage() {
   return (
     <div className="w-full py-12 lg:py-24 xl:py-32">
       <div className="container grid gap-8 px-4 md:px-6">
