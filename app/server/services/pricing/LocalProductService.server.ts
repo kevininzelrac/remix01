@@ -30,9 +30,10 @@ export class LocalProductService implements IProductService {
   };
 }
 
-const productList = [
+const productList: Product[] = [
   {
     id: "free-usd",
+    downgradesTo: null,
     name: "Free",
     description: "All the basics for starting a new business.",
     plan: Plan.FREE,
@@ -47,6 +48,7 @@ const productList = [
   },
   {
     id: "pro-usd",
+    downgradesTo: "free-usd",
     name: "Pro",
     description:
       "For teams that want to track progress and automate workflows.",

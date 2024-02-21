@@ -2,6 +2,7 @@ import type { Plan, Recurrence } from "~/constants";
 
 export type Product = {
   id: string;
+  downgradesTo: string | null;
   name: string;
   description: string;
   plan: Plan;
