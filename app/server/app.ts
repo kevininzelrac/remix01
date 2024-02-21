@@ -142,20 +142,42 @@ function getRequestHandler(
       await requestContainer.finalizeSuccess();
       await sendStandardResponse(reply, response);
     } catch (error: unknown) {
+      let handledError = error;
+
       await requestContainer.finalizeError();
 
-      if (error instanceof StandardError) {
+      if (handledError instanceof StandardError) {
         // If a standard error is thrown, then it is intentional and the FE should handle it.
-        error.headers.set("X-Remix-Response", "yes");
-        error.headers.delete("X-Remix-Catch");
+        handledError.headers.set("X-Remix-Response", "yes");
+        handledError.headers.delete("X-Remix-Catch");
+
+        // Is redirect response
+        if (300 <= handledError.status && handledError.status < 400) {
+          // We don't have any way to prevent a fetch request from following
+          // redirects. So we use the `X-Remix-Redirect` header to indicate the
+          // next URL, and then "follow" the redirect manually on the client.
+          const headers = new Headers(handledError.headers);
+          const redirectUrl = headers.get("Location")!;
+          headers.set("X-Remix-Redirect", redirectUrl);
+          headers.set("X-Remix-Status", handledError.status.toString());
+          headers.delete("Location");
+          if (handledError.headers.get("Set-Cookie") !== null) {
+            headers.set("X-Remix-Revalidate", "yes");
+          }
+
+          handledError = new Response(null, {
+            status: 204,
+            headers,
+          });
+        }
       }
 
-      if (error instanceof Response) {
-        await sendStandardResponse(reply, error);
+      if (handledError instanceof Response) {
+        await sendStandardResponse(reply, handledError);
         return;
       }
 
-      throw error;
+      throw handledError;
     }
   };
 }
