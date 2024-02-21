@@ -1,0 +1,57 @@
+import { Form } from "@remix-run/react";
+
+import {
+  AvatarInput,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+} from "~/components";
+
+import { UPDATE_PROFILE } from "../constants";
+import type { ProfileProps } from "../loader.server";
+
+export function ProfilePage(data: ProfileProps) {
+  const { user } = data;
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <Form method="POST" encType="multipart/form-data">
+        <input type="hidden" name="type" value={UPDATE_PROFILE} />
+        <Card className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+          <CardHeader>
+            <CardTitle>Profile Settings</CardTitle>
+            <CardDescription>Update your profile information.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                placeholder="Enter your full name"
+                defaultValue={user.fullName ?? ""}
+              />
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="avatar">Avatar</Label>
+              <AvatarInput
+                id="avatar"
+                name="avatar"
+                defaultValue={user.avatar ?? ""}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="ml-auto">Save</Button>
+          </CardFooter>
+        </Card>
+      </Form>
+    </div>
+  );
+}

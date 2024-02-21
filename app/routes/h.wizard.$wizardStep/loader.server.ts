@@ -48,13 +48,12 @@ const handleInitial = async ({ context }: LoaderFunctionArgs, user: User) => {
   return redirect(PAGES.WIZARD(nextStep));
 };
 
-const handleVerify = ({ context }: LoaderFunctionArgs, user: User) => {
-  context.sessionService.sendVerificationEmail(user);
+const handleVerify = async ({ context }: LoaderFunctionArgs, user: User) => {
+  await context.sessionService.sendVerificationEmail(user);
   return json({
     step: WIZARD_STEP.VERIFY,
   });
 };
-export type VerifyProps = TypedResponseData<ReturnType<typeof handleVerify>>;
 
 const handleProfile = (user: User) => {
   return json({
