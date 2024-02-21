@@ -26,17 +26,23 @@ type RouteHandler = (
   reply: FastifyReply,
 ) => Promise<void>;
 
-const BUILD_PATH = "./build/index.js";
-const VERSION_PATH = "./build/version.txt";
-
-export async function main(serverContainer: Container) {
-  const initialBuild: ServerBuild = await import(BUILD_PATH);
+export async function main(
+  buildPath: string,
+  versionPath: string,
+  serverContainer: Container,
+) {
+  const initialBuild: ServerBuild = await import(buildPath);
 
   let handler: RouteHandler;
   if (NODE_ENV === "production") {
     handler = getRequestHandler(initialBuild, serverContainer);
   } else {
-    handler = await getDevRequestHandler(initialBuild, serverContainer);
+    handler = await getDevRequestHandler(
+      buildPath,
+      versionPath,
+      initialBuild,
+      serverContainer,
+    );
   }
 
   installGlobals();
@@ -156,6 +162,8 @@ function getRequestHandler(
 }
 
 async function getDevRequestHandler(
+  buildPath: string,
+  versionPath: string,
   initialBuild: ServerBuild,
   serverContainer: Container,
 ): Promise<RouteHandler> {
@@ -164,14 +172,14 @@ async function getDevRequestHandler(
 
   async function handleServerUpdate() {
     // 1. re-import the server build
-    build = await reimportServer();
+    build = await reimportServer(buildPath);
     // 2. tell Remix that this app server is now up-to-date and ready
     await broadcastDevReady(build);
   }
 
   let chokidar = await import("chokidar");
   chokidar
-    .watch(VERSION_PATH, { ignoreInitial: true })
+    .watch(versionPath, { ignoreInitial: true })
     .on("add", handleServerUpdate)
     .on("change", handleServerUpdate);
 
@@ -182,11 +190,11 @@ async function getDevRequestHandler(
   };
 }
 
-async function reimportServer(): Promise<ServerBuild> {
-  const stat = fs.statSync(BUILD_PATH);
+async function reimportServer(buildPath: string): Promise<ServerBuild> {
+  const stat = fs.statSync(buildPath);
 
   // convert build path to URL for Windows compatibility with dynamic `import`
-  const BUILD_URL = url.pathToFileURL(BUILD_PATH).href;
+  const BUILD_URL = url.pathToFileURL(buildPath).href;
 
   // use a timestamp query parameter to bust the import cache
   return import(BUILD_URL + "?t=" + stat.mtimeMs);
