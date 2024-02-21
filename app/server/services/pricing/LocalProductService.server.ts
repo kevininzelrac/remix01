@@ -1,16 +1,18 @@
 import { add } from "date-fns";
 
-import { Plan, Recurrence } from "~/constants";
+import { Plan, Recurrence, WizardStep } from "~/constants";
 import type {
   IClockService,
   IDatabaseService,
   IProductService,
+  IUserService,
   ServerContext,
 } from "~/server/interfaces";
 import type { Product } from "~/types";
 export class LocalProductService implements IProductService {
   constructor(
     private _databaseService: IDatabaseService,
+    private _userService: IUserService,
     private _clockService: IClockService,
     private _productList: Product[],
   ) {}
@@ -28,20 +30,25 @@ export class LocalProductService implements IProductService {
     // SKIP CHECKOUT
     const product = this._getProductById(productId);
     const tx = this._databaseService.transaction();
-    await tx.subscription.upsert({
-      create: {
-        plan: product.plan,
-        expiresAt: this._getProductExpiration(product),
-        userId,
-      },
-      update: {
-        plan: product.plan,
-        expiresAt: this._getProductExpiration(product),
-      },
-      where: {
-        userId,
-      },
-    });
+    await Promise.all([
+      tx.subscription.upsert({
+        create: {
+          plan: product.plan,
+          expiresAt: this._getProductExpiration(product),
+          userId,
+        },
+        update: {
+          plan: product.plan,
+          expiresAt: this._getProductExpiration(product),
+        },
+        where: {
+          userId,
+        },
+      }),
+      this._userService.updateUser(userId, {
+        wizardStep: WizardStep.COMPLETE,
+      }),
+    ]);
 
     return successUrl;
   };
@@ -112,6 +119,7 @@ export const getLocalProductService = (
 ): LocalProductService => {
   return new LocalProductService(
     context.databaseService,
+    context.userService,
     context.clockService,
     productList,
   );
