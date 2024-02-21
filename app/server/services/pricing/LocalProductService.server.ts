@@ -1,25 +1,52 @@
-import { Plan, Recurrence } from "~/constants";
-import type { IProductService, ServerContext } from "~/server/interfaces";
-import type { Product } from "~/types";
+import { add } from "date-fns";
 
+import { Plan, Recurrence } from "~/constants";
+import type {
+  IClockService,
+  IDatabaseService,
+  IProductService,
+  ServerContext,
+} from "~/server/interfaces";
+import type { Product } from "~/types";
 export class LocalProductService implements IProductService {
-  constructor(private _productList: Product[]) {}
+  constructor(
+    private _databaseService: IDatabaseService,
+    private _clockService: IClockService,
+    private _productList: Product[],
+  ) {}
 
   getProducts = async (): Promise<Product[]> => {
     return this._productList;
   };
 
   getProductCheckoutPage = async (
+    userId: string,
     productId: string,
     successUrl: string,
     cancelUrl: string,
   ): Promise<string> => {
     // SKIP CHECKOUT
-    // const product = this._getProductById(productId);
+    const product = this._getProductById(productId);
+    const tx = this._databaseService.transaction();
+    await tx.subscription.upsert({
+      create: {
+        plan: product.plan,
+        expiresAt: this._getProductExpiration(product),
+        userId,
+      },
+      update: {
+        plan: product.plan,
+        expiresAt: this._getProductExpiration(product),
+      },
+      where: {
+        userId,
+      },
+    });
+
     return successUrl;
   };
 
-  _getProductById = async (productId: string): Promise<Product> => {
+  _getProductById = (productId: string): Product => {
     for (const item of this._productList) {
       if (item.id === productId) {
         return item;
@@ -27,6 +54,20 @@ export class LocalProductService implements IProductService {
     }
 
     throw new Error("Product not found.");
+  };
+
+  _getProductExpiration = (product: Product): Date | null => {
+    switch (product.recurrence) {
+      case Recurrence.ONE_TIME: {
+        return null;
+      }
+      case Recurrence.MONTHLY: {
+        return add(this._clockService.getCurrentDateTime(), { months: 1 });
+      }
+      case Recurrence.YEARLY: {
+        return add(this._clockService.getCurrentDateTime(), { years: 1 });
+      }
+    }
   };
 }
 
@@ -38,8 +79,9 @@ const productList: Product[] = [
     description: "All the basics for starting a new business.",
     plan: Plan.FREE,
     currency: "USD",
-    recurrence: Recurrence.MONTHLY,
+    recurrence: Recurrence.ONE_TIME,
     values: {
+      [Recurrence.ONE_TIME]: 0,
       [Recurrence.MONTHLY]: 0,
       [Recurrence.YEARLY]: 0,
     },
@@ -56,6 +98,7 @@ const productList: Product[] = [
     currency: "USD",
     recurrence: Recurrence.YEARLY,
     values: {
+      [Recurrence.ONE_TIME]: 0,
       [Recurrence.MONTHLY]: 5,
       [Recurrence.YEARLY]: 60,
     },
@@ -67,5 +110,9 @@ const productList: Product[] = [
 export const getLocalProductService = (
   context: ServerContext,
 ): LocalProductService => {
-  return new LocalProductService(productList);
+  return new LocalProductService(
+    context.databaseService,
+    context.clockService,
+    productList,
+  );
 };
