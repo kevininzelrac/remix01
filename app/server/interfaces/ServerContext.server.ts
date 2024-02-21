@@ -6,6 +6,7 @@ import type { IMailService } from "./IMailService.server";
 import type { IClockService } from "./IClockService.server";
 import type { IFileSystemService } from "./IFileSystemService.server";
 import type { IDatabaseService } from "./IDatabaseService.server";
+import type { IProductService } from "./IProductService.server";
 
 export type ServerContext = {
   databaseService: IDatabaseService;
@@ -14,6 +15,7 @@ export type ServerContext = {
   loggerService: ILoggerService;
   mailService: IMailService;
   oauthProviderFactoryService: IOAuthProviderFactoryService;
+  productService: IProductService;
   sessionService: ISessionService;
   userService: IUserService;
 };
