@@ -1,10 +1,10 @@
 import { Link } from "@remix-run/react";
 
-import { loader } from "./loader.server";
+import type { PlansProps } from "./loader.server";
 
-export { loader };
+export { loader } from "./loader.server";
 
-export default function PlansPage() {
+export default function PlansPage({ products }: PlansProps) {
   return (
     <div className="w-full py-12 lg:py-24 xl:py-32">
       <div className="container grid gap-8 px-4 md:px-6">
@@ -20,64 +20,39 @@ export default function PlansPage() {
           </p>
         </div>
         <div className="grid max-w-sm gap-6 mx-auto lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-12">
-          <div className="border rounded-lg divide-y">
-            <div className="grid items-center justify-between p-6">
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl">
-                  Free
-                </h3>
-                <p className="text-gray-500">
-                  All the basics for starting a new business
-                </p>
+          {products.map((item) => (
+            <div key={item.id} className="border rounded-lg divide-y">
+              <div className="grid items-center justify-between p-6">
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl">
+                    {item.name}
+                  </h3>
+                  <p className="text-gray-500">{item.description}</p>
+                </div>
+                <div className="text-4xl font-semibold">$0</div>
               </div>
-              <div className="text-4xl font-semibold">$0</div>
-            </div>
-            <div className="grid items-center p-6">
-              <div className="space-y-2">
-                <h4 className="font-bold">Features</h4>
-                <p className="text-gray-500 text-sm">
-                  10 projects, basic kanban boards, 2 team members
-                </p>
+              <div className="grid items-center p-6">
+                <div className="space-y-2">
+                  <h4 className="font-bold">Features</h4>
+                  <p className="text-gray-500 text-sm">
+                    <ul>
+                      {item.features.map((message) => (
+                        <li key={message}>{message}</li>
+                      ))}
+                    </ul>
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="p-6">
-              <Link
-                to="/"
-                className="w-full inline-flex items-center justify-center rounded-b-md border-t border-gray-200 bg-gray-50 h-11 font-medium transition-colors hover:bg-gray-50/90 hover:text-gray-900"
-              >
-                Start with Free
-              </Link>
-            </div>
-          </div>
-          <div className="border rounded-lg divide-y">
-            <div className="grid items-center justify-between p-6">
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl">
-                  Pro
-                </h3>
-                <p className="text-gray-500">
-                  For teams that want to track progress and automate workflows
-                </p>
-              </div>
-              <div className="text-4xl font-semibold">$12</div>
-            </div>
-            <div className="grid items-center p-6">
-              <div className="space-y-2">
-                <h4 className="font-bold">Features</h4>
-                <p className="text-gray-500 text-sm">
-                  Unlimited projects, advanced reporting, 10 team members
-                </p>
+              <div className="p-6">
+                <Link
+                  to="/"
+                  className="w-full inline-flex items-center justify-center rounded-b-md border-t border-gray-200 bg-gray-50 h-11 font-medium transition-colors hover:bg-gray-50/90 hover:text-gray-900"
+                >
+                  {item.cta}
+                </Link>
               </div>
             </div>
-            <div className="p-6">
-              <Link
-                to="/"
-                className="w-full inline-flex items-center justify-center rounded-b-md border-t border-gray-200 bg-gray-50 h-11 font-medium transition-colors hover:bg-gray-50/90 hover:text-gray-900"
-              >
-                Upgrade to Pro
-              </Link>
-            </div>
-          </div>
+          ))}
         </div>
         <div className="mx-auto max-w-3xl grid gap-4 lg:grid-cols-2 lg:gap-8 xl:max-w-5xl">
           <div className="grid gap-1">

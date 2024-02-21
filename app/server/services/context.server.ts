@@ -7,6 +7,7 @@ import { getClockService } from "./clock/ClockService.server";
 import { getLocalFileSystemService } from "./fs/LocalFileSystemService.server";
 import { getDatabaseService } from "./db/DatabaseService.server";
 import { Container, RegistrationLifetime } from "./container.server";
+import { getLocalProductService } from "./pricing";
 
 export const serverContainer = new Container();
 
@@ -56,4 +57,10 @@ serverContainer.register(
   "userService",
   getUserService,
   RegistrationLifetime.SCOPED,
+);
+
+serverContainer.register(
+  "productService",
+  getLocalProductService,
+  RegistrationLifetime.SINGLETON,
 );

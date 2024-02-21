@@ -13,7 +13,11 @@ export const authGuard = async (args: {
     throw new RedirectError(PAGES.SIGN_OUT);
   }
 
-  if (user.wizardStep != WizardStep.COMPLETE) {
+  const url = new URL(request.url);
+  if (
+    user.wizardStep != WizardStep.COMPLETE &&
+    url.pathname !== PAGES.WIZARD(user.wizardStep as WizardStep)
+  ) {
     throw new RedirectError(PAGES.WIZARD(user.wizardStep as WizardStep));
   }
 
