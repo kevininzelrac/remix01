@@ -1,4 +1,4 @@
-import type { ERROR_TYPES } from "./constants";
+import type { ERROR_TYPES } from "../constants";
 
 export type HandledError = { error: HandledErrorBody };
 
