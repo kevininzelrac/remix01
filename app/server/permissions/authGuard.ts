@@ -1,6 +1,6 @@
 import { PAGES, WizardStep } from "~/constants";
 import type { ServerContext } from "../interfaces";
-import { RedirectError } from "../errors";
+import { redirect } from "@remix-run/node";
 
 export const authGuard = async (args: {
   context: ServerContext;
@@ -10,7 +10,7 @@ export const authGuard = async (args: {
 
   const user = await context.sessionService.getAuthenticatedUser(request);
   if (!user) {
-    throw new RedirectError(PAGES.SIGN_OUT);
+    throw redirect(PAGES.SIGN_OUT);
   }
 
   const url = new URL(request.url);
@@ -18,7 +18,7 @@ export const authGuard = async (args: {
     user.wizardStep != WizardStep.COMPLETE &&
     url.pathname !== PAGES.WIZARD(user.wizardStep as WizardStep)
   ) {
-    throw new RedirectError(PAGES.WIZARD(user.wizardStep as WizardStep));
+    throw redirect(PAGES.WIZARD(user.wizardStep as WizardStep));
   }
 
   return { user };
