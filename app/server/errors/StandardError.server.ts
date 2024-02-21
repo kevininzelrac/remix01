@@ -4,9 +4,9 @@ export class StandardError<
   E extends HandledErrorBody = HandledErrorBody,
 > extends Response {
   constructor(status: number, statusText: string, data: E, headers?: Headers) {
-    if (status < 300) {
+    if (status < 400) {
       throw new Error(
-        `Status for a standard error should be >=300. Instead got ${status}.`,
+        `Status for a standard error should be >=400. Instead got ${status}.`,
       );
     }
 
