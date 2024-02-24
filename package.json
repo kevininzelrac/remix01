@@ -40,6 +40,7 @@
     "server-image-remix": "^0.2.2",
     "server-image-transformer-sharp": "^0.2.2",
     "sharp": "^0.33.2",
+    "tailwind-merge": "^2.2.1",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"
   },
