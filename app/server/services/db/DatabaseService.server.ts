@@ -58,7 +58,7 @@ export class DatabaseService implements IDatabaseService {
       throw new Error("Rollback occurs before transaction begins.");
     }
     this._rollback();
-    return this._waiter;
+    return this._waiter.catch(() => {});
   };
 }
 
