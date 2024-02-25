@@ -52,6 +52,9 @@ export const provideServerContext =
         return error;
       }
 
+      // FIXME: This check is likely not working because actions are compiled by
+      // remix but the load context is compiled by ts-node, so we might have
+      // different references for these checks.
       if (error instanceof ClientError) {
         return json({
           data: null,
