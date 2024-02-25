@@ -1,43 +1,36 @@
+import type * as http from "node:http";
+import type * as http2 from "node:http2";
+import type * as https from "node:https";
+
 import type { ServerBuild } from "@remix-run/node";
 import { fastifyEarlyHints } from "@fastify/early-hints";
 import { fastifyStatic } from "@fastify/static";
-import { getEarlyHintLinks } from "@mcansh/remix-fastify";
-import {
-  broadcastDevReady,
-  createRequestHandler,
-  installGlobals,
-} from "@remix-run/node";
+import type { GetLoadContextFunction } from "@mcansh/remix-fastify";
+import { createRequestHandler, getEarlyHintLinks } from "@mcansh/remix-fastify";
+import { broadcastDevReady, installGlobals } from "@remix-run/node";
 import path from "path";
 import type { FastifyRequest, FastifyReply } from "fastify";
 import fastify from "fastify";
-import {
-  createStandardRequest,
-  sendStandardResponse,
-} from "fastify-standard-request-reply";
+
 import fs from "node:fs";
 import url from "node:url";
 
 import { NODE_ENV, PORT } from "~/server/constants.server";
-import type { ServerContext } from "./interfaces";
+
+type HttpServer =
+  | http.Server
+  | https.Server
+  | http2.Http2Server
+  | http2.Http2SecureServer;
 
 type IRouteHandler = (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => Promise<void>;
 
-export type IRequestLifecycleHandlerFactory = (
-  request: Request,
-) => IRequestLifecycleHandler;
-
-export type IRequestLifecycleHandler = {
-  initialize(): Promise<void>;
-  getContext(): ServerContext;
-  finalize(response?: Response): Promise<void>;
-};
-
 export async function main(
   root: string,
-  requestLifecycleHandlerFactory: IRequestLifecycleHandlerFactory,
+  getLoadContext: GetLoadContextFunction<HttpServer>,
 ) {
   const buildPath = path.join(root, "./build/index.js");
   const versionPath = path.join(root, "./build/version.txt");
@@ -46,13 +39,13 @@ export async function main(
 
   let handler: IRouteHandler;
   if (NODE_ENV === "production") {
-    handler = getRequestHandler(initialBuild, requestLifecycleHandlerFactory);
+    handler = getRequestHandler(initialBuild, getLoadContext);
   } else {
     handler = await getDevRequestHandler(
       buildPath,
       versionPath,
       initialBuild,
-      requestLifecycleHandlerFactory,
+      getLoadContext,
     );
   }
 
@@ -118,55 +111,24 @@ export async function main(
   }
 }
 
-/**
- * Wanted to ensure that a single request/response cycle was atomic. But Prisma
- * doesn't have an imperative API for transactions, so we need to wrap all of our
- * logic in a callback and give that to prisma. This API can be deceived into an
- * imperative one with some effort though, but we would still need to insert commit
- * and rollback statements after the request is done, and the default express adapter
- * for Remix doesn't give us this option.
- *
- * The solution was to rewrite the express adapter logic (reusing as much as we
- * could, including some "private" functions), and to wrap everything within a
- * Prisma transaction.
- *
- * We also wanted thrown error responses (4xx errors) from actions and loaders
- * to not be sent to a remix errorboundary.
- */
-function getRequestHandler(
+export function getRequestHandler(
   initialBuild: ServerBuild,
-  requestLifecycleHandlerFactory: IRequestLifecycleHandlerFactory,
+  getLoadContext: GetLoadContextFunction<HttpServer>,
 ): IRouteHandler {
-  const handleRequest = createRequestHandler(initialBuild, NODE_ENV);
-
-  return async (req, reply) => {
-    const request = createStandardRequest(req, reply);
-    const requestLifecycleHandler = requestLifecycleHandlerFactory(request);
-    try {
-      await requestLifecycleHandler.initialize();
-      const response = await handleRequest(
-        request,
-        requestLifecycleHandler.getContext(),
-      );
-      await requestLifecycleHandler.finalize(response);
-      await sendStandardResponse(reply, response);
-    } catch (error: unknown) {
-      await requestLifecycleHandler.finalize();
-      throw error;
-    }
-  };
+  return createRequestHandler({
+    build: initialBuild,
+    getLoadContext,
+    mode: NODE_ENV,
+  });
 }
 
 async function getDevRequestHandler(
   buildPath: string,
   versionPath: string,
   initialBuild: ServerBuild,
-  requestLifecycleHandlerFactory: IRequestLifecycleHandlerFactory,
+  getLoadContext: GetLoadContextFunction<HttpServer>,
 ): Promise<IRouteHandler> {
-  const handler = getRequestHandler(
-    initialBuild,
-    requestLifecycleHandlerFactory,
-  );
+  const handler = getRequestHandler(initialBuild, getLoadContext);
   let build = initialBuild;
 
   async function handleServerUpdate() {
