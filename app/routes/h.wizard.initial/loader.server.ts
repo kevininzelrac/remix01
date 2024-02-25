@@ -1,8 +1,9 @@
-import { redirect, type LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { PAGES, WizardStep } from "~/constants";
+import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions";
 
-export const loader = async (args: LoaderFunctionArgs) => {
+export const loader = middleware.build(async (args) => {
   const { user } = await authGuard(args);
 
   const nextStep = user.emailVerifiedAt
@@ -15,4 +16,4 @@ export const loader = async (args: LoaderFunctionArgs) => {
   });
 
   return redirect(PAGES.WIZARD(nextStep));
-};
+});

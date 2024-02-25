@@ -1,9 +1,9 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 
+import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions";
 
-export const loader = async (args: LoaderFunctionArgs) => {
+export const loader = middleware.build(async (args) => {
   const { user } = await authGuard(args);
 
   return json({
@@ -12,4 +12,4 @@ export const loader = async (args: LoaderFunctionArgs) => {
       avatar: user.avatar,
     },
   });
-};
+});

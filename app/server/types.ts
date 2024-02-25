@@ -1,18 +1,9 @@
-import type {
-  ActionFunction,
-  DataFunctionArgs,
-  LoaderFunction,
-  TypedResponse,
-} from "@remix-run/node";
+import type { DataFunctionArgs } from "@remix-run/node";
 
-export type RouteFunction = (
+export type Awaitable<T> = T | Promise<T>;
+
+export type DataFunctionValue<T> = Response | NonNullable<T> | null;
+
+export type RouteFunction = <T>(
   args: DataFunctionArgs,
-) => ReturnType<ActionFunction> & ReturnType<LoaderFunction>;
-
-export type DataFunctionValue = ReturnType<RouteFunction>;
-
-export type TypedResponseData<T> = T extends TypedResponse<infer U>
-  ? U
-  : T extends Promise<TypedResponse<infer U>>
-    ? U
-    : never;
+) => Awaitable<DataFunctionValue<T>>;

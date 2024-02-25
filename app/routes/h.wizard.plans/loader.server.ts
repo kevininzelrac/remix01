@@ -1,11 +1,12 @@
 import { json } from "@remix-run/node";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+
 import { PAGES, WizardStep } from "~/constants";
+import { middleware } from "~/server/middleware";
 
 import { authGuard } from "~/server/permissions";
 import { getFullUrlFromPath } from "~/server/utils";
 
-export const loader = async (args: LoaderFunctionArgs) => {
+export const loader = middleware.build(async (args) => {
   await authGuard(args);
 
   const { context, request } = args;
@@ -16,4 +17,4 @@ export const loader = async (args: LoaderFunctionArgs) => {
     successUrl: getFullUrlFromPath(request, PAGES.WIZARD(WizardStep.COMPLETE)),
     cancelUrl: getFullUrlFromPath(request, PAGES.WIZARD(WizardStep.PLANS)),
   });
-};
+});

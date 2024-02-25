@@ -1,7 +1,7 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { middleware } from "~/server/middleware";
 
-export const loader = ({ request, context, params }: LoaderFunctionArgs) => {
+export const loader = middleware.build(({ context, params }) => {
   const providerName = params.providerName;
   if (!providerName) throw new Error("No provider name found.");
   return context.sessionService.redirectToOAuthProvider(providerName);
-};
+});

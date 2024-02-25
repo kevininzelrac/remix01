@@ -1,8 +1,10 @@
-import { redirect, type ActionFunctionArgs, json } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import { z } from "zod";
 
 import { PAGES, WizardStep } from "~/constants";
 import { RESEND_CODE, SUBMIT_CODE } from "./constants";
+import { middleware } from "~/server/middleware";
+import { authGuard } from "~/server/permissions";
 
 const schema = z.union([
   z.object({
@@ -14,7 +16,9 @@ const schema = z.union([
   }),
 ]);
 
-export const action = async ({ request, context }: ActionFunctionArgs) => {
+export const action = middleware.build(async (args) => {
+  const { request, context } = args;
+
   const formData = await request.formData();
   const rawData = Object.fromEntries(formData.entries());
   const result = schema.safeParse(rawData);
@@ -22,10 +26,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     throw new Error("Invalid action.");
   }
 
-  const user = await context.sessionService.getAuthenticatedUser(request);
-  if (!user) {
-    return redirect(PAGES.SIGN_OUT);
-  }
+  const { user } = await authGuard(args);
 
   const { data } = result;
   switch (data.type) {
@@ -42,4 +43,4 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       await context.sessionService.sendVerificationEmail(user);
       return json({});
   }
-};
+});

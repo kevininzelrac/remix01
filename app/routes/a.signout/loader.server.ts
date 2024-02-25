@@ -1,5 +1,5 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { middleware } from "~/server/middleware";
 
-export const loader = ({ context }: LoaderFunctionArgs) => {
+export const loader = middleware.build(({ context }) => {
   return context.sessionService.handleSignOut();
-};
+});

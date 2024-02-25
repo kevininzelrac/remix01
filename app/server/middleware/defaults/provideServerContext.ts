@@ -1,26 +1,50 @@
 import type { DataFunctionArgs } from "@remix-run/node";
 import type { ServerContext } from "~/server/interfaces";
-import type { DataFunctionValue } from "~/server/types";
+import type {
+  Awaitable,
+  DataFunctionValue,
+  RouteFunction,
+} from "~/server/types";
 
-export type ProvideServerContextNext = (
+export type ProvideServerContextNext = <T>(
   args: Omit<DataFunctionArgs, "context"> & { context: ServerContext },
-) => DataFunctionValue;
+) => Awaitable<DataFunctionValue<T>>;
+
+const READONLY_METHODS = ["GET", "OPTIONS"];
 
 export const provideServerContext =
-  (next: ProvideServerContextNext) =>
-  async (args: DataFunctionArgs): Promise<DataFunctionValue> => {
+  (next: ProvideServerContextNext): RouteFunction =>
+  async <T>(args: DataFunctionArgs) => {
     const {
+      request,
       context: { container },
     } = args;
 
     const requestContainer = container.createScope();
+    let result: DataFunctionValue<T> | undefined = undefined;
 
     try {
       await requestContainer.initialize();
-      return await next({ ...args, context: requestContainer.getContext() });
-      // FIXME: finalize container
+      result = await next({
+        ...args,
+        context: requestContainer.getContext(),
+      });
+      if (
+        !READONLY_METHODS.includes(request.method.toUpperCase()) &&
+        result instanceof Response &&
+        result.status >= 400
+      ) {
+        throw result;
+      }
+      await requestContainer.finalizeSuccess();
+      return result;
     } catch (error: unknown) {
-      // FIXME: Do something here
-      throw new Error("");
+      await requestContainer.finalizeError();
+
+      if (result instanceof Response) {
+        return result;
+      }
+
+      throw error;
     }
   };

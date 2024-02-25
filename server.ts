@@ -1,6 +1,6 @@
 import { main } from "~/server/app";
+import { serverContainer } from "~/server/services";
 
 // Can use different containers based on environment at this point
 const root = __dirname;
-// FIXME: Fix this issue
-main(root, null);
+main(root, () => ({ container: serverContainer }));

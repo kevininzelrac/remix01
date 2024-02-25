@@ -1,15 +1,18 @@
-import { redirect, type ActionFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { z } from "zod";
 import mime from "mime-types";
 
 import { PAGES, WizardStep } from "~/constants";
+import { middleware } from "~/server/middleware";
+import { authGuard } from "~/server/permissions";
 
 const schema = z.object({
   fullName: z.string().trim(),
   avatar: z.instanceof(Blob),
 });
 
-export const action = async ({ request, context }: ActionFunctionArgs) => {
+export const action = middleware.build(async (args) => {
+  const { request, context } = args;
   const formData = await request.formData();
   const rawData = Object.fromEntries(formData.entries());
   const result = schema.safeParse(rawData);
@@ -17,10 +20,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     throw new Error("Invalid action.");
   }
 
-  const user = await context.sessionService.getAuthenticatedUser(request);
-  if (!user) {
-    return redirect(PAGES.SIGN_OUT);
-  }
+  const { user } = await authGuard(args);
 
   const { data } = result;
   const avatarExtension = mime.extension(data.avatar.type);
@@ -33,4 +33,4 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   });
 
   return redirect(PAGES.WIZARD(WizardStep.PLANS));
-};
+});

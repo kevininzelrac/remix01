@@ -1,6 +1,7 @@
-import { redirect, type ActionFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { z } from "zod";
 import { BadRequestError } from "~/server/errors";
+import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions";
 
 const schema = z.object({
@@ -9,7 +10,7 @@ const schema = z.object({
   cancelUrl: z.string().url(),
 });
 
-export const action: ActionFunction = async (args) => {
+export const action = middleware.build(async (args) => {
   const { context, request } = args;
   const formData = await request.formData();
   const rawData = Object.fromEntries(formData.entries());
@@ -28,4 +29,4 @@ export const action: ActionFunction = async (args) => {
   );
 
   return redirect(redirectUrl);
-};
+});
