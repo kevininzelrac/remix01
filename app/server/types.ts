@@ -5,9 +5,9 @@ export type Awaitable<T> = T | Promise<T>;
 
 export type DataFunctionValue<T> = Response | NonNullable<T> | null;
 
-export type RouteFunctionGeneric = <T>(
+export type RouteFunctionGeneric = (
   args: DataFunctionArgs,
-) => Awaitable<DataFunctionValue<T>>;
+) => Awaitable<DataFunctionValue<unknown>>;
 
 export type RouteFunction<T extends DataFunctionValue<unknown>> = (
   args: DataFunctionArgs,

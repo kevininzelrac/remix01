@@ -7,22 +7,22 @@ import type {
   RouteFunctionGeneric,
 } from "~/server/types";
 
-export type ProvideServerContextNext = <T>(
+export type ProvideServerContextNext = (
   args: Omit<DataFunctionArgs, "context"> & { context: ServerContext },
-) => Awaitable<DataFunctionValue<T>>;
+) => Awaitable<DataFunctionValue<unknown>>;
 
 const READONLY_METHODS = ["GET", "OPTIONS"];
 
 export const provideServerContext =
   (next: ProvideServerContextNext): RouteFunctionGeneric =>
-  async <T>(args: DataFunctionArgs) => {
+  async (args: DataFunctionArgs) => {
     const {
       request,
       context: { container },
     } = args;
 
     const requestContainer = container.createScope();
-    let result: DataFunctionValue<T> | undefined = undefined;
+    let result: DataFunctionValue<unknown> | undefined = undefined;
 
     try {
       await requestContainer.initialize();

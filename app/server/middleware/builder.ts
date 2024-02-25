@@ -1,9 +1,9 @@
-import type { RouteFunction } from "../types";
+import type { RouteFunction, RouteFunctionGeneric } from "../types";
 
-export class Builder<T extends (...args: any[]) => any> {
+export class Builder<T extends (args: any) => any = RouteFunctionGeneric> {
   constructor(private _middlewareList: any[] = []) {}
 
-  use<F extends (...args: any[]) => any>(
+  use<F extends (args: any) => any>(
     currentMiddleware: (next: F) => T,
   ): Builder<F> {
     return new Builder([currentMiddleware, ...this._middlewareList]);
