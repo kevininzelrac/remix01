@@ -1,5 +1,8 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunction } from "@remix-run/node";
+import { middleware } from "~/server/middleware";
 
-export const action = ({ request, context }: ActionFunctionArgs) => {
-  return context.sessionService.handleCredentialSignIn(request);
-};
+export const action: ActionFunction = middleware.build(
+  ({ request, context }) => {
+    return context.sessionService.handleCredentialSignIn(request);
+  },
+);

@@ -1,8 +1,12 @@
 /// <reference types="@remix-run/dev" />
 /// <reference types="@remix-run/node" />
 
-import type { ServerContext } from "~/server/interfaces";
+import "@remix-run/server-runtime";
+
+import type { Container } from "~/server/services/container.server";
 
 declare module "@remix-run/server-runtime" {
-  export interface AppLoadContext extends ServerContext {}
+  export interface AppLoadContext {
+    container: Container;
+  }
 }
