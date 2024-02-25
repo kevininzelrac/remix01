@@ -1,4 +1,3 @@
-import type { AsEnum } from "~/server/types";
 import type { WizardStep } from "./wizard";
 
 export const PAGES = {
@@ -9,5 +8,5 @@ export const PAGES = {
   AUTH_CALLBACK_API: (providerName: string) =>
     `/api/auth/callback/${providerName}`,
   HOME: "/",
-  WIZARD: (wizardStep: AsEnum<typeof WizardStep>) => `/h/wizard/${wizardStep}`,
+  WIZARD: (wizardStep: WizardStep) => `/h/wizard/${wizardStep}`,
 };

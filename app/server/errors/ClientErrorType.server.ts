@@ -1,3 +1,3 @@
-export const ClientErrorType = {
-  BAD_REQUEST: "BAD_REQUEST",
-} as const;
+export enum ClientErrorType {
+  BAD_REQUEST = "BAD_REQUEST",
+}

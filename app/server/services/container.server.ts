@@ -2,13 +2,12 @@ import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 
 import type { ServerContext } from "../interfaces";
-import type { AsEnum } from "../types";
 
-export const RegistrationLifetime = {
-  SCOPED: "SCOPED",
-  SINGLETON: "SINGLETON",
-  TRANSIENT: "TRANSIENT",
-} as const;
+export enum RegistrationLifetime {
+  SCOPED = "SCOPED",
+  SINGLETON = "SINGLETON",
+  TRANSIENT = "TRANSIENT",
+}
 
 export class Container {
   private _container: AwilixContainer<ServerContext>;
@@ -33,7 +32,7 @@ export class Container {
   register = <K extends keyof ServerContext>(
     name: K,
     factory: (context: ServerContext) => ServerContext[K],
-    lifetime: AsEnum<typeof RegistrationLifetime>,
+    lifetime: RegistrationLifetime,
   ): void => {
     let registration = awilix.asFunction(factory);
 

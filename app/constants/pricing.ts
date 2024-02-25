@@ -1,10 +1,10 @@
-export const Recurrence = {
-  YEARLY: "yearly",
-  MONTHLY: "monthly",
-  ONE_TIME: "one-time",
-} as const;
+export enum Recurrence {
+  YEARLY = "yearly",
+  MONTHLY = "monthly",
+  ONE_TIME = "one-time",
+}
 
-export const Plan = {
-  FREE: "free",
-  PRO: "pro",
-} as const;
+export enum Plan {
+  FREE = "free",
+  PRO = "pro",
+}

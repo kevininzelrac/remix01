@@ -1,7 +1,6 @@
 import { PAGES, WizardStep } from "~/constants";
 import type { ServerContext } from "../interfaces";
 import { redirect } from "@remix-run/node";
-import type { AsEnum } from "../types";
 
 export const authGuard = async (args: {
   context: ServerContext;
@@ -17,9 +16,9 @@ export const authGuard = async (args: {
   const url = new URL(request.url);
   if (
     user.wizardStep != WizardStep.COMPLETE &&
-    url.pathname !== PAGES.WIZARD(user.wizardStep as AsEnum<typeof WizardStep>)
+    url.pathname !== PAGES.WIZARD(user.wizardStep as WizardStep)
   ) {
-    throw redirect(PAGES.WIZARD(user.wizardStep as AsEnum<typeof WizardStep>));
+    throw redirect(PAGES.WIZARD(user.wizardStep as WizardStep));
   }
 
   return { user };
