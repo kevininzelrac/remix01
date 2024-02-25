@@ -1,9 +1,9 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { WizardStep } from "~/constants";
+import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions";
 
-export const loader = async (args: LoaderFunctionArgs) => {
+export const loader = middleware.build(async (args) => {
   const { user } = await authGuard(args);
 
   const { context } = args;
@@ -12,4 +12,4 @@ export const loader = async (args: LoaderFunctionArgs) => {
   return json({
     step: WizardStep.VERIFY,
   });
-};
+});

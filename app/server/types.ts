@@ -1,4 +1,5 @@
 import type { DataFunctionArgs } from "@remix-run/node";
+import type { HandledErrorBody } from "~/types";
 
 export type Awaitable<T> = T | Promise<T>;
 
@@ -8,6 +9,6 @@ export type RouteFunctionGeneric = <T>(
   args: DataFunctionArgs,
 ) => Awaitable<DataFunctionValue<T>>;
 
-export type RouteFunction<T> = (
+export type RouteFunction<T extends DataFunctionValue<unknown>> = (
   args: DataFunctionArgs,
-) => Awaitable<DataFunctionValue<T>>;
+) => Awaitable<{ data: T } | { error: HandledErrorBody }>;
