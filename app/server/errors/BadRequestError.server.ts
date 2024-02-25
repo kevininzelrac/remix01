@@ -19,7 +19,7 @@ export class BadRequestError extends ClientError {
   getData(): ClientErrorData {
     return {
       type: ClientErrorType.BAD_REQUEST,
-      messages: [],
+      messages: this.messages,
     };
   }
 }
