@@ -1,6 +1,5 @@
 import { ClientError } from "./ClientError.server";
-import { ClientErrorType } from "./ClientErrorType.server";
-import type { ClientErrorData } from "./types";
+import { ClientErrorType, type ClientErrorData } from "./types";
 
 export class BadRequestError extends ClientError {
   private messages: string[];

@@ -1,4 +1,6 @@
-import type { ClientErrorType } from "./ClientErrorType.server";
+export enum ClientErrorType {
+  BAD_REQUEST = "BAD_REQUEST",
+}
 
 export type BadRequestErrorData = {
   type: typeof ClientErrorType.BAD_REQUEST;
