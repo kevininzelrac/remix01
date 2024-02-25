@@ -16,7 +16,7 @@ export const provideServerContext =
   async (args: DataFunctionArgs) => {
     const { request } = args;
 
-    const requestContainer = serverContainer.createScope();
+    const requestContainer = serverContainer.createScope(request);
     let result: DataFunctionValue<unknown> | undefined = undefined;
 
     try {

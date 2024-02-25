@@ -9,6 +9,7 @@ import type { IDatabaseService } from "./IDatabaseService.server";
 import type { IProductService } from "./IProductService.server";
 
 export type ServerContext = {
+  request: Request;
   databaseService: IDatabaseService;
   clockService: IClockService;
   fileSystemService: IFileSystemService;

@@ -21,8 +21,10 @@ export class Container {
       });
   }
 
-  createScope = (): Container => {
-    return new Container(this._container.createScope());
+  createScope = (request: Request): Container => {
+    const scopedContainer = this._container.createScope();
+    scopedContainer.register({ request: awilix.asValue(request) });
+    return new Container(scopedContainer);
   };
 
   initialize = (): Promise<void> => {
