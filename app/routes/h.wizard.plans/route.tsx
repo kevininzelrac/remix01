@@ -7,7 +7,14 @@ export { action } from "./action.server";
 export { loader };
 
 export default function PlansPage() {
-  const { products, successUrl, cancelUrl } = useLoaderData<typeof loader>();
+  const response = useLoaderData<typeof loader>();
+  if (!response.success) {
+    throw new Error();
+  }
+
+  const {
+    data: { products, cancelUrl, successUrl },
+  } = response;
 
   return (
     <div className="w-full py-12 lg:py-24 xl:py-32">

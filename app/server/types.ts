@@ -9,8 +9,11 @@ export type RouteFunctionGeneric = (
   args: DataFunctionArgs,
 ) => Awaitable<DataFunctionValue<unknown>>;
 
-export type RouteFunction<T extends DataFunctionValue<unknown>> = (
+export type UnwrapAwaitable<T> = T extends Promise<infer U> ? U : T;
+
+export type RouteFunction<T extends Awaitable<DataFunctionValue<unknown>>> = (
   args: DataFunctionArgs,
 ) => Awaitable<
-  { success: true; data: T } | { success: false; error: ClientErrorData }
+  | { success: true; data: UnwrapAwaitable<T> }
+  | { success: false; error: ClientErrorData }
 >;
