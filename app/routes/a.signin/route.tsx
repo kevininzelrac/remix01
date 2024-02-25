@@ -12,6 +12,7 @@ export default function SignInPage() {
   const response = useActionData<typeof action>();
 
   if (
+    response &&
     !response?.success &&
     response?.error.type != ClientErrorType.BAD_REQUEST
   ) {
@@ -58,7 +59,7 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign In
           </Button>
-          {response.error?.messages.map((message) => (
+          {response?.error?.messages.map((message) => (
             <em key={message}>{message}</em>
           ))}
         </Form>
