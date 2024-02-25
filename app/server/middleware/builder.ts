@@ -1,4 +1,4 @@
-import type { RouteFunction, RouteFunctionGeneric } from "../types";
+import type { RouteFunction, RouteFunctionGeneric } from "./types";
 
 export class Builder<T extends (args: any) => any = RouteFunctionGeneric> {
   constructor(private _middlewareList: any[] = []) {}
