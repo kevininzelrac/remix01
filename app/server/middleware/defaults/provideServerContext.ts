@@ -3,6 +3,7 @@ import { ClientError } from "~/server/errors/ClientError.server";
 import type { ServerContext } from "~/server/interfaces";
 import type { DataFunctionValue, RouteFunctionGeneric } from "../types";
 import type { Awaitable } from "~/server/types";
+import { serverContainer } from "~/server/services";
 
 export type ProvideServerContextNext = (
   args: Omit<DataFunctionArgs, "context"> & { context: ServerContext },
@@ -13,12 +14,9 @@ const READONLY_METHODS = ["GET", "OPTIONS"];
 export const provideServerContext =
   (next: ProvideServerContextNext): RouteFunctionGeneric =>
   async (args: DataFunctionArgs) => {
-    const {
-      request,
-      context: { container },
-    } = args;
+    const { request } = args;
 
-    const requestContainer = container.createScope();
+    const requestContainer = serverContainer.createScope();
     let result: DataFunctionValue<unknown> | undefined = undefined;
 
     try {

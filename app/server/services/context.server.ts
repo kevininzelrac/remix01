@@ -9,58 +9,65 @@ import { getDatabaseService } from "./db/DatabaseService.server";
 import { Container, RegistrationLifetime } from "./container.server";
 import { getLocalProductService } from "./pricing";
 
-export const serverContainer = new Container();
+export const serverContainer = getServerContainer();
 
-serverContainer.register(
-  "clockService",
-  getClockService,
-  RegistrationLifetime.SINGLETON,
-);
+// Change the logic here to determine what container gets injected
+function getServerContainer(): Container {
+  const container = new Container();
 
-serverContainer.register(
-  "fileSystemService",
-  getLocalFileSystemService,
-  RegistrationLifetime.SINGLETON,
-);
+  container.register(
+    "clockService",
+    getClockService,
+    RegistrationLifetime.SINGLETON,
+  );
 
-serverContainer.register(
-  "loggerService",
-  getConsoleLoggerService,
-  RegistrationLifetime.SINGLETON,
-);
+  container.register(
+    "fileSystemService",
+    getLocalFileSystemService,
+    RegistrationLifetime.SINGLETON,
+  );
 
-serverContainer.register(
-  "mailService",
-  getLocalMailService,
-  RegistrationLifetime.SINGLETON,
-);
+  container.register(
+    "loggerService",
+    getConsoleLoggerService,
+    RegistrationLifetime.SINGLETON,
+  );
 
-serverContainer.register(
-  "oauthProviderFactoryService",
-  getOAuthProviderFactoryService,
-  RegistrationLifetime.SINGLETON,
-);
+  container.register(
+    "mailService",
+    getLocalMailService,
+    RegistrationLifetime.SINGLETON,
+  );
 
-serverContainer.register(
-  "databaseService",
-  getDatabaseService,
-  RegistrationLifetime.SCOPED,
-);
+  container.register(
+    "oauthProviderFactoryService",
+    getOAuthProviderFactoryService,
+    RegistrationLifetime.SINGLETON,
+  );
 
-serverContainer.register(
-  "sessionService",
-  getSessionService,
-  RegistrationLifetime.SCOPED,
-);
+  container.register(
+    "databaseService",
+    getDatabaseService,
+    RegistrationLifetime.SCOPED,
+  );
 
-serverContainer.register(
-  "userService",
-  getUserService,
-  RegistrationLifetime.SCOPED,
-);
+  container.register(
+    "sessionService",
+    getSessionService,
+    RegistrationLifetime.SCOPED,
+  );
 
-serverContainer.register(
-  "productService",
-  getLocalProductService,
-  RegistrationLifetime.SCOPED,
-);
+  container.register(
+    "userService",
+    getUserService,
+    RegistrationLifetime.SCOPED,
+  );
+
+  container.register(
+    "productService",
+    getLocalProductService,
+    RegistrationLifetime.SCOPED,
+  );
+
+  return container;
+}

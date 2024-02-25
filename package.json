@@ -2,8 +2,9 @@
   "name": "remix01",
   "private": true,
   "sideEffects": false,
+  "type": "module",
   "scripts": {
-    "dev": "remix dev -c \"tsx ./server.ts\"",
+    "dev": "remix dev -c 'node ./server.js'",
     "format": "eslint . --ext .ts,.tsx --fix",
     "lint": "eslint . --ext .ts,.tsx",
     "postinstall": "prisma generate",
