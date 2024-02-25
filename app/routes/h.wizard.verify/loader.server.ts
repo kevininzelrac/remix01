@@ -9,7 +9,7 @@ export const loader = middleware.build(async (args) => {
   const { context } = args;
   await context.sessionService.sendVerificationEmail(user);
 
-  return json({
+  return {
     step: WizardStep.VERIFY,
-  });
+  };
 });

@@ -41,6 +41,6 @@ export const action = middleware.build(async (args) => {
       }
     case RESEND_CODE:
       await context.sessionService.sendVerificationEmail(user);
-      return json({});
+      return {};
   }
 });
