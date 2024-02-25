@@ -11,4 +11,6 @@ export type RouteFunctionGeneric = <T>(
 
 export type RouteFunction<T extends DataFunctionValue<unknown>> = (
   args: DataFunctionArgs,
-) => Awaitable<{ data: T } | { error: ClientErrorData }>;
+) => Awaitable<
+  { success: true; data: T } | { success: false; error: ClientErrorData }
+>;

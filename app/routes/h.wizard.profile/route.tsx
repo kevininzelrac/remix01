@@ -19,7 +19,15 @@ export { loader };
 export { action } from "./action.server";
 
 export default function ProfilePage() {
-  const { user } = useLoaderData<typeof loader>();
+  const result = useLoaderData<typeof loader>();
+
+  if (!result.success) {
+    throw new Error();
+  }
+
+  const {
+    data: { user },
+  } = result;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

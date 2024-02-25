@@ -1,5 +1,3 @@
-import { json } from "@remix-run/node";
-
 import { PAGES, WizardStep } from "~/constants";
 import { middleware } from "~/server/middleware";
 
@@ -12,9 +10,9 @@ export const loader = middleware.build(async (args) => {
   const { context, request } = args;
   const productList = await context.productService.getProducts();
 
-  return json({
+  return {
     products: productList,
     successUrl: getFullUrlFromPath(request, PAGES.WIZARD(WizardStep.COMPLETE)),
     cancelUrl: getFullUrlFromPath(request, PAGES.WIZARD(WizardStep.PLANS)),
-  });
+  };
 });
