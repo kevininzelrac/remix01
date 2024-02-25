@@ -1,7 +1,7 @@
 import type { ClientErrorType } from "./ClientErrorType.server";
 
 export type BadRequestErrorData = {
-  type: ClientErrorType.BAD_REQUEST;
+  type: typeof ClientErrorType.BAD_REQUEST;
 };
 
 // If new client errors are needed, add them to this union
