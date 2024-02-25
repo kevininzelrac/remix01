@@ -25,6 +25,7 @@ import { PAGES } from "~/constants";
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "../mail/templates";
 import { BadRequestError } from "~/server/errors";
+import { redirect } from "@remix-run/node";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -120,10 +121,8 @@ export class SessionService implements ISessionService {
         sameSite: "strict",
       },
     );
-    return new Response(null, {
-      status: 302,
+    return redirect(url, {
       headers: {
-        Location: url,
         "Set-Cookie": stateCookie,
       },
     });
@@ -232,10 +231,8 @@ export class SessionService implements ISessionService {
       },
     );
 
-    return new Response(null, {
-      status: 302,
+    return redirect(PAGES.HOME, {
       headers: {
-        Location: PAGES.HOME,
         "Set-Cookie": authCookie,
       },
     });
@@ -251,10 +248,8 @@ export class SessionService implements ISessionService {
       sameSite: "strict",
     });
 
-    return new Response(null, {
-      status: 302,
+    return redirect(PAGES.SIGN_IN, {
       headers: {
-        Location: PAGES.SIGN_IN,
         "Set-Cookie": authCookie,
       },
     });

@@ -1,4 +1,5 @@
-import type { DataFunctionArgs } from "@remix-run/node";
+import { json, type DataFunctionArgs } from "@remix-run/node";
+import { ClientError } from "~/server/errors/ClientError.server";
 import type { ServerContext } from "~/server/interfaces";
 import type {
   Awaitable,
@@ -37,12 +38,27 @@ export const provideServerContext =
         throw result;
       }
       await requestContainer.finalizeSuccess();
-      return result;
+
+      if (result instanceof Response) {
+        return result;
+      } else {
+        return json({ data: result });
+      }
     } catch (error: unknown) {
       await requestContainer.finalizeError();
 
       if (result instanceof Response) {
         return result;
+      }
+
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error instanceof ClientError) {
+        return json({
+          error: error.getData(),
+        });
       }
 
       throw error;
