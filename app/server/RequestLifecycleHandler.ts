@@ -7,6 +7,8 @@ import type { ServerContext } from "./interfaces";
 import { serverContainer } from "./services";
 import type { Container } from "./services/container.server";
 
+const READONLY_METHODS = ["GET", "OPTIONS"];
+
 class RequestLifecycleHandler implements IRequestLifecycleHandler {
   private _container: Container;
 
@@ -26,7 +28,10 @@ class RequestLifecycleHandler implements IRequestLifecycleHandler {
   }
 
   finalize(response?: Response): Promise<void> {
-    if (!response || response.status >= 400) {
+    if (
+      !READONLY_METHODS.includes(this._request.method.toUpperCase()) &&
+      (!response || response.status >= 400)
+    ) {
       return this._container.finalizeError();
     }
     return this._container.finalizeSuccess();
