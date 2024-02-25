@@ -1,4 +1,4 @@
-import { redirect, json } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { z } from "zod";
 
 import { PAGES, WizardStep } from "~/constants";

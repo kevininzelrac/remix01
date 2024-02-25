@@ -2,17 +2,20 @@ import { Form, Link, useActionData } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
-import { ERROR_TYPES, PAGES } from "~/constants";
-import type { HandledError } from "~/types";
+import { PAGES } from "~/constants";
+import type { action } from "./action.server";
+import { ClientErrorType } from "~/server/errors/ClientErrorType.server";
 
 export { action } from "./action.server";
 
 export default function SignInPage() {
-  const data = useActionData<HandledError>();
+  const response = useActionData<typeof action>();
 
-  const error = data?.error;
-  if (error && error.type != ERROR_TYPES.BAD_REQUEST) {
-    throw new Error(`Unexpected BE error ${error.type}`);
+  if (
+    !response?.success &&
+    response?.error.type != ClientErrorType.BAD_REQUEST
+  ) {
+    throw new Error(`Unexpected BE error ${response?.error.type}`);
   }
 
   return (
@@ -55,7 +58,9 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign In
           </Button>
-          {error?.messages.map((message) => <em key={message}>{message}</em>)}
+          {response.error?.messages.map((message) => (
+            <em key={message}>{message}</em>
+          ))}
         </Form>
         <div className="space-y-4">
           <p className="text-center text-gray-500">Or sign in with</p>

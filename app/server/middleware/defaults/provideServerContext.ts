@@ -42,7 +42,7 @@ export const provideServerContext =
       if (result instanceof Response) {
         return result;
       } else {
-        return json({ data: result });
+        return json({ data: result, error: null });
       }
     } catch (error: unknown) {
       await requestContainer.finalizeError();
@@ -57,6 +57,7 @@ export const provideServerContext =
 
       if (error instanceof ClientError) {
         return json({
+          data: null,
           error: error.getData(),
         });
       }
