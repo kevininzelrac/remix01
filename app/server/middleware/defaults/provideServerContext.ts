@@ -1,7 +1,11 @@
-import { json, type DataFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { ClientError } from "~/server/errors/ClientError.server";
 import type { ServerContext } from "~/server/interfaces";
-import type { DataFunctionValue, RouteFunctionGeneric } from "../types";
+import type {
+  DataFunctionArgs,
+  DataFunctionValue,
+  RouteFunctionGeneric,
+} from "../types";
 import type { Awaitable } from "~/server/types";
 import { serverContainer } from "~/server/services";
 

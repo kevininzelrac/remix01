@@ -1,8 +1,10 @@
-import type { DataFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import type { ClientErrorData } from "../errors";
 import type { Awaitable, AwaitableType } from "../types";
 
 export type DataFunctionValue<T> = Response | NonNullable<T> | null;
+
+export type DataFunctionArgs = LoaderFunctionArgs & ActionFunctionArgs;
 
 export type RouteFunctionGeneric = (
   args: DataFunctionArgs,
