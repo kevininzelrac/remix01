@@ -18,29 +18,41 @@ import fs from "node:fs";
 import url from "node:url";
 
 import { NODE_ENV, PORT } from "~/server/constants.server";
-import { StandardError } from "~/server/errors/StandardError.server";
-import type { Container } from "~/server/services/container.server";
+import type { ServerContext } from "./interfaces";
 
-type RouteHandler = (
+type IRouteHandler = (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => Promise<void>;
 
-export async function main(root: string, serverContainer: Container) {
+export type IRequestLifecycleHandlerFactory = (
+  request: Request,
+) => IRequestLifecycleHandler;
+
+export type IRequestLifecycleHandler = {
+  initialize(): Promise<void>;
+  getContext(): ServerContext;
+  finalize(response?: Response): Promise<void>;
+};
+
+export async function main(
+  root: string,
+  requestLifecycleHandlerFactory: IRequestLifecycleHandlerFactory,
+) {
   const buildPath = path.join(root, "./build/index.js");
   const versionPath = path.join(root, "./build/version.txt");
 
   const initialBuild: ServerBuild = await import(buildPath);
 
-  let handler: RouteHandler;
+  let handler: IRouteHandler;
   if (NODE_ENV === "production") {
-    handler = getRequestHandler(initialBuild, serverContainer);
+    handler = getRequestHandler(initialBuild, requestLifecycleHandlerFactory);
   } else {
     handler = await getDevRequestHandler(
       buildPath,
       versionPath,
       initialBuild,
-      serverContainer,
+      requestLifecycleHandlerFactory,
     );
   }
 
@@ -123,41 +135,24 @@ export async function main(root: string, serverContainer: Container) {
  */
 function getRequestHandler(
   initialBuild: ServerBuild,
-  serverContainer: Container,
-): RouteHandler {
+  requestLifecycleHandlerFactory: IRequestLifecycleHandlerFactory,
+): IRouteHandler {
   const handleRequest = createRequestHandler(initialBuild, NODE_ENV);
 
   return async (req, reply) => {
     const request = createStandardRequest(req, reply);
-    const requestContainer = serverContainer.createScope();
+    const requestLifecycleHandler = requestLifecycleHandlerFactory(request);
     try {
-      await requestContainer.initialize();
+      await requestLifecycleHandler.initialize();
       const response = await handleRequest(
         request,
-        requestContainer.getContext(),
+        requestLifecycleHandler.getContext(),
       );
-      if (response.status >= 400) {
-        throw response;
-      }
-      await requestContainer.finalizeSuccess();
+      await requestLifecycleHandler.finalize(response);
       await sendStandardResponse(reply, response);
     } catch (error: unknown) {
-      let handledError = error;
-
-      await requestContainer.finalizeError();
-
-      if (handledError instanceof StandardError) {
-        // If a standard error is thrown, then it is intentional and the FE should handle it.
-        handledError.headers.set("X-Remix-Response", "yes");
-        handledError.headers.delete("X-Remix-Catch");
-      }
-
-      if (handledError instanceof Response) {
-        await sendStandardResponse(reply, handledError);
-        return;
-      }
-
-      throw handledError;
+      await requestLifecycleHandler.finalize();
+      throw error;
     }
   };
 }
@@ -166,9 +161,12 @@ async function getDevRequestHandler(
   buildPath: string,
   versionPath: string,
   initialBuild: ServerBuild,
-  serverContainer: Container,
-): Promise<RouteHandler> {
-  const handler = getRequestHandler(initialBuild, serverContainer);
+  requestLifecycleHandlerFactory: IRequestLifecycleHandlerFactory,
+): Promise<IRouteHandler> {
+  const handler = getRequestHandler(
+    initialBuild,
+    requestLifecycleHandlerFactory,
+  );
   let build = initialBuild;
 
   async function handleServerUpdate() {
