@@ -3,7 +3,7 @@ import type { ServerContext } from "~/server/interfaces";
 import type {
   Awaitable,
   DataFunctionValue,
-  RouteFunction,
+  RouteFunctionGeneric,
 } from "~/server/types";
 
 export type ProvideServerContextNext = <T>(
@@ -13,7 +13,7 @@ export type ProvideServerContextNext = <T>(
 const READONLY_METHODS = ["GET", "OPTIONS"];
 
 export const provideServerContext =
-  (next: ProvideServerContextNext): RouteFunction =>
+  (next: ProvideServerContextNext): RouteFunctionGeneric =>
   async <T>(args: DataFunctionArgs) => {
     const {
       request,
