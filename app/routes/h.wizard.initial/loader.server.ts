@@ -1,7 +1,7 @@
 import { redirect } from "@remix-run/node";
 import { PAGES, WizardStep } from "~/constants";
 import { middleware } from "~/server/middleware";
-import { authGuard } from "~/server/permissions";
+import { authGuard } from "~/server/permissions/authGuard.server";
 
 export const loader = middleware.build(async (args) => {
   const { user } = await authGuard(args);

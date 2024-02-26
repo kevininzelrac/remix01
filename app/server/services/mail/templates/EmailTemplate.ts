@@ -1,4 +1,4 @@
-import type { MailProps } from "~/server/interfaces";
+import type { MailProps } from "~/server/interfaces/IMailService.server";
 
 export abstract class EmailTemplate {
   abstract getSubject(): string;

@@ -7,7 +7,7 @@ import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-} from "~/server/interfaces";
+} from "~/server/interfaces/IOAuthProviderService.server";
 import { BASE_URL } from "~/server/constants.server";
 
 export class GithubOAuthProviderService implements IOAuthProviderService {

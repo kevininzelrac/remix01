@@ -1,7 +1,7 @@
 import { PAGES, WizardStep } from "~/constants";
 import { middleware } from "~/server/middleware";
 
-import { authGuard } from "~/server/permissions";
+import { authGuard } from "~/server/permissions/authGuard.server";
 import { getFullUrlFromPath } from "~/server/utils";
 
 export const loader = middleware.build(async (args) => {

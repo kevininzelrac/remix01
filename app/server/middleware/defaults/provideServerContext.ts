@@ -1,13 +1,15 @@
 import { json } from "@remix-run/node";
+
 import { ClientError } from "~/server/errors/ClientError.server";
-import type { ServerContext } from "~/server/interfaces";
+import type { ServerContext } from "~/server/interfaces/ServerContext.server";
+import type { Awaitable } from "~/server/types";
+import { serverContainer } from "~/server/services";
+
 import type {
   DataFunctionArgs,
   DataFunctionValue,
   RouteFunctionGeneric,
 } from "../types";
-import type { Awaitable } from "~/server/types";
-import { serverContainer } from "~/server/services";
 
 export type ProvideServerContextNext = (
   args: Omit<DataFunctionArgs, "context"> & { context: ServerContext },

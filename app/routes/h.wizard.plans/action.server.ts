@@ -1,8 +1,8 @@
 import { redirect } from "@remix-run/node";
 import { z } from "zod";
-import { BadRequestError } from "~/server/errors";
+import { BadRequestError } from "~/server/errors/BadRequestError.server";
 import { middleware } from "~/server/middleware";
-import { authGuard } from "~/server/permissions";
+import { authGuard } from "~/server/permissions/authGuard.server";
 
 const schema = z.object({
   productId: z.string(),

@@ -3,16 +3,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 
-import type {
-  IOAuthProviderFactoryService,
-  ISessionService,
-  IUserService,
-  IMailService,
-  IClockService,
-  ILoggerService,
-  ServerContext,
-  IDatabaseService,
-} from "~/server/interfaces";
+import type { IOAuthProviderFactoryService } from "~/server/interfaces/IOAuthProviderFactoryService.server";
+import type { ISessionService } from "~/server/interfaces/ISessionService.server";
+import type { IUserService } from "~/server/interfaces/IUserService.server";
+import type { IMailService } from "~/server/interfaces/IMailService.server";
+import type { IClockService } from "~/server/interfaces/IClockService.server";
+import type { ILoggerService } from "~/server/interfaces/ILoggerService.server";
+import type { ServerContext } from "~/server/interfaces/ServerContext.server";
+import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
+
 import type { User } from "~/server/db/interfaces.server";
 import {
   ACCESS_TOKEN_DURATION,
@@ -24,7 +23,7 @@ import {
 import { PAGES } from "~/constants";
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "../mail/templates";
-import { BadRequestError } from "~/server/errors";
+import { BadRequestError } from "~/server/errors/BadRequestError.server";
 import { redirect } from "@remix-run/node";
 
 const credentialSchema = z.object({

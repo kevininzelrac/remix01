@@ -1,4 +1,5 @@
-import type { ILoggerService, ServerContext } from "~/server/interfaces";
+import type { ILoggerService } from "~/server/interfaces/ILoggerService.server";
+import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 export class ConsoleLoggerService implements ILoggerService {
   debug(message: string, params?: object | undefined): void {

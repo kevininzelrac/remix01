@@ -1,15 +1,14 @@
 import { add } from "date-fns";
 
 import { Plan, Recurrence, WizardStep } from "~/constants";
-import { BadRequestError } from "~/server/errors";
-import type {
-  IClockService,
-  IDatabaseService,
-  IProductService,
-  IUserService,
-  ServerContext,
-} from "~/server/interfaces";
+import { BadRequestError } from "~/server/errors/BadRequestError.server";
+import type { IClockService } from "~/server/interfaces/IClockService.server";
+import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
+import type { IProductService } from "~/server/interfaces/IProductService.server";
+import type { IUserService } from "~/server/interfaces/IUserService.server";
+import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 import type { Product } from "~/types";
+
 export class LocalProductService implements IProductService {
   constructor(
     private _databaseService: IDatabaseService,

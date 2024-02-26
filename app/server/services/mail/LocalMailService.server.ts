@@ -6,11 +6,12 @@ import {
   GMAIL_SECRET,
   GMAIL_USER,
 } from "~/server/constants.server";
+
 import type {
   MailProps,
   IMailService,
-  ServerContext,
-} from "~/server/interfaces";
+} from "~/server/interfaces/IMailService.server";
+import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 export class LocalMailService implements IMailService {
   constructor(

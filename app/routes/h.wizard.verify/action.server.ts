@@ -4,7 +4,7 @@ import { z } from "zod";
 import { PAGES, WizardStep } from "~/constants";
 import { RESEND_CODE, SUBMIT_CODE } from "./constants";
 import { middleware } from "~/server/middleware";
-import { authGuard } from "~/server/permissions";
+import { authGuard } from "~/server/permissions/authGuard.server";
 
 const schema = z.union([
   z.object({

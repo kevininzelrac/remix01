@@ -1,7 +1,7 @@
 import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 
-import type { ServerContext } from "../interfaces";
+import type { ServerContext } from "../interfaces/ServerContext.server";
 
 export enum RegistrationLifetime {
   SCOPED = "SCOPED",

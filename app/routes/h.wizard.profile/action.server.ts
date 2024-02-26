@@ -4,7 +4,7 @@ import mime from "mime-types";
 
 import { PAGES, WizardStep } from "~/constants";
 import { middleware } from "~/server/middleware";
-import { authGuard } from "~/server/permissions";
+import { authGuard } from "~/server/permissions/authGuard.server";
 
 const schema = z.object({
   fullName: z.string().trim(),
