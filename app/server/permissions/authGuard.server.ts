@@ -3,12 +3,12 @@ import type { ServerContext } from "../interfaces/ServerContext.server";
 import { redirect } from "@remix-run/node";
 
 export const authGuard = async (args: {
-  context: ServerContext;
+  container: ServerContext;
   request: Request;
 }) => {
-  const { context, request } = args;
+  const { container, request } = args;
 
-  const user = await context.sessionService.getAuthenticatedUser(request);
+  const user = await container.sessionService.getAuthenticatedUser(request);
   if (!user) {
     throw redirect(PAGES.SIGN_OUT);
   }

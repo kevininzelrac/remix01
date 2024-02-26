@@ -10,8 +10,8 @@ export const loader = middleware.build(async (args) => {
     ? WizardStep.PROFILE
     : WizardStep.VERIFY;
 
-  const { context } = args;
-  await context.userService.updateUser(user.id, {
+  const { container } = args;
+  await container.userService.updateUser(user.id, {
     wizardStep: nextStep,
   });
 

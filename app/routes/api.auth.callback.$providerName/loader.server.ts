@@ -1,7 +1,7 @@
 import { middleware } from "~/server/middleware";
 
-export const loader = middleware.build(({ request, context, params }) => {
+export const loader = middleware.build(({ request, container, params }) => {
   const providerName = params.providerName;
   if (!providerName) throw new Error("No provider name found.");
-  return context.sessionService.handleOAuthResult(request, providerName);
+  return container.sessionService.handleOAuthResult(request, providerName);
 });

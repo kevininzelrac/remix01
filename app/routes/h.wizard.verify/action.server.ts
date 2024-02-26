@@ -17,7 +17,7 @@ const schema = z.union([
 ]);
 
 export const action = middleware.build(async (args) => {
-  const { request, context } = args;
+  const { request, container } = args;
 
   const formData = await request.formData();
   const rawData = Object.fromEntries(formData.entries());
@@ -31,8 +31,8 @@ export const action = middleware.build(async (args) => {
   const { data } = result;
   switch (data.type) {
     case SUBMIT_CODE:
-      if (await context.sessionService.verifyEmail(user, data.code)) {
-        await context.userService.updateUser(user.id, {
+      if (await container.sessionService.verifyEmail(user, data.code)) {
+        await container.userService.updateUser(user.id, {
           wizardStep: WizardStep.PROFILE,
         });
         return redirect(PAGES.WIZARD(WizardStep.PROFILE));
@@ -40,7 +40,7 @@ export const action = middleware.build(async (args) => {
         throw new Error("Invalid code.");
       }
     case RESEND_CODE:
-      await context.sessionService.sendVerificationEmail(user);
+      await container.sessionService.sendVerificationEmail(user);
       return {};
   }
 });

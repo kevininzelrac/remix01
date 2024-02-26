@@ -7,8 +7,8 @@ import { getFullUrlFromPath } from "~/server/utils";
 export const loader = middleware.build(async (args) => {
   await authGuard(args);
 
-  const { context, request } = args;
-  const productList = await context.productService.getProducts();
+  const { container, request } = args;
+  const productList = await container.productService.getProducts();
 
   return {
     products: productList,

@@ -5,8 +5,8 @@ import { authGuard } from "~/server/permissions/authGuard.server";
 export const loader = middleware.build(async (args) => {
   const { user } = await authGuard(args);
 
-  const { context } = args;
-  await context.sessionService.sendVerificationEmail(user);
+  const { container } = args;
+  await container.sessionService.sendVerificationEmail(user);
 
   return {
     step: WizardStep.VERIFY,

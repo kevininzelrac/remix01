@@ -12,7 +12,7 @@ const schema = z.object({
 });
 
 export const action = middleware.build(async (args) => {
-  const { request, context } = args;
+  const { request, container } = args;
   const formData = await request.formData();
   const rawData = Object.fromEntries(formData.entries());
   const result = schema.safeParse(rawData);
@@ -26,8 +26,8 @@ export const action = middleware.build(async (args) => {
   const avatarExtension = mime.extension(data.avatar.type);
   const avatarPath = `/avatars/${user.id}.${avatarExtension}`;
   const avatarBinaryData = await data.avatar.arrayBuffer();
-  await context.fileSystemService.saveFile(avatarPath, avatarBinaryData);
-  await context.userService.updateUser(user.id, {
+  await container.fileSystemService.saveFile(avatarPath, avatarBinaryData);
+  await container.userService.updateUser(user.id, {
     fullName: data.fullName,
     wizardStep: WizardStep.PLANS,
   });

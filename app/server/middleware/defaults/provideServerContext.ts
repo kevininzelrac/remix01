@@ -12,7 +12,7 @@ import type {
 } from "../types";
 
 export type ProvideServerContextNext = (
-  args: Omit<DataFunctionArgs, "context"> & { context: ServerContext },
+  args: DataFunctionArgs & { container: ServerContext },
 ) => Awaitable<DataFunctionValue<unknown>>;
 
 const READONLY_METHODS = ["GET", "OPTIONS"];
@@ -29,7 +29,7 @@ export const provideServerContext =
       await requestContainer.initialize();
       result = await next({
         ...args,
-        context: requestContainer.getContext(),
+        container: requestContainer.getContext(),
       });
       if (
         !READONLY_METHODS.includes(request.method.toUpperCase()) &&

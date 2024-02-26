@@ -11,7 +11,7 @@ const schema = z.object({
 });
 
 export const action = middleware.build(async (args) => {
-  const { context, request } = args;
+  const { container, request } = args;
   const formData = await request.formData();
   const rawData = Object.fromEntries(formData.entries());
   const result = schema.safeParse(rawData);
@@ -21,7 +21,7 @@ export const action = middleware.build(async (args) => {
 
   const { data } = result;
   const { user } = await authGuard(args);
-  const redirectUrl = await context.productService.getProductCheckoutPage(
+  const redirectUrl = await container.productService.getProductCheckoutPage(
     user.id,
     data.productId,
     data.successUrl,
