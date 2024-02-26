@@ -11,8 +11,12 @@ import type {
   RouteFunctionGeneric,
 } from "../types";
 
+export type DataFunctionArgsWithContainer = DataFunctionArgs & {
+  container: ServerContext;
+};
+
 export type ProvideServerContextNext = (
-  args: DataFunctionArgs & { container: ServerContext },
+  args: DataFunctionArgsWithContainer,
 ) => Awaitable<DataFunctionValue<unknown>>;
 
 const READONLY_METHODS = ["GET", "OPTIONS"];
