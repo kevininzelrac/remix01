@@ -67,6 +67,9 @@
       "env": {
         "jest": true,
         "jest/globals": true
+      },
+      "rules": {
+        "testing-library/no-await-sync-queries": "off"
       }
     }
   ]

@@ -1,6 +1,6 @@
 import { redirect } from "@remix-run/node";
 import { z } from "zod";
-import mime from "mime-types";
+import * as mime from "mime-types";
 
 import { PAGES, WizardStep } from "~/constants";
 import { middleware } from "~/server/middleware";

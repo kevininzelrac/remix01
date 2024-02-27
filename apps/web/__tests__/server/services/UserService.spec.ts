@@ -51,10 +51,13 @@ describe("UserService", () => {
   });
 
   describe("getByEmailPasswordCombination", () => {
+    // eslint-disable-next-line jest/expect-expect
     it("should return an existing user if the email/password combination matches", () => {});
 
+    // eslint-disable-next-line jest/expect-expect
     it("should return null if the user does not exist by email", () => {});
 
+    // eslint-disable-next-line jest/expect-expect
     it("should return null if the password does not match", () => {});
   });
 });

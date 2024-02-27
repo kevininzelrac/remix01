@@ -36,7 +36,9 @@ export default function SignInPage() {
       </div>
       <div className="w-full md:w-1/2 p-8 space-y-6">
         <div className="flex flex-row justify-end items-center gap-3 mb-10">
-          <p className="text-center text-gray-500">Don't have an account?</p>
+          <p className="text-center text-gray-500">
+            Don&apos;t have an account?
+          </p>
           <Link to={PAGES.SIGN_UP}>
             <Button className="!bg-green-500 text-white">Sign Up</Button>
           </Link>

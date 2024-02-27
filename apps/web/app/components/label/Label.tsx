@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
 
 export const Label = ({ className, ...props }: LabelProps) => (
