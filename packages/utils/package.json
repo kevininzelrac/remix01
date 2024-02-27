@@ -10,6 +10,9 @@
     "postinstall": "prisma generate",
     "typecheck": "tsc"
   },
+  "devDependencies": {
+    "@app/config": "*"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./constants": "./src/constants/index.ts"

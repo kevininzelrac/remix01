@@ -1,0 +1,8 @@
+{
+  "name": "@app/config",
+  "version": "1.0.0",
+  "exports": {
+    "./eslint/*.json": "./eslint/*.json",
+    "./typescript/*.json": "./typescript/*.json"
+  }
+}

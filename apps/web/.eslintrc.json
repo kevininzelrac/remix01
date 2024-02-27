@@ -1,5 +1,5 @@
 {
   "extends": [
-    "../../.eslintrc.json"
+    "@app/config/eslint/.eslintrc.json"
   ]
 }
