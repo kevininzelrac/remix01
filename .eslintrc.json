@@ -21,8 +21,11 @@
   ],
   "settings": {
     "import/resolver": {
-      "typescript": true,
-      "node": true
+      "typescript": {},
+      "node": {}
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     }
   },
   "rules": {
