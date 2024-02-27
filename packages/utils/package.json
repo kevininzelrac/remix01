@@ -1,12 +1,13 @@
 {
   "name": "@app/utils",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
   "scripts": {
     "build": "tsc",
-    "format": "eslint . --ext .ts,.tsx --max-warnings=0 --fix",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
+    "format": "eslint . --max-warnings=0 --fix",
+    "lint": "eslint . --max-warnings=0",
     "postinstall": "prisma generate",
     "typecheck": "tsc"
   },

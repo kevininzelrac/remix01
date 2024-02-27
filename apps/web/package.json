@@ -6,8 +6,8 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev",
-    "format": "eslint . --ext .ts,.tsx --max-warnings=0 --fix",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
+    "format": "eslint . --max-warnings=0 --fix",
+    "lint": "eslint . --max-warnings=0",
     "start": "remix-serve ./build/server/index.js",
     "test:env": "dotenv -e .env.test -- npx prisma migrate reset --force",
     "test:jest": "dotenv -e .env.test -- npx jest",

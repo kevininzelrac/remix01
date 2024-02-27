@@ -1,10 +1,13 @@
-{
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2020
-  },
-  "env": {
-    "node": true
+import typescriptParser from "@typescript-eslint/parser";
+import globals from "globals";
+
+export default {
+  languageOptions: {
+    parser: typescriptParser,
+    ecmaVersion: 2022,
+    globals: {
+      ...globals.node,
+    },
   },
   "plugins": [
     "@typescript-eslint"
@@ -73,4 +76,4 @@
       }
     }
   ]
-}
+};

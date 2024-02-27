@@ -1,8 +1,11 @@
 {
   "name": "@app/config",
   "version": "1.0.0",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
   "exports": {
-    "./eslint/*.json": "./eslint/*.json",
+    "./eslint/*": "./eslint/*.js",
     "./typescript/*.json": "./typescript/*.json"
   }
 }
