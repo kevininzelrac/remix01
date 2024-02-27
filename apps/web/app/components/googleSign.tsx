@@ -24,7 +24,7 @@ export default function GoogleSign({ clientId }: { clientId: string }) {
             type: "google",
             accessToken: credential,
           },
-          { method: "post", action: "/api/google" }
+          { method: "post", action: "/api/google" },
         );
       })
     : null;
