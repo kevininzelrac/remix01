@@ -4,7 +4,6 @@ import { readReplicas } from "@prisma/extension-read-replicas";
 import { READ_DB_URL } from "~/server/constants.server";
 import type { DatabaseClient } from "~/server/db/interfaces.server";
 import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 export class DatabaseService implements IDatabaseService {
   private _complete: boolean;
@@ -67,8 +66,8 @@ const prisma = new PrismaClient().$extends(
   readReplicas({
     url: READ_DB_URL,
   }),
-) as any as PrismaClient;
+) as unknown as PrismaClient;
 
-export const getDatabaseService = (context: ServerContext) => {
+export const getDatabaseService = () => {
   return new DatabaseService(prisma);
 };

@@ -1,6 +1,6 @@
 import { parseCookie, serializeCookie } from "lucia/utils";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 import { z } from "zod";
 
 import type { IOAuthProviderFactoryService } from "~/server/interfaces/IOAuthProviderFactoryService.server";
