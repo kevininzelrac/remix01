@@ -12,7 +12,7 @@ import type { ILoggerService } from "~/server/interfaces/ILoggerService.server";
 import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
 
-import type { User } from "~/server/db/interfaces.server";
+import type { User } from "@app/db";
 import {
   ACCESS_TOKEN_DURATION,
   ACCESS_TOKEN_SECRET,

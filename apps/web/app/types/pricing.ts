@@ -1,4 +1,4 @@
-import type { Plan, Recurrence } from "~/constants";
+import type { Plan, Recurrence } from "@app/utils/constants";
 
 export type Product = {
   id: string;

@@ -1,6 +1,6 @@
 import { add } from "date-fns";
 
-import { Plan, Recurrence, WizardStep } from "~/constants";
+import { Plan, Recurrence, WizardStep } from "@app/utils/constants";
 import { BadRequestError } from "~/server/errors/BadRequestError.server";
 import type { IClockService } from "~/server/interfaces/IClockService.server";
 import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";

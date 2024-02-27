@@ -1,5 +1,6 @@
-import { WizardStep } from "~/constants";
-import type { Credential, User } from "~/server/db/interfaces.server";
+import type { Credential, User } from "@app/db";
+import { WizardStep } from "@app/utils/constants";
+
 import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
 import type { IUserService } from "~/server/interfaces/IUserService.server";
 import type { ServerContext } from "~/server/interfaces/ServerContext.server";
