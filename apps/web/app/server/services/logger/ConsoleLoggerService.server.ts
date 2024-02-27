@@ -1,5 +1,4 @@
 import type { ILoggerService } from "~/server/interfaces/ILoggerService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 export class ConsoleLoggerService implements ILoggerService {
   debug(message: string, params?: object | undefined): void {
@@ -19,6 +18,6 @@ export class ConsoleLoggerService implements ILoggerService {
   }
 }
 
-export const getConsoleLoggerService = (context: ServerContext) => {
+export const getConsoleLoggerService = () => {
   return new ConsoleLoggerService();
 };

@@ -1,5 +1,4 @@
 import type { IClockService } from "~/server/interfaces/IClockService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 export class ClockService implements IClockService {
   getCurrentDateTime(): Date {
@@ -7,6 +6,6 @@ export class ClockService implements IClockService {
   }
 }
 
-export const getClockService = (context: ServerContext) => {
+export const getClockService = () => {
   return new ClockService();
 };

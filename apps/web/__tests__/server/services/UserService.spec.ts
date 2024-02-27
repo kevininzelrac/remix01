@@ -1,12 +1,11 @@
 import { database, clearDatabase } from "__tests__/utils/database";
-import { mockServerContext } from "__tests__/utils/mocks";
-import { UserService } from "~/server/services/UserService.server";
+import { UserService } from "~/server/services/models/UserService.server";
 
 describe("UserService", () => {
   let userService: UserService;
 
   beforeAll(() => {
-    userService = new UserService(database, mockServerContext.loggerService);
+    userService = new UserService(database);
   });
 
   beforeEach(async () => {

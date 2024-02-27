@@ -11,7 +11,6 @@ import type {
   MailProps,
   IMailService,
 } from "~/server/interfaces/IMailService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 export class LocalMailService implements IMailService {
   constructor(
@@ -39,6 +38,6 @@ const transport = createTransport({
   },
 });
 
-export const getLocalMailService = (context: ServerContext) => {
+export const getLocalMailService = () => {
   return new LocalMailService(transport, DEFAULT_MAIL_FROM);
 };

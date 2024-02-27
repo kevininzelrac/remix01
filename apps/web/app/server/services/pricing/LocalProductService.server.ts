@@ -25,7 +25,6 @@ export class LocalProductService implements IProductService {
     userId: string,
     productId: string,
     successUrl: string,
-    cancelUrl: string,
   ): Promise<string> => {
     // SKIP CHECKOUT
     const product = this._getProductById(productId);

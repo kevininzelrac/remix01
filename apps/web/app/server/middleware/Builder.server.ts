@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RouteFunction, RouteFunctionGeneric } from "./types";
 
 export class Builder<T extends (args: any) => any = RouteFunctionGeneric> {

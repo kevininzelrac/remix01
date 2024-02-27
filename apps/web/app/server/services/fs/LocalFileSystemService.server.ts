@@ -1,5 +1,4 @@
 import type { IFileSystemService } from "~/server/interfaces/IFileSystemService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
 
 import fs from "fs";
 import path from "path";
@@ -30,6 +29,6 @@ export class LocalFileSystemService implements IFileSystemService {
   }
 }
 
-export const getLocalFileSystemService = (context: ServerContext) => {
+export const getLocalFileSystemService = () => {
   return new LocalFileSystemService("./.data");
 };
