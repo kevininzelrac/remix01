@@ -4,8 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "format": "eslint . --ext .ts,.tsx --max-warnings=0 --fix",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
+    "postinstall": "prisma generate",
+    "typecheck": "tsc"
   },
-  "author": "",
-  "license": "ISC"
+  "exports": {
+    ".": "./src/index.ts",
+    "./constants": "./src/constants/index.ts"
+  }
 }

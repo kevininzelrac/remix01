@@ -19,6 +19,6 @@
   },
   "prisma": {
     "schema": "schema/schema.prisma",
-    "seed": "tsx seed.ts"
+    "seed": "tsx seeds/index.ts"
   }
 }

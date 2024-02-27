@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { WizardStep } from "~/constants";
+import { WizardStep } from "@app/utils/constants";
 
 const prisma = new PrismaClient();
 
