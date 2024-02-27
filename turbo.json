@@ -6,6 +6,7 @@
       "persistent": true
     },
     "lint": {},
-    "format": {}
+    "format": {},
+    "typecheck": {}
   }
 }

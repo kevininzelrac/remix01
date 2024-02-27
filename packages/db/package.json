@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "prisma generate"
+    "format": "eslint . --ext .ts,.tsx --max-warnings=0 --fix",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
+    "postinstall": "prisma generate",
+    "typecheck": "tsc"
   },
   "dependencies": {
+    "@app/utils": "*",
     "@prisma/client": "^5.6.0",
     "@prisma/extension-read-replicas": "^0.3.0"
   },
