@@ -1,6 +1,7 @@
-import { PAGES, WizardStep } from "~/constants";
-import { middleware } from "~/server/middleware";
+import { WizardStep } from "@app/utils/constants";
 
+import { PAGES } from "~/constants";
+import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
 import { getFullUrlFromPath } from "~/server/utils";
 

@@ -1,4 +1,4 @@
-import type { WizardStep } from "@app/utils";
+import type { WizardStep } from "@app/utils/constants";
 
 export const PAGES = {
   SIGN_IN: "/a/signin",

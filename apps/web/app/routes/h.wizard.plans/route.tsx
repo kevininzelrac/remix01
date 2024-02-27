@@ -1,7 +1,7 @@
+import { Recurrence } from "@app/utils/constants";
 import { Form, useLoaderData } from "@remix-run/react";
 
 import { loader } from "./loader.server";
-import { Recurrence } from "~/constants";
 
 export { action } from "./action.server";
 export { loader };

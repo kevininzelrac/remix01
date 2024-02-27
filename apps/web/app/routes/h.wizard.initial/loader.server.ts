@@ -1,5 +1,7 @@
+import { WizardStep } from "@app/utils/constants";
 import { redirect } from "@remix-run/node";
-import { PAGES, WizardStep } from "~/constants";
+
+import { PAGES } from "~/constants";
 import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
 

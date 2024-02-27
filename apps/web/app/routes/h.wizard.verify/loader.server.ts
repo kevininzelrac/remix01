@@ -1,4 +1,4 @@
-import { WizardStep } from "~/constants";
+import { WizardStep } from "@app/utils/constants";
 import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
 
