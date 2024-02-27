@@ -8,14 +8,9 @@
     "jsx": "react-jsx",
     "target": "ES2022",
     "strict": true,
-    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "paths": {
-      "~/*": ["./app/*"]
-    },
 
     // Remix takes care of building everything in `remix build`.
     "noEmit": true
