@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-import { readReplicas } from "@prisma/extension-read-replicas";
+import { DatabaseClient, PrismaClient, getClient } from "@app/db";
 
 import { READ_DB_URL } from "~/server/constants.server";
-import type { DatabaseClient } from "~/server/db/interfaces.server";
 import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
 
 export class DatabaseService implements IDatabaseService {
@@ -62,11 +60,7 @@ export class DatabaseService implements IDatabaseService {
   };
 }
 
-const prisma = new PrismaClient().$extends(
-  readReplicas({
-    url: READ_DB_URL,
-  }),
-) as unknown as PrismaClient;
+const prisma = getClient(READ_DB_URL);
 
 export const getDatabaseService = () => {
   return new DatabaseService(prisma);
