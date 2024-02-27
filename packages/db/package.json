@@ -20,5 +20,8 @@
   "prisma": {
     "schema": "schema/schema.prisma",
     "seed": "tsx seeds/index.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
   }
 }
