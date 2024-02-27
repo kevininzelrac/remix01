@@ -10,6 +10,7 @@ Recommended settings:
     "eslint.workingDirectories": [
         {"pattern": "./apps/*/"},
         {"pattern": "./packages/*/"}
-    ]
+    ],
+    "eslint.experimental.useFlatConfig": true
 }
 ```
