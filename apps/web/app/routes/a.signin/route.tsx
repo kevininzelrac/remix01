@@ -1,10 +1,10 @@
+import { ClientErrorType } from "@app/utils/errors";
 import { Form, Link, useActionData } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
 import { PAGES } from "~/constants";
 import type { action } from "./action.server";
-import { ClientErrorType } from "~/server/errors/types";
 
 export { action } from "./action.server";
 

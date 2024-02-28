@@ -1,5 +1,5 @@
 import { middleware } from "~/server/middleware";
-import type { DataFunctionArgsWithContainer } from "~/server/middleware/defaults/provideServerContext";
+import type { DataFunctionArgsWithContainer } from "~/server/middleware/defaults/provideServerContext.server";
 
 import { authGuard } from "~/server/permissions/authGuard.server";
 

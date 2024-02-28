@@ -1,8 +1,8 @@
+import { ClientError } from "@app/utils/errors";
 import type { Awaitable } from "@app/utils/types";
 import type { ServerContext } from "@app/services/types/ServerContext";
 import { json } from "@remix-run/node";
 
-import { ClientError } from "~/server/errors/ClientError.server";
 import { serverContainer } from "~/server/context.server";
 
 import type {

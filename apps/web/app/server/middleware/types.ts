@@ -1,7 +1,7 @@
+import type { ClientErrorData } from "@app/utils/errors";
 import type { Awaitable, AwaitableType } from "@app/utils/types";
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import type { ClientErrorData } from "../errors/types";
 
 export type DataFunctionValue<T> = Response | NonNullable<T> | null;
 
