@@ -105,7 +105,7 @@ export class Container<ContextType extends ServerContext | never = never> {
 
   finalizeSuccess = async (): Promise<void> => {
     await Promise.all(
-      this._onInitializeHooks.map((callback) =>
+      this._onFinalizeSuccessHooks.map((callback) =>
         callback(this._container.cradle),
       ),
     );
@@ -114,7 +114,7 @@ export class Container<ContextType extends ServerContext | never = never> {
 
   finalizeError = async (): Promise<void> => {
     await Promise.all(
-      this._onInitializeHooks.map((callback) =>
+      this._onFinalizeErrorHooks.map((callback) =>
         callback(this._container.cradle),
       ),
     );
