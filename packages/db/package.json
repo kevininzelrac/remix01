@@ -10,6 +10,7 @@
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "migrate:dev": "npm run build:schema && prisma migrate dev",
+    "migrate:reset": "prisma migrate reset --force",
     "postinstall": "npm run build",
     "typecheck": "tsc"
   },

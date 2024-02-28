@@ -8,6 +8,7 @@
     },
     "lint": {},
     "format": {},
+    "migrate:reset": {},
     "typecheck": {}
   }
 }
