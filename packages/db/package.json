@@ -5,7 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:schema && tsc --noEmit false",
+    "build": "npm run build:schema && tsc --noEmit false && tsc-alias",
     "build:schema": "prisma-import --force && prisma generate",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",

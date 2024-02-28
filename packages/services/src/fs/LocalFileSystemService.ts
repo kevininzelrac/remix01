@@ -1,7 +1,7 @@
 import type { IFileSystemService } from "~/types/IFileSystemService";
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 export class LocalFileSystemService implements IFileSystemService {
   constructor(private _basePath: string) {}
