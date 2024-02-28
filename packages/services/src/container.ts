@@ -1,3 +1,4 @@
+import type { Awaitable } from "@app/utils/types";
 import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 
@@ -10,12 +11,24 @@ export enum RegistrationLifetime {
   TRANSIENT = "TRANSIENT",
 }
 
+export type RegistrationHooks = {
+  onInitialize: (context: ServerContext) => Awaitable<void>;
+  onFinalizeSuccess: (context: ServerContext) => Awaitable<void>;
+  onFinalizeError: (context: ServerContext) => Awaitable<void>;
+};
+
 export class Container<ContextType extends ServerContext | never = never> {
   private _root: boolean;
   private _container: AwilixContainer<ServerContext>;
 
-  constructor(_container?: AwilixContainer<ServerContext>) {
+  constructor(
+    _container?: AwilixContainer<ServerContext>,
+    private _onInitializeHooks: RegistrationHooks["onInitialize"][] = [],
+    private _onFinalizeSuccessHooks: RegistrationHooks["onFinalizeSuccess"][] = [],
+    private _onFinalizeErrorHooks: RegistrationHooks["onFinalizeError"][] = [],
+  ) {
     this._root = _container === undefined;
+
     this._container =
       _container ??
       awilix.createContainer<ServerContext>({
@@ -25,7 +38,12 @@ export class Container<ContextType extends ServerContext | never = never> {
   }
 
   createScope = (request: Request | null = null): Container<ServerContext> => {
-    const scopedContainer = new Container(this._container.createScope());
+    const scopedContainer = new Container(
+      this._container.createScope(),
+      this._onInitializeHooks,
+      this._onFinalizeSuccessHooks,
+      this._onFinalizeErrorHooks,
+    );
 
     scopedContainer.register(
       "requestService",
@@ -36,14 +54,19 @@ export class Container<ContextType extends ServerContext | never = never> {
     return scopedContainer;
   };
 
-  initialize = (): Promise<void> => {
-    return this._container.cradle.databaseService.begin();
+  initialize = async (): Promise<void> => {
+    await Promise.all(
+      this._onInitializeHooks.map((callback) =>
+        callback(this._container.cradle),
+      ),
+    );
   };
 
   register = <K extends keyof ServerContext>(
     name: K,
     factory: (context: ServerContext) => ServerContext[K],
     lifetime: RegistrationLifetime,
+    hooks?: RegistrationHooks,
   ): void => {
     let registration = awilix.asFunction(factory);
 
@@ -60,6 +83,16 @@ export class Container<ContextType extends ServerContext | never = never> {
     this._container.register({
       [name]: registration,
     });
+
+    if (hooks && hooks.onInitialize) {
+      this._onInitializeHooks.push(hooks.onInitialize);
+    }
+    if (hooks && hooks.onFinalizeSuccess) {
+      this._onInitializeHooks.push(hooks.onFinalizeSuccess);
+    }
+    if (hooks && hooks.onFinalizeError) {
+      this._onInitializeHooks.push(hooks.onFinalizeError);
+    }
   };
 
   getContext = (): ContextType => {
@@ -70,12 +103,20 @@ export class Container<ContextType extends ServerContext | never = never> {
   };
 
   finalizeSuccess = async (): Promise<void> => {
-    await this._container.cradle.databaseService.commit();
+    await Promise.all(
+      this._onInitializeHooks.map((callback) =>
+        callback(this._container.cradle),
+      ),
+    );
     this._container.dispose();
   };
 
   finalizeError = async (): Promise<void> => {
-    await this._container.cradle.databaseService.rollback();
+    await Promise.all(
+      this._onInitializeHooks.map((callback) =>
+        callback(this._container.cradle),
+      ),
+    );
     this._container.dispose();
   };
 }

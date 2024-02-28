@@ -54,24 +54,3 @@ export const GOOGLE_CLIENT_SECRET = data.GOOGLE_CLIENT_SECRET;
 export const DEFAULT_MAIL_FROM = data.DEFAULT_MAIL_FROM;
 export const GMAIL_USER = data.GMAIL_USER;
 export const GMAIL_SECRET = data.GMAIL_SECRET;
-
-// FIXME: CLEAN THIS
-export const MAIL_HOST = "smtp.gmail.com";
-/*
-new URL(
-        PAGES.AUTH_CALLBACK_API(_providerName),
-        BASE_URL,
-      ).toString()
-
-{
-        httpOnly: true,
-        secure: NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60,
-        sameSite: "strict",
-      }
-
-_getAuthCookieName(): string {
-    return "webapp_auth";
-  }
-*/

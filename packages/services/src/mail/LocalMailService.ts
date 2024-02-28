@@ -22,14 +22,14 @@ export class LocalMailService implements IMailService {
 export type LocalMailServiceOptions = {
   host: string;
   user: string;
-  password: string;
+  secret: string;
   from: string;
 };
 
 export const getLocalMailService = ({
   host,
   user,
-  password,
+  secret,
   from,
 }: LocalMailServiceOptions) => {
   const transport = createTransport({
@@ -38,7 +38,7 @@ export const getLocalMailService = ({
     secure: true,
     auth: {
       user,
-      pass: password,
+      pass: secret,
     },
   });
   return () => {

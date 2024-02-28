@@ -1,9 +1,9 @@
+import type { Awaitable } from "@app/utils/types";
+import type { ServerContext } from "@app/services/types/ServerContext";
 import { json } from "@remix-run/node";
 
 import { ClientError } from "~/server/errors/ClientError.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
-import type { Awaitable } from "~/server/types";
-import { serverContainer } from "~/server/services";
+import { serverContainer } from "~/server/context.server";
 
 import type {
   DataFunctionArgs,

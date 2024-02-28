@@ -112,13 +112,13 @@ const productList: Product[] = [
   },
 ];
 
-export const getLocalProductService = (
-  context: ServerContext,
-): LocalProductService => {
-  return new LocalProductService(
-    context.databaseService,
-    context.userService,
-    context.clockService,
-    productList,
-  );
-};
+export const getLocalProductService =
+  () =>
+  (context: ServerContext): LocalProductService => {
+    return new LocalProductService(
+      context.databaseService,
+      context.userService,
+      context.clockService,
+      productList,
+    );
+  };

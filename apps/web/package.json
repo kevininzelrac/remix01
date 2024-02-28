@@ -15,7 +15,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@app/db": "*",
+    "@app/services": "*",
     "@app/utils": "*",
     "@remix-run/node": "^2.7.2",
     "@remix-run/react": "^2.7.2",

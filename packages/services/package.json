@@ -27,6 +27,6 @@
     "@types/nodemailer": "^6.4.14"
   },
   "exports": {
-    ".": "./src/index.ts"
+    "./*": "./src/*.ts"
   }
 }
