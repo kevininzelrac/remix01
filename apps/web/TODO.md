@@ -12,3 +12,4 @@ We are also missing the following features:
 - Add an authorization service (???)
 - Add an admin interface using refine.dev
 - Validate and Deploy app using Github actions
+- Add background workers
