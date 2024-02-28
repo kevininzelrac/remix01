@@ -1,4 +1,4 @@
-import { AssertionError } from "@app/utils/errors/AssertionError";
+import { AssertionError } from "@app/utils/errors";
 import { middleware } from "~/server/middleware";
 
 export const loader = middleware.build(({ request, container, params }) => {

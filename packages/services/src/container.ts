@@ -4,7 +4,7 @@ import * as awilix from "awilix";
 
 import type { ServerContext } from "./types/ServerContext";
 import { getRequestService } from "./request/RequestService";
-import { AssertionError } from "@app/utils/errors/AssertionError";
+import { AssertionError } from "@app/utils/errors";
 
 export enum RegistrationLifetime {
   SCOPED = "SCOPED",

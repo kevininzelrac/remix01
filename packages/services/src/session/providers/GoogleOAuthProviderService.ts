@@ -7,7 +7,7 @@ import type {
   OAuthResult,
   IOAuthProviderService,
 } from "~/types/IOAuthProviderService";
-import { NotAuthenticatedError } from "@app/utils/errors/NotAuthenticatedError";
+import { NotAuthenticatedError } from "@app/utils/errors";
 
 export class GoogleOAuthProviderService implements IOAuthProviderService {
   private _provider: GoogleAuth;

@@ -1,5 +1,5 @@
 import { DatabaseClient, PrismaClient, getClient } from "@app/db";
-import { AssertionError } from "@app/utils/errors/AssertionError";
+import { AssertionError } from "@app/utils/errors";
 
 import type { IDatabaseService } from "~/types/IDatabaseService";
 

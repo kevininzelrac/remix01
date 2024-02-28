@@ -8,7 +8,7 @@ import type { IOAuthProviderService } from "~/types/IOAuthProviderService";
 import { FacebookOAuthProviderService } from "./providers/FacebookOAuthProviderService";
 import { GithubOAuthProviderService } from "./providers/GithubOAuthProviderService";
 import { GoogleOAuthProviderService } from "./providers/GoogleOAuthProviderService";
-import { AssertionError } from "@app/utils/errors/AssertionError";
+import { AssertionError } from "@app/utils/errors";
 
 const adapter = {
   async getSession(): Promise<void> {},

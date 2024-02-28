@@ -14,7 +14,7 @@ import {
 } from "~/components";
 
 import { loader } from "./loader.server";
-import { AssertionError } from "@app/utils/errors/AssertionError";
+import { AssertionError } from "@app/utils/errors";
 
 export { loader };
 export { action } from "./action.server";

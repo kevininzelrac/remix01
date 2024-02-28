@@ -2,7 +2,7 @@ import { Recurrence } from "@app/utils/constants";
 import { Form, useLoaderData } from "@remix-run/react";
 
 import { loader } from "./loader.server";
-import { AssertionError } from "@app/utils/errors/AssertionError";
+import { AssertionError } from "@app/utils/errors";
 
 export { action } from "./action.server";
 export { loader };
