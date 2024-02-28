@@ -66,5 +66,8 @@ export default tseslint.config(
       "testing-library/no-await-sync-queries": "off"
     },
   },
+  {
+    ignores: ["**/dist/**/*"]
+  },
   eslintPluginPrettier
 );

@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "bundle": "remix vite:build",
+    "build": "remix vite:build",
     "dev": "remix vite:dev",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
