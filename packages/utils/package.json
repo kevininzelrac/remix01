@@ -5,9 +5,10 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "build": "tsc --noEmit false",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "tsc --noEmit false",
+    "postinstall": "npm run build",
     "typecheck": "tsc"
   },
   "devDependencies": {

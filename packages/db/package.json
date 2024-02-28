@@ -5,9 +5,12 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "build": "npm run build:schema && tsc --noEmit false",
+    "build:schema": "prisma-import --force && prisma generate",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "tsc --noEmit false",
+    "migrate:dev": "npm run build:schema && prisma migrate dev",
+    "postinstall": "npm run build",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -24,7 +27,8 @@
     "import": {
       "schemas": "schema/models/**/*.prisma",
       "output": "schema/schema.prisma"
-    }
+    },
+    "schema": "schema/schema.prisma"
   },
   "exports": {
     ".": {
