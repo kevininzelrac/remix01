@@ -11,3 +11,4 @@ We are also missing the following features:
 - Add tests for all things we are adding.
 - Add an authorization service (???)
 - Add an admin interface using refine.dev
+- Validate and Deploy app using Github actions
