@@ -1,6 +1,6 @@
 {
   "extends": "@app/config/typescript/tsconfig.json",
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts"],
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
