@@ -55,14 +55,6 @@ export class Container<ContextType extends ServerContext | never = never> {
     return scopedContainer;
   };
 
-  initialize = async (): Promise<void> => {
-    await Promise.all(
-      this._onInitializeHooks.map((callback) =>
-        callback(this._container.cradle),
-      ),
-    );
-  };
-
   register = <K extends keyof ServerContext>(
     name: K,
     factory: (context: ServerContext) => ServerContext[K],
@@ -89,10 +81,10 @@ export class Container<ContextType extends ServerContext | never = never> {
       this._onInitializeHooks.push(hooks.onInitialize);
     }
     if (hooks && hooks.onFinalizeSuccess) {
-      this._onInitializeHooks.push(hooks.onFinalizeSuccess);
+      this._onFinalizeSuccessHooks.push(hooks.onFinalizeSuccess);
     }
     if (hooks && hooks.onFinalizeError) {
-      this._onInitializeHooks.push(hooks.onFinalizeError);
+      this._onFinalizeErrorHooks.push(hooks.onFinalizeError);
     }
   };
 
@@ -101,6 +93,14 @@ export class Container<ContextType extends ServerContext | never = never> {
       throw new AssertionError("Can only return context of scoped container");
     }
     return this._container.cradle as unknown as ContextType;
+  };
+
+  initialize = async (): Promise<void> => {
+    await Promise.all(
+      this._onInitializeHooks.map((callback) =>
+        callback(this._container.cradle),
+      ),
+    );
   };
 
   finalizeSuccess = async (): Promise<void> => {
