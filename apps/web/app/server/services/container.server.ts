@@ -2,6 +2,7 @@ import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 
 import type { ServerContext } from "../interfaces/ServerContext.server";
+import { getRequestService } from "./request/RequestService";
 
 export enum RegistrationLifetime {
   SCOPED = "SCOPED",
@@ -10,9 +11,11 @@ export enum RegistrationLifetime {
 }
 
 export class Container {
+  private _root: boolean;
   private _container: AwilixContainer<ServerContext>;
 
   constructor(_container?: AwilixContainer<ServerContext>) {
+    this._root = _container === undefined;
     this._container =
       _container ??
       awilix.createContainer<ServerContext>({
@@ -21,10 +24,16 @@ export class Container {
       });
   }
 
-  createScope = (request: Request): Container => {
-    const scopedContainer = this._container.createScope();
-    scopedContainer.register({ request: awilix.asValue(request) });
-    return new Container(scopedContainer);
+  createScope = (request: Request | null = null): Container => {
+    const scopedContainer = new Container(this._container.createScope());
+
+    scopedContainer.register(
+      "requestService",
+      getRequestService(request),
+      RegistrationLifetime.SCOPED,
+    );
+
+    return scopedContainer;
   };
 
   initialize = (): Promise<void> => {
@@ -54,6 +63,9 @@ export class Container {
   };
 
   getContext = (): ServerContext => {
+    if (this._root) {
+      throw new Error("Can only return context of scoped container");
+    }
     return this._container.cradle;
   };
 

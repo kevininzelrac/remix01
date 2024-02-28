@@ -7,9 +7,10 @@ import type { IClockService } from "./IClockService.server";
 import type { IFileSystemService } from "./IFileSystemService.server";
 import type { IDatabaseService } from "./IDatabaseService.server";
 import type { IProductService } from "./IProductService.server";
+import type { IRequestService } from "./IRequestService.server";
 
 export type ServerContext = {
-  request: Request;
+  requestService: IRequestService;
   databaseService: IDatabaseService;
   clockService: IClockService;
   fileSystemService: IFileSystemService;
