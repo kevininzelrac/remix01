@@ -1,4 +1,5 @@
 import { DatabaseClient, PrismaClient, getClient } from "@app/db";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 import type { IDatabaseService } from "~/types/IDatabaseService";
 
@@ -43,7 +44,7 @@ export class DatabaseService implements IDatabaseService {
   commit = async (): Promise<void> => {
     if (this._complete) return;
     if (this._waiter === null || this._commit === null) {
-      throw new Error("Commit occurs before transaction begins.");
+      throw new AssertionError("Commit occurs before transaction begins.");
     }
     this._commit();
     return this._waiter;
@@ -52,7 +53,7 @@ export class DatabaseService implements IDatabaseService {
   rollback = async (): Promise<void> => {
     if (this._complete) return;
     if (this._waiter === null || this._rollback === null) {
-      throw new Error("Rollback occurs before transaction begins.");
+      throw new AssertionError("Rollback occurs before transaction begins.");
     }
     this._rollback();
     return this._waiter.catch(() => {});

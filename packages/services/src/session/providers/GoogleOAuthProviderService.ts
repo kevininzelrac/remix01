@@ -7,6 +7,7 @@ import type {
   OAuthResult,
   IOAuthProviderService,
 } from "~/types/IOAuthProviderService";
+import { NotAuthenticatedError } from "@app/utils/errors/NotAuthenticatedError";
 
 export class GoogleOAuthProviderService implements IOAuthProviderService {
   private _provider: GoogleAuth;
@@ -36,7 +37,9 @@ export class GoogleOAuthProviderService implements IOAuthProviderService {
   async getOAuthResult(code: string): Promise<OAuthResult<GoogleUser>> {
     const { googleUser } = await this._provider.validateCallback(code);
     if (!googleUser.email) {
-      throw new Error("Could not link account. Email not provider.");
+      throw new NotAuthenticatedError(
+        "Could not link account. Email not provided.",
+      );
     }
     return {
       user: {

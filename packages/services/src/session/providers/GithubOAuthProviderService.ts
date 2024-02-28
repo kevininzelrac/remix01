@@ -7,6 +7,7 @@ import type {
   OAuthResult,
   IOAuthProviderService,
 } from "~/types/IOAuthProviderService";
+import { NotAuthenticatedError } from "@app/utils/errors/NotAuthenticatedError";
 
 export class GithubOAuthProviderService implements IOAuthProviderService {
   private _provider: GithubAuth;
@@ -36,7 +37,9 @@ export class GithubOAuthProviderService implements IOAuthProviderService {
   async getOAuthResult(code: string): Promise<OAuthResult<GithubUser>> {
     const { githubUser } = await this._provider.validateCallback(code);
     if (!githubUser.email) {
-      throw new Error("Could not link account. Email not provider.");
+      throw new NotAuthenticatedError(
+        "Could not link account. Email not provided.",
+      );
     }
     return {
       user: {

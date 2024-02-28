@@ -4,6 +4,7 @@ import * as awilix from "awilix";
 
 import type { ServerContext } from "./types/ServerContext";
 import { getRequestService } from "./request/RequestService";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 export enum RegistrationLifetime {
   SCOPED = "SCOPED",
@@ -77,7 +78,7 @@ export class Container<ContextType extends ServerContext | never = never> {
     } else if (lifetime === RegistrationLifetime.TRANSIENT) {
       registration = registration.transient();
     } else {
-      throw new Error("Invalid registration lifetime");
+      throw new AssertionError("Invalid registration lifetime");
     }
 
     this._container.register({
@@ -97,7 +98,7 @@ export class Container<ContextType extends ServerContext | never = never> {
 
   getContext = (): ContextType => {
     if (this._root) {
-      throw new Error("Can only return context of scoped container");
+      throw new AssertionError("Can only return context of scoped container");
     }
     return this._container.cradle as unknown as ContextType;
   };

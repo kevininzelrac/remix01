@@ -6,6 +6,8 @@ import { PAGES } from "~/constants";
 import { RESEND_CODE, SUBMIT_CODE } from "./constants";
 import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
+import { BadRequestError } from "@app/utils/errors/BadRequestError";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 const schema = z.union([
   z.object({
@@ -24,7 +26,7 @@ export const action = middleware.build(async (args) => {
   const rawData = Object.fromEntries(formData.entries());
   const result = schema.safeParse(rawData);
   if (!result.success) {
-    throw new Error("Invalid action.");
+    throw new BadRequestError("Invalid action.");
   }
 
   const { user } = await authGuard(args);
@@ -38,7 +40,7 @@ export const action = middleware.build(async (args) => {
         });
         return redirect(PAGES.WIZARD(WizardStep.PROFILE));
       } else {
-        throw new Error("Invalid code.");
+        throw new AssertionError("Invalid code.");
       }
     case RESEND_CODE:
       await container.sessionService.sendVerificationEmail(user);

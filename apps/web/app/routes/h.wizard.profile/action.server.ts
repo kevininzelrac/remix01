@@ -6,6 +6,7 @@ import * as mime from "mime-types";
 import { PAGES } from "~/constants";
 import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
+import { BadRequestError } from "@app/utils/errors/BadRequestError";
 
 const schema = z.object({
   fullName: z.string().trim(),
@@ -18,7 +19,7 @@ export const action = middleware.build(async (args) => {
   const rawData = Object.fromEntries(formData.entries());
   const result = schema.safeParse(rawData);
   if (!result.success) {
-    throw new Error("Invalid action.");
+    throw new BadRequestError("Invalid action.");
   }
 
   const { user } = await authGuard(args);

@@ -14,15 +14,15 @@ import {
 } from "~/components";
 
 import { loader } from "./loader.server";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 export { loader };
 export { action } from "./action.server";
 
 export default function ProfilePage() {
   const result = useLoaderData<typeof loader>();
-
   if (!result.success) {
-    throw new Error();
+    throw new AssertionError();
   }
 
   const {

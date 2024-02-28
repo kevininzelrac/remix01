@@ -2,6 +2,7 @@ import { Recurrence } from "@app/utils/constants";
 import { Form, useLoaderData } from "@remix-run/react";
 
 import { loader } from "./loader.server";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 export { action } from "./action.server";
 export { loader };
@@ -9,7 +10,7 @@ export { loader };
 export default function PlansPage() {
   const response = useLoaderData<typeof loader>();
   if (!response.success) {
-    throw new Error();
+    throw new AssertionError();
   }
 
   const {

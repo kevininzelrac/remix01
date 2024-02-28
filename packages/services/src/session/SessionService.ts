@@ -13,7 +13,7 @@ import type { IDatabaseService } from "~/types/IDatabaseService";
 import type { ServerContext } from "~/types/ServerContext";
 
 import type { User } from "@app/db";
-import { BadRequestError } from "@app/utils/errors";
+import { AssertionError, NotAuthenticatedError } from "@app/utils/errors";
 
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "~/mail/templates";
@@ -74,10 +74,10 @@ export class SessionService implements ISessionService {
         },
       });
     if (!credential)
-      throw new BadRequestError("Credential not found for user.");
+      throw new NotAuthenticatedError("Credential not found for user.");
 
     const match = await bcrypt.compare(password, credential.passwordHash!);
-    if (!match) throw new BadRequestError("Incorrect email or password.");
+    if (!match) throw new NotAuthenticatedError("Incorrect email or password.");
 
     return this._authenticateUser(credential.user);
   }
@@ -88,7 +88,7 @@ export class SessionService implements ISessionService {
 
     const existingUser = await this._userService.getByEmail(email);
     if (existingUser) {
-      throw new BadRequestError("Invalid username/password.");
+      throw new NotAuthenticatedError("Invalid username/password.");
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -107,7 +107,7 @@ export class SessionService implements ISessionService {
     const rawData = Object.fromEntries(formData.entries());
     const result = credentialSchema.safeParse(rawData);
     if (!result.success) {
-      throw new BadRequestError("Email/password required.");
+      throw new NotAuthenticatedError("Email/password required.");
     }
     return result.data;
   }
@@ -148,7 +148,7 @@ export class SessionService implements ISessionService {
 
     // validate state
     if (!storedState || !state || storedState !== state || !code) {
-      throw new Error("Invalid State");
+      throw new AssertionError("Invalid State.");
     }
 
     const {

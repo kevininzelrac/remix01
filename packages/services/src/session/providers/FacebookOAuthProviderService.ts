@@ -7,6 +7,7 @@ import type {
   OAuthResult,
   IOAuthProviderService,
 } from "~/types/IOAuthProviderService";
+import { NotAuthenticatedError } from "@app/utils/errors/NotAuthenticatedError";
 
 export class FacebookOAuthProviderService implements IOAuthProviderService {
   private _provider: FacebookAuth;
@@ -36,7 +37,9 @@ export class FacebookOAuthProviderService implements IOAuthProviderService {
   async getOAuthResult(code: string): Promise<OAuthResult<FacebookUser>> {
     const { facebookUser } = await this._provider.validateCallback(code);
     if (!facebookUser.email) {
-      throw new Error("Could not link account. Email not provider.");
+      throw new NotAuthenticatedError(
+        "Could not link account. Email not provided.",
+      );
     }
     return {
       user: {

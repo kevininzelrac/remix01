@@ -8,6 +8,7 @@ import type { IOAuthProviderService } from "~/types/IOAuthProviderService";
 import { FacebookOAuthProviderService } from "./providers/FacebookOAuthProviderService";
 import { GithubOAuthProviderService } from "./providers/GithubOAuthProviderService";
 import { GoogleOAuthProviderService } from "./providers/GoogleOAuthProviderService";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 const adapter = {
   async getSession(): Promise<void> {},
@@ -45,7 +46,9 @@ export class OAuthProviderFactoryService
   getProvider(providerName: string): IOAuthProviderService {
     const provider = this.providers[providerName];
     if (!provider)
-      throw new Error(`OAuth provider ${providerName} does not exist.`);
+      throw new AssertionError(
+        `OAuth provider ${providerName} does not exist.`,
+      );
     return provider;
   }
 }

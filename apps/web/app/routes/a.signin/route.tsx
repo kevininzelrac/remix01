@@ -1,4 +1,4 @@
-import { ClientErrorType } from "@app/utils/errors";
+import { AssertionError, ClientErrorType } from "@app/utils/errors";
 import { Form, Link, useActionData } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
@@ -16,7 +16,7 @@ export default function SignInPage() {
     !response?.success &&
     response?.error.type != ClientErrorType.BAD_REQUEST
   ) {
-    throw new Error(`Unexpected BE error ${response?.error.type}`);
+    throw new AssertionError(`Unexpected BE error ${response?.error.type}`);
   }
 
   return (
