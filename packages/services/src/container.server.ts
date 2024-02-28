@@ -1,7 +1,7 @@
 import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 
-import type { ServerContext } from "../interfaces/ServerContext.server";
+import type { ServerContext } from "./types/ServerContext";
 import { getRequestService } from "./request/RequestService";
 
 export enum RegistrationLifetime {

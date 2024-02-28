@@ -1,4 +1,4 @@
-import type { IClockService } from "~/server/interfaces/IClockService.server";
+import type { IClockService } from "~/types/IClockService";
 
 export class ClockService implements IClockService {
   getCurrentDateTime(): Date {

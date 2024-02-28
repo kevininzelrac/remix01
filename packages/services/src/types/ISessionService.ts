@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { User } from "@app/db";
 
 export interface ISessionService {
   handleCredentialSignIn(request: Request): Promise<Response>;

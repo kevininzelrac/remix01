@@ -1,4 +1,4 @@
-import type { Product } from "~/types";
+import type { Product } from "@app/utils/constants";
 
 export interface IProductService {
   getProducts(): Promise<Product[]>;

@@ -1,4 +1,4 @@
-import type { IOAuthProviderService } from "./IOAuthProviderService.server";
+import type { IOAuthProviderService } from "./IOAuthProviderService";
 
 export interface IOAuthProviderFactoryService {
   getProvider(providerName: string): IOAuthProviderService;

@@ -1,0 +1,22 @@
+{
+  "name": "@app/services",
+  "version": "1.0.0",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "format": "eslint . --max-warnings=0 --fix",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@app/db": "*",
+    "@app/utils": "*"
+  },
+  "devDependencies": {
+    "@app/config": "*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
