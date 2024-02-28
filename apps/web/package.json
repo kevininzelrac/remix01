@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
+    "bundle": "remix vite:build",
     "dev": "remix vite:dev",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
@@ -19,6 +19,7 @@
     "@app/utils": "*",
     "@remix-run/node": "^2.7.2",
     "@remix-run/react": "^2.7.2",
+    "isbot": "^4",
     "mime-types": "^2.1.35",
     "server-image-core": "^0.2.2",
     "server-image-react": "^0.2.2",

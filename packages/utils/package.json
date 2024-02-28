@@ -5,19 +5,30 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "tsc",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "prisma generate",
+    "postinstall": "tsc --noEmit false",
     "typecheck": "tsc"
   },
   "devDependencies": {
     "@app/config": "*"
   },
   "exports": {
-    "./*": "./src/*.ts",
-    "./constants": "./src/constants/index.ts",
-    "./errors": "./src/errors/index.ts",
-    "./types": "./src/types/index.ts"
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    }
   }
 }

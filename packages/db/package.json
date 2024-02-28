@@ -7,7 +7,7 @@
   "scripts": {
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && tsc --noEmit false",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -24,6 +24,9 @@
     "seed": "tsx seeds/index.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   }
 }
