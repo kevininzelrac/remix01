@@ -1,13 +1,12 @@
+import { Plan, Product, Recurrence, WizardStep } from "@app/utils/constants";
 import { add } from "date-fns";
 
-import { Plan, Recurrence, WizardStep } from "@app/utils/constants";
-import { BadRequestError } from "~/server/errors/BadRequestError.server";
-import type { IClockService } from "~/server/interfaces/IClockService.server";
-import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
-import type { IProductService } from "~/server/interfaces/IProductService.server";
-import type { IUserService } from "~/server/interfaces/IUserService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
-import type { Product } from "~/types";
+import { BadRequestError } from "~/server/errors/BadRequestError";
+import type { IClockService } from "~/types/IClockService";
+import type { IDatabaseService } from "~/types/IDatabaseService";
+import type { IProductService } from "~/types/IProductService";
+import type { IUserService } from "~/types/IUserService";
+import type { ServerContext } from "~/types/ServerContext";
 
 export class LocalProductService implements IProductService {
   constructor(

@@ -1,9 +1,9 @@
 import type { Credential, User } from "@app/db";
 import { WizardStep } from "@app/utils/constants";
 
-import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
-import type { IUserService } from "~/server/interfaces/IUserService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
+import type { IDatabaseService } from "~/types/IDatabaseService";
+import type { IUserService } from "~/types/IUserService";
+import type { ServerContext } from "~/types/ServerContext";
 
 export class UserService implements IUserService {
   constructor(private _databaseService: IDatabaseService) {}

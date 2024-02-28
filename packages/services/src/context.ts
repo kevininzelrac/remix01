@@ -1,13 +1,13 @@
-import { getConsoleLoggerService } from "./logger/ConsoleLoggerService.server";
-import { getUserService } from "./models/UserService.server";
-import { getSessionService } from "./session/SessionService.server";
-import { getOAuthProviderFactoryService } from "./session/OAuthProviderFactoryService.server";
-import { getLocalMailService } from "./mail/LocalMailService.server";
-import { getClockService } from "./clock/ClockService.server";
-import { getLocalFileSystemService } from "./fs/LocalFileSystemService.server";
-import { getDatabaseService } from "./db/DatabaseService.server";
-import { Container, RegistrationLifetime } from "./container.server";
-import { getLocalProductService } from "./pricing";
+import { getConsoleLoggerService } from "./logger/ConsoleLoggerService";
+import { getUserService } from "./models/UserService";
+import { getSessionService } from "./session/SessionService";
+import { getOAuthProviderFactoryService } from "./session/OAuthProviderFactoryService";
+import { getLocalMailService } from "./mail/LocalMailService";
+import { getClockService } from "./clock/ClockService";
+import { getLocalFileSystemService } from "./fs/LocalFileSystemService";
+import { getDatabaseService } from "./db/DatabaseService";
+import { getLocalProductService } from "./pricing/LocalProductService";
+import { Container, RegistrationLifetime } from "./container";
 
 export const serverContainer = getServerContainer();
 

@@ -3,14 +3,14 @@ import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { z } from "zod";
 
-import type { IOAuthProviderFactoryService } from "~/server/interfaces/IOAuthProviderFactoryService.server";
-import type { ISessionService } from "~/server/interfaces/ISessionService.server";
-import type { IUserService } from "~/server/interfaces/IUserService.server";
-import type { IMailService } from "~/server/interfaces/IMailService.server";
-import type { IClockService } from "~/server/interfaces/IClockService.server";
-import type { ILoggerService } from "~/server/interfaces/ILoggerService.server";
-import type { ServerContext } from "~/server/interfaces/ServerContext.server";
-import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
+import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService";
+import type { ISessionService } from "~/types/ISessionService";
+import type { IUserService } from "~/types/IUserService";
+import type { IMailService } from "~/types/IMailService";
+import type { IClockService } from "~/types/IClockService";
+import type { ILoggerService } from "~/types/ILoggerService";
+import type { IDatabaseService } from "~/types/IDatabaseService";
+import type { ServerContext } from "~/types/ServerContext";
 
 import type { User } from "@app/db";
 import {
@@ -19,11 +19,11 @@ import {
   NODE_ENV,
   REFRESH_TOKEN_DURATION,
   REFRESH_TOKEN_SECRET,
-} from "~/server/constants.server";
+} from "~/server/constants";
 import { PAGES } from "~/constants";
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "../mail/templates";
-import { BadRequestError } from "~/server/errors/BadRequestError.server";
+import { BadRequestError } from "~/server/errors/BadRequestError";
 import { redirect } from "@remix-run/node";
 
 const credentialSchema = z.object({

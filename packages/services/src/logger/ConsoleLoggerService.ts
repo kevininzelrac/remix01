@@ -1,4 +1,4 @@
-import type { ILoggerService } from "~/server/interfaces/ILoggerService.server";
+import type { ILoggerService } from "~/types/ILoggerService";
 
 export class ConsoleLoggerService implements ILoggerService {
   debug(message: string, params?: object | undefined): void {

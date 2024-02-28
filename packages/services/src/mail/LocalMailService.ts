@@ -7,10 +7,7 @@ import {
   GMAIL_USER,
 } from "~/server/constants.server";
 
-import type {
-  MailProps,
-  IMailService,
-} from "~/server/interfaces/IMailService.server";
+import type { MailProps, IMailService } from "~/types/IMailService";
 
 export class LocalMailService implements IMailService {
   constructor(

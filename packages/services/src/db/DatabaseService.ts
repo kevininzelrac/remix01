@@ -1,7 +1,7 @@
 import { DatabaseClient, PrismaClient, getClient } from "@app/db";
 
 import { READ_DB_URL } from "~/server/constants.server";
-import type { IDatabaseService } from "~/server/interfaces/IDatabaseService.server";
+import type { IDatabaseService } from "~/types/IDatabaseService";
 
 export class DatabaseService implements IDatabaseService {
   private _complete: boolean;

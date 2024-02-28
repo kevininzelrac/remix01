@@ -1,4 +1,4 @@
-import { IRequestService } from "~/server/interfaces/IRequestService.server";
+import { IRequestService } from "~/types/IRequestService";
 
 export class RequestService implements IRequestService {
   constructor(private _request: Request | null = null) {}

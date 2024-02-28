@@ -1,4 +1,4 @@
-import type { IFileSystemService } from "~/server/interfaces/IFileSystemService.server";
+import type { IFileSystemService } from "~/types/IFileSystemService";
 
 import fs from "fs";
 import path from "path";
