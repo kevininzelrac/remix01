@@ -16,7 +16,7 @@ import type { User } from "@app/db";
 import { BadRequestError } from "@app/utils/errors";
 
 import { add } from "date-fns";
-import { VerificationEmailTemplate } from "../mail/templates";
+import { VerificationEmailTemplate } from "~/mail/templates";
 
 const credentialSchema = z.object({
   email: z.string(),
