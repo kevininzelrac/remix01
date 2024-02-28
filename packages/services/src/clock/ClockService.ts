@@ -6,6 +6,6 @@ export class ClockService implements IClockService {
   }
 }
 
-export const getClockService = () => {
+export const getClockService = () => () => {
   return new ClockService();
 };

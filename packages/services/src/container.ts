@@ -10,7 +10,7 @@ export enum RegistrationLifetime {
   TRANSIENT = "TRANSIENT",
 }
 
-export class Container {
+export class Container<ContextType extends ServerContext | never = never> {
   private _root: boolean;
   private _container: AwilixContainer<ServerContext>;
 
@@ -24,7 +24,7 @@ export class Container {
       });
   }
 
-  createScope = (request: Request | null = null): Container => {
+  createScope = (request: Request | null = null): Container<ServerContext> => {
     const scopedContainer = new Container(this._container.createScope());
 
     scopedContainer.register(
@@ -62,11 +62,11 @@ export class Container {
     });
   };
 
-  getContext = (): ServerContext => {
+  getContext = (): ContextType => {
     if (this._root) {
       throw new Error("Can only return context of scoped container");
     }
-    return this._container.cradle;
+    return this._container.cradle as unknown as ContextType;
   };
 
   finalizeSuccess = async (): Promise<void> => {

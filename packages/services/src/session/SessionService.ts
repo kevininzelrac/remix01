@@ -13,18 +13,10 @@ import type { IDatabaseService } from "~/types/IDatabaseService";
 import type { ServerContext } from "~/types/ServerContext";
 
 import type { User } from "@app/db";
-import {
-  ACCESS_TOKEN_DURATION,
-  ACCESS_TOKEN_SECRET,
-  NODE_ENV,
-  REFRESH_TOKEN_DURATION,
-  REFRESH_TOKEN_SECRET,
-} from "~/server/constants";
-import { PAGES } from "~/constants";
+
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "../mail/templates";
 import { BadRequestError } from "~/server/errors/BadRequestError";
-import { redirect } from "@remix-run/node";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -40,8 +32,23 @@ const jwtContentsSchema = z.object({
   uid: z.string(),
 });
 
+export type CookieSerializeOptions = NonNullable<
+  Parameters<typeof serializeCookie>[2]
+>;
+
+export type TokenConfiguration = {
+  secret: string;
+  duration: string;
+};
+
 export class SessionService implements ISessionService {
   constructor(
+    private _cookieName: string,
+    private _cookieSerializeOptions: CookieSerializeOptions,
+    private _accessTokenConfiguration: TokenConfiguration,
+    private _refreshTokenConfiguration: TokenConfiguration,
+    private _signInRedirectUri: URL,
+    private _signOutRedirectUri: URL,
     private _databaseService: IDatabaseService,
     private _clockService: IClockService,
     private _loggerService: ILoggerService,
@@ -105,6 +112,13 @@ export class SessionService implements ISessionService {
     return result.data;
   }
 
+  private _redirect(url: string, headers: Record<string, string>): Response {
+    return new Response(null, {
+      status: 302,
+      headers: new Headers({ ...headers, Location: url }),
+    });
+  }
+
   async redirectToOAuthProvider(providerName: string): Promise<Response> {
     const provider =
       this._oauthProviderFactoryService.getProvider(providerName);
@@ -112,18 +126,10 @@ export class SessionService implements ISessionService {
     const stateCookie = serializeCookie(
       this._getStateCookieName(providerName),
       state,
-      {
-        httpOnly: true,
-        secure: NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60,
-        sameSite: "strict",
-      },
+      this._cookieSerializeOptions,
     );
-    return redirect(url, {
-      headers: {
-        "Set-Cookie": stateCookie,
-      },
+    return this._redirect(url, {
+      "Set-Cookie": stateCookie,
     });
   }
 
@@ -169,10 +175,6 @@ export class SessionService implements ISessionService {
     return this._authenticateUser(user);
   }
 
-  _getAuthCookieName(): string {
-    return "webapp_auth";
-  }
-
   _getStateCookieName(providerName: string): string {
     return `${providerName}_oauth_state`;
   }
@@ -182,13 +184,21 @@ export class SessionService implements ISessionService {
       uid: user.id,
     };
 
-    const accessToken = jwt.sign(userProps, ACCESS_TOKEN_SECRET, {
-      expiresIn: ACCESS_TOKEN_DURATION,
-    });
+    const accessToken = jwt.sign(
+      userProps,
+      this._accessTokenConfiguration.secret,
+      {
+        expiresIn: this._accessTokenConfiguration.duration,
+      },
+    );
 
-    const refreshToken = jwt.sign(userProps, REFRESH_TOKEN_SECRET, {
-      expiresIn: REFRESH_TOKEN_DURATION,
-    });
+    const refreshToken = jwt.sign(
+      userProps,
+      this._refreshTokenConfiguration.secret,
+      {
+        expiresIn: this._refreshTokenConfiguration.duration,
+      },
+    );
 
     await Promise.all([
       this._databaseService.transaction().token.updateMany({
@@ -216,41 +226,28 @@ export class SessionService implements ISessionService {
     ]);
 
     const authCookie = serializeCookie(
-      this._getAuthCookieName(),
+      this._cookieName,
       JSON.stringify({
         accessToken: accessToken,
         refreshToken: refreshToken,
       }),
-      {
-        httpOnly: true,
-        secure: NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60,
-        sameSite: "strict",
-      },
+      this._cookieSerializeOptions,
     );
 
-    return redirect(PAGES.HOME, {
-      headers: {
-        "Set-Cookie": authCookie,
-      },
+    return this._redirect(this._signInRedirectUri.toString(), {
+      "Set-Cookie": authCookie,
     });
   }
 
   handleSignOut(): Response {
-    const authCookie = serializeCookie(this._getAuthCookieName(), "", {
-      httpOnly: true,
-      secure: NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60,
-      expires: new Date(),
-      sameSite: "strict",
-    });
+    const authCookie = serializeCookie(
+      this._cookieName,
+      "",
+      this._cookieSerializeOptions,
+    );
 
-    return redirect(PAGES.SIGN_IN, {
-      headers: {
-        "Set-Cookie": authCookie,
-      },
+    return this._redirect(this._signOutRedirectUri.toString(), {
+      "Set-Cookie": authCookie,
     });
   }
 
@@ -258,7 +255,7 @@ export class SessionService implements ISessionService {
     const cookies = parseCookie(request.headers.get("Cookie") ?? "");
     let data;
     try {
-      data = JSON.parse(cookies[this._getAuthCookieName()]);
+      data = JSON.parse(cookies[this._cookieName]);
     } catch (error) {
       return null;
     }
@@ -268,7 +265,7 @@ export class SessionService implements ISessionService {
     const { accessToken } = parseResult.data;
 
     try {
-      jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
+      jwt.verify(accessToken, this._accessTokenConfiguration.secret);
     } catch (error) {
       return null;
     }
@@ -372,13 +369,37 @@ export class SessionService implements ISessionService {
   }
 }
 
-export const getSessionService = (context: ServerContext) => {
-  return new SessionService(
-    context.databaseService,
-    context.clockService,
-    context.loggerService,
-    context.mailService,
-    context.oauthProviderFactoryService,
-    context.userService,
-  );
+export type SessionServiceOptions = {
+  cookieName: string;
+  cookieSerializeOptions: CookieSerializeOptions;
+  accessTokenConfiguration: TokenConfiguration;
+  refreshTokenConfiguration: TokenConfiguration;
+  signInRedirectUri: URL;
+  signOutRedirectUri: URL;
 };
+
+export const getSessionService =
+  ({
+    cookieName,
+    cookieSerializeOptions,
+    accessTokenConfiguration,
+    refreshTokenConfiguration,
+    signInRedirectUri,
+    signOutRedirectUri,
+  }: SessionServiceOptions) =>
+  (context: ServerContext) => {
+    return new SessionService(
+      cookieName,
+      cookieSerializeOptions,
+      accessTokenConfiguration,
+      refreshTokenConfiguration,
+      signInRedirectUri,
+      signOutRedirectUri,
+      context.databaseService,
+      context.clockService,
+      context.loggerService,
+      context.mailService,
+      context.oauthProviderFactoryService,
+      context.userService,
+    );
+  };

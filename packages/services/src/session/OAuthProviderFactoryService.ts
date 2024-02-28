@@ -2,23 +2,12 @@ import type { Auth, KeySchema } from "lucia";
 import { lucia } from "lucia";
 import { web } from "lucia/middleware";
 
-import type { IOAuthProviderFactoryService } from "~/server/interfaces/IOAuthProviderFactoryService.server";
-import type { IOAuthProviderService } from "~/server/interfaces/IOAuthProviderService.server";
+import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService";
+import type { IOAuthProviderService } from "~/types/IOAuthProviderService";
 
-import {
-  FacebookOAuthProviderService,
-  GithubOAuthProviderService,
-  GoogleOAuthProviderService,
-} from "./providers";
-import {
-  FACEBOOK_CLIENT_ID,
-  FACEBOOK_CLIENT_SECRET,
-  GITHUB_CLIENT_ID,
-  GITHUB_CLIENT_SECRET,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  NODE_ENV,
-} from "~/server/constants.server";
+import { FacebookOAuthProviderService } from "./providers/FacebookOAuthProviderService";
+import { GithubOAuthProviderService } from "./providers/GithubOAuthProviderService";
+import { GoogleOAuthProviderService } from "./providers/GoogleOAuthProviderService";
 
 const adapter = {
   async getSession(): Promise<void> {},
@@ -61,33 +50,64 @@ export class OAuthProviderFactoryService
   }
 }
 
-const auth = lucia({
-  env: NODE_ENV === "production" ? "PROD" : "DEV",
-  adapter: () => adapter,
-  middleware: web(),
-});
-
-const providers = {
-  facebook: new FacebookOAuthProviderService(
-    "facebook",
-    FACEBOOK_CLIENT_ID,
-    FACEBOOK_CLIENT_SECRET,
-    auth,
-  ),
-  github: new GithubOAuthProviderService(
-    "github",
-    GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET,
-    auth,
-  ),
-  google: new GoogleOAuthProviderService(
-    "google",
-    GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET,
-    auth,
-  ),
+export type OAuthProviderConfiguration = {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: URL;
 };
 
-export const getOAuthProviderFactoryService = () => {
-  return new OAuthProviderFactoryService(auth, providers);
+export type OAuthProviderFactoryServiceOptions = {
+  env: string;
+  providers: {
+    facebook?: OAuthProviderConfiguration;
+    github?: OAuthProviderConfiguration;
+    google?: OAuthProviderConfiguration;
+  };
+};
+
+export const getOAuthProviderFactoryService = ({
+  env,
+  providers: { github, google, facebook },
+}: OAuthProviderFactoryServiceOptions) => {
+  const auth = lucia({
+    env: env === "production" ? "PROD" : "DEV",
+    adapter: () => adapter,
+    middleware: web(),
+  });
+
+  const providers: Record<string, IOAuthProviderService | undefined> = {};
+
+  if (facebook) {
+    providers.facebook = new FacebookOAuthProviderService(
+      "facebook",
+      facebook.clientId,
+      facebook.clientSecret,
+      facebook.redirectUri,
+      auth,
+    );
+  }
+
+  if (github) {
+    providers.github = new GithubOAuthProviderService(
+      "github",
+      github.clientId,
+      github.clientSecret,
+      github.redirectUri,
+      auth,
+    );
+  }
+
+  if (google) {
+    providers.google = new GoogleOAuthProviderService(
+      "google",
+      google.clientId,
+      google.clientSecret,
+      google.redirectUri,
+      auth,
+    );
+  }
+
+  return () => {
+    return new OAuthProviderFactoryService(auth, providers);
+  };
 };

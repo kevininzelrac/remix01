@@ -1,6 +1,5 @@
 import { DatabaseClient, PrismaClient, getClient } from "@app/db";
 
-import { READ_DB_URL } from "~/server/constants.server";
 import type { IDatabaseService } from "~/types/IDatabaseService";
 
 export class DatabaseService implements IDatabaseService {
@@ -60,8 +59,13 @@ export class DatabaseService implements IDatabaseService {
   };
 }
 
-const prisma = getClient(READ_DB_URL);
+export type DatabaseServiceOptions = {
+  readDbUrl: string;
+};
 
-export const getDatabaseService = () => {
-  return new DatabaseService(prisma);
+export const getDatabaseService = ({ readDbUrl }: DatabaseServiceOptions) => {
+  const prisma = getClient(readDbUrl);
+  return () => {
+    return new DatabaseService(prisma);
+  };
 };

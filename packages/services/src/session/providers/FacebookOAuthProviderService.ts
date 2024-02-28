@@ -2,13 +2,11 @@ import type { Auth } from "lucia";
 import type { FacebookAuth, FacebookUser } from "@lucia-auth/oauth/providers";
 import { facebook } from "@lucia-auth/oauth/providers";
 
-import { PAGES } from "~/constants";
 import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-} from "~/server/interfaces/IOAuthProviderService.server";
-import { BASE_URL } from "~/server/constants.server";
+} from "~/types/IOAuthProviderService";
 
 export class FacebookOAuthProviderService implements IOAuthProviderService {
   private _provider: FacebookAuth;
@@ -17,15 +15,13 @@ export class FacebookOAuthProviderService implements IOAuthProviderService {
     private _providerName: string,
     clientId: string,
     clientSecret: string,
+    redirectUri: URL,
     auth: Auth,
   ) {
     this._provider = facebook(auth, {
       clientId,
       clientSecret,
-      redirectUri: new URL(
-        PAGES.AUTH_CALLBACK_API(_providerName),
-        BASE_URL,
-      ).toString(),
+      redirectUri: redirectUri.toString(),
     });
   }
 

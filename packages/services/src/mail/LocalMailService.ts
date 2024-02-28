@@ -1,12 +1,6 @@
 import type { Transporter } from "nodemailer";
 import { createTransport } from "nodemailer";
 
-import {
-  DEFAULT_MAIL_FROM,
-  GMAIL_SECRET,
-  GMAIL_USER,
-} from "~/server/constants.server";
-
 import type { MailProps, IMailService } from "~/types/IMailService";
 
 export class LocalMailService implements IMailService {
@@ -25,16 +19,29 @@ export class LocalMailService implements IMailService {
   }
 }
 
-const transport = createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: GMAIL_USER,
-    pass: GMAIL_SECRET,
-  },
-});
+export type LocalMailServiceOptions = {
+  host: string;
+  user: string;
+  password: string;
+  from: string;
+};
 
-export const getLocalMailService = () => {
-  return new LocalMailService(transport, DEFAULT_MAIL_FROM);
+export const getLocalMailService = ({
+  host,
+  user,
+  password,
+  from,
+}: LocalMailServiceOptions) => {
+  const transport = createTransport({
+    host,
+    port: 465,
+    secure: true,
+    auth: {
+      user,
+      pass: password,
+    },
+  });
+  return () => {
+    return new LocalMailService(transport, from);
+  };
 };

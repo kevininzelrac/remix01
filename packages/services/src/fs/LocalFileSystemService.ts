@@ -29,6 +29,12 @@ export class LocalFileSystemService implements IFileSystemService {
   }
 }
 
-export const getLocalFileSystemService = () => {
-  return new LocalFileSystemService("./.data");
+export type LocalFileSystemServiceOptions = {
+  path: string;
 };
+
+export const getLocalFileSystemService =
+  ({ path }: LocalFileSystemServiceOptions) =>
+  () => {
+    return new LocalFileSystemService(path);
+  };

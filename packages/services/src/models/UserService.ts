@@ -95,6 +95,6 @@ export class UserService implements IUserService {
   }
 }
 
-export const getUserService = (context: ServerContext) => {
+export const getUserService = () => (context: ServerContext) => {
   return new UserService(context.databaseService);
 };

@@ -2,13 +2,11 @@ import type { Auth } from "lucia";
 import type { GoogleAuth, GoogleUser } from "@lucia-auth/oauth/providers";
 import { google } from "@lucia-auth/oauth/providers";
 
-import { PAGES } from "~/constants";
 import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-} from "~/server/interfaces/IOAuthProviderService.server";
-import { BASE_URL } from "~/server/constants.server";
+} from "~/types/IOAuthProviderService";
 
 export class GoogleOAuthProviderService implements IOAuthProviderService {
   private _provider: GoogleAuth;
@@ -17,15 +15,13 @@ export class GoogleOAuthProviderService implements IOAuthProviderService {
     private _providerName: string,
     clientId: string,
     clientSecret: string,
+    redirectUri: URL,
     auth: Auth,
   ) {
     this._provider = google(auth, {
       clientId,
       clientSecret,
-      redirectUri: new URL(
-        PAGES.AUTH_CALLBACK_API(_providerName),
-        BASE_URL,
-      ).toString(),
+      redirectUri: redirectUri.toString(),
     });
   }
 

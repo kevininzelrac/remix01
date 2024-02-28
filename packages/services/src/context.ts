@@ -17,7 +17,7 @@ function getServerContainer(): Container {
 
   container.register(
     "clockService",
-    getClockService,
+    getClockService(),
     RegistrationLifetime.SINGLETON,
   );
 
