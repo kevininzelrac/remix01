@@ -13,10 +13,10 @@ import type { IDatabaseService } from "~/types/IDatabaseService";
 import type { ServerContext } from "~/types/ServerContext";
 
 import type { User } from "@app/db";
+import { BadRequestError } from "@app/utils/errors";
 
 import { add } from "date-fns";
 import { VerificationEmailTemplate } from "../mail/templates";
-import { BadRequestError } from "~/server/errors/BadRequestError";
 
 const credentialSchema = z.object({
   email: z.string(),

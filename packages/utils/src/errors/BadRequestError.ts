@@ -1,4 +1,4 @@
-import { ClientError } from "./ClientError.server";
+import { ClientError } from "./ClientError";
 import { ClientErrorType, type ClientErrorData } from "./types";
 
 export class BadRequestError extends ClientError {

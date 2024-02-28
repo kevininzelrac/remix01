@@ -1,6 +1,6 @@
+import { BadRequestError } from "@app/utils/errors";
 import { redirect } from "@remix-run/node";
 import { z } from "zod";
-import { BadRequestError } from "~/server/errors/BadRequestError.server";
 import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
 

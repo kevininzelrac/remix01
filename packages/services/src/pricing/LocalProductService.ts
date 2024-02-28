@@ -1,7 +1,7 @@
 import { Plan, Product, Recurrence, WizardStep } from "@app/utils/constants";
+import { BadRequestError } from "@app/utils/errors";
 import { add } from "date-fns";
 
-import { BadRequestError } from "~/server/errors/BadRequestError";
 import type { IClockService } from "~/types/IClockService";
 import type { IDatabaseService } from "~/types/IDatabaseService";
 import type { IProductService } from "~/types/IProductService";

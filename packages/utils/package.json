@@ -15,8 +15,9 @@
     "@app/config": "*"
   },
   "exports": {
-    ".": "./src/index.ts",
+    "./*": "./src/*.ts",
     "./constants": "./src/constants/index.ts",
+    "./errors": "./src/errors/index.ts",
     "./types": "./src/types/index.ts"
   }
 }
