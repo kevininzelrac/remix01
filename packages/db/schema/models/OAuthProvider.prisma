@@ -1,0 +1,14 @@
+import { User } from "./User"
+
+model OAuthProvider {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId       String   @db.Uuid
+  providerName String
+  providerId   String
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, providerName])
+  @@index([providerName, providerId])
+}

@@ -7,7 +7,7 @@
   "scripts": {
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "prisma generate && tsc --noEmit false",
+    "postinstall": "tsc --noEmit false",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -17,11 +17,14 @@
   },
   "devDependencies": {
     "@app/config": "*",
-    "prisma": "^5.6.0"
+    "prisma": "^5.6.0",
+    "prisma-import": "^1.0.5"
   },
   "prisma": {
-    "schema": "schema/schema.prisma",
-    "seed": "tsx seeds/index.ts"
+    "import": {
+      "schemas": "schema/models/**/*.prisma",
+      "output": "schema/schema.prisma"
+    }
   },
   "exports": {
     ".": {

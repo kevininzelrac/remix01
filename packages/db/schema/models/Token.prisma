@@ -1,0 +1,14 @@
+import { User } from "./User"
+
+model Token {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String    @db.Uuid
+  type      String
+  token     String
+  revoked   DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([token])
+}

@@ -1,0 +1,23 @@
+import { Credential } from "./Credential"
+import { OAuthProvider } from "./OAuthProvider"
+import { Subscription } from "./Subscription"
+import { Token } from "./Token"
+import { VerificationCode } from "./VerificationCode"
+
+model User {
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  email            String            @unique
+  emailVerifiedAt  DateTime?
+  fullName         String?
+  avatar           String?
+  wizardStep       String
+  credential       Credential?
+  oauthProviders   OAuthProvider[]
+  tokens           Token[]
+  verificationCode VerificationCode?
+  subscription     Subscription?
+
+  @@index([email])
+}
