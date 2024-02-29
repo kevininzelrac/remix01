@@ -5,7 +5,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit false && tsc-alias",
+    "build": "npm run clean && tsc --noEmit false && tsc-alias",
+    "clean": "rm -rf dist",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "postinstall": "npm run build",
@@ -30,7 +31,7 @@
   },
   "exports": {
     "./*": {
-      "types": "./dist/*.d.ts",
+      "types": "./src/*.ts",
       "import": "./dist/*.js"
     }
   }

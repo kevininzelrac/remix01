@@ -5,7 +5,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit false && tsc-alias",
+    "build": "npm run clean && tsc --noEmit false && tsc-alias",
+    "clean": "rm -rf dist",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "postinstall": "npm run build",
@@ -16,19 +17,19 @@
   },
   "exports": {
     "./*": {
-      "types": "./dist/*.d.ts",
+      "types": "./src/*.ts",
       "import": "./dist/*.js"
     },
     "./constants": {
-      "types": "./dist/constants/index.d.ts",
+      "types": "./src/constants/index.ts",
       "import": "./dist/constants/index.js"
     },
     "./errors": {
-      "types": "./dist/errors/index.d.ts",
+      "types": "./src/errors/index.ts",
       "import": "./dist/errors/index.js"
     },
     "./types": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./src/types/index.ts",
       "import": "./dist/types/index.js"
     }
   }

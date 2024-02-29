@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "declaration": true,
+    "sourceMap": true,
 
     // Vite takes care of building everything
     "noEmit": true

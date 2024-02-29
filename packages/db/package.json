@@ -5,8 +5,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:schema && tsc --noEmit false && tsc-alias",
+    "build": "npm run build:schema && npm run clean && tsc --noEmit false && tsc-alias",
     "build:schema": "prisma-import --force && prisma generate",
+    "clean": "rm -rf dist",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "migrate:dev": "npm run build:schema && prisma migrate dev",
@@ -33,7 +34,7 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./src/index.ts",
       "import": "./dist/index.js"
     }
   }
