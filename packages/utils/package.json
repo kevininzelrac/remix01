@@ -5,35 +5,17 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run clean && npm run build:compile",
-    "build:compile": "tsc && tsc-alias",
-    "build:watch": "tsc-watch --onSuccess tsc-alias",
-    "clean": "rm -rf dist",
-    "dev": "npm run clean && npm run build:watch",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "npm run build",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "devDependencies": {
     "@app/config": "*"
   },
   "exports": {
-    "./*": {
-      "types": "./src/*.ts",
-      "import": "./dist/*.js"
-    },
-    "./constants": {
-      "types": "./src/constants/index.ts",
-      "import": "./dist/constants/index.js"
-    },
-    "./errors": {
-      "types": "./src/errors/index.ts",
-      "import": "./dist/errors/index.js"
-    },
-    "./types": {
-      "types": "./src/types/index.ts",
-      "import": "./dist/types/index.js"
-    }
+    "./*": "./src/*.ts",
+    "./constants": "./src/constants/index.ts",
+    "./errors": "./src/errors/index.ts",
+    "./types": "./src/types/index.ts"
   }
 }

@@ -5,9 +5,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"]
-    },
-
-    // Vite takes care of building everything
-    "noEmit": true
-  }
+    }
+  },
+  "references": [
+    {"path": "../../packages/services"},
+    {"path": "../../packages/utils"}
+  ]
 }

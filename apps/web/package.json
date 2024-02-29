@@ -12,7 +12,7 @@
     "test:env": "dotenv -e .env.test -- npx prisma migrate reset --force",
     "test:jest": "dotenv -e .env.test -- npx jest",
     "test": "npm run test:env && npm run test:jest",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "@app/services": "*",

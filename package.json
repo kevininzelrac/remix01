@@ -8,7 +8,10 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "turbo run format",
-    "typecheck": "turbo run typecheck"
+    "migrate:dev": "npm run migrate:dev -w packages/db",
+    "migrate:reset": "npm run migrate:reset -w packages/db",
+    "typecheck": "turbo run typecheck",
+    "validate": "turbo run lint typecheck && turbo run build"
   },
   "author": "",
   "license": "ISC",
@@ -34,7 +37,6 @@
     "prettier": "^3.1.0",
     "ts-jest": "^29.1.1",
     "tsc-alias": "^1.8.8",
-    "tsc-watch": "^6.0.4",
     "tsx": "^4.7.0",
     "typescript": "^5.1.6",
     "typescript-eslint": "^7.1.0"

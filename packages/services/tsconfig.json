@@ -8,5 +8,9 @@
     "paths": {
       "~/*": ["./src/*"]
     }
-  }
+  },
+  "references": [
+    {"path": "../db"},
+    {"path": "../utils"}
+  ]
 }

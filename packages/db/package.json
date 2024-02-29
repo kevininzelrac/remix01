@@ -5,18 +5,13 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:schema && npm run clean && npm run build:compile",
-    "build:compile": "tsc && tsc-alias",
     "build:schema": "prisma-import --force && prisma generate",
-    "build:watch": "tsc-watch --onSuccess tsc-alias",
-    "clean": "rm -rf dist",
-    "dev": "npm run build:schema && npm run clean && npm run build:watch",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "migrate:dev": "npm run build:schema && prisma migrate dev",
     "migrate:reset": "prisma migrate reset --force",
-    "postinstall": "npm run build",
-    "typecheck": "tsc"
+    "postinstall": "npm run build:schema",
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "@app/utils": "*",
@@ -36,9 +31,6 @@
     "schema": "schema/schema.prisma"
   },
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "import": "./dist/index.js"
-    }
+    ".": "./src/index.ts"
   }
 }

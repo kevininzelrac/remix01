@@ -5,15 +5,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run clean && npm run build:compile",
-    "build:compile": "tsc && tsc-alias",
-    "build:watch": "tsc-watch --onSuccess tsc-alias",
-    "clean": "rm -rf dist",
-    "dev": "npm run clean && npm run build:watch",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "postinstall": "npm run build",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "@app/db": "*",
@@ -33,9 +27,6 @@
     "@types/nodemailer": "^6.4.14"
   },
   "exports": {
-    "./*": {
-      "types": "./src/*.ts",
-      "import": "./dist/*.js"
-    }
+    "./*": "./src/*.ts"
   }
 }
