@@ -4,7 +4,9 @@
     "build": {
       "dependsOn": ["^build"]
     },
-    "clean": {},
+    "clean": {
+      "dependsOn": ["^clean"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

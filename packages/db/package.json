@@ -5,9 +5,12 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:schema && npm run clean && tsc --noEmit false && tsc-alias",
+    "build": "npm run build:schema && npm run clean && npm run build:compile",
+    "build:compile": "tsc && tsc-alias",
     "build:schema": "prisma-import --force && prisma generate",
+    "build:watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
     "clean": "rm -rf dist",
+    "dev": "npm run build:schema && npm run clean && npm run build:watch",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "migrate:dev": "npm run build:schema && prisma migrate dev",

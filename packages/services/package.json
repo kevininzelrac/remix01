@@ -5,8 +5,11 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run clean && tsc --noEmit false && tsc-alias",
+    "build": "npm run clean && npm run build:compile",
+    "build:compile": "tsc && tsc-alias",
+    "build:watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
     "clean": "rm -rf dist",
+    "dev": "npm run clean && npm run build:watch",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "postinstall": "npm run build",
