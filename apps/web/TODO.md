@@ -7,7 +7,7 @@ The application that we want to build has the following:
 - Both types of user can edit their full name and their avatar
 
 We are also missing the following features:
-- Add tests for all things we are adding.
+- Add tests for some of the things we are adding.
 - Add an authorization service (???)
 - Add an admin interface using refine.dev
 - Validate and Deploy app using Github actions
