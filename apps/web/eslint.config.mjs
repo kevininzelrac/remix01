@@ -1,3 +1,6 @@
 import preset from "@app/config/eslint/preset";
+import tseslint from "typescript-eslint";
 
-export default [...preset];
+export default tseslint.config(...preset, {
+  ignores: ["build/*"],
+});
