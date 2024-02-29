@@ -10,4 +10,6 @@ export interface ISessionService {
   getAuthenticatedUser(request: Request): Promise<User | null>;
   sendVerificationEmail(user: User): Promise<void>;
   verifyEmail(user: User, code: string): Promise<boolean>;
+  sendForgotPasswordEmail(email: string, url: URL): Promise<void>;
+  resetPassword(code: string, password: string): Promise<void>;
 }

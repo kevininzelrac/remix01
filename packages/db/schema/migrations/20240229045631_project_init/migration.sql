@@ -10,6 +10,18 @@ CREATE TABLE "Credential" (
 );
 
 -- CreateTable
+CREATE TABLE "ForgotPassword" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" UUID NOT NULL,
+    "code" UUID NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ForgotPassword_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "OAuthProvider" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -76,6 +88,12 @@ CREATE TABLE "VerificationCode" (
 CREATE UNIQUE INDEX "Credential_userId_key" ON "Credential"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "ForgotPassword_userId_key" ON "ForgotPassword"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ForgotPassword_code_key" ON "ForgotPassword"("code");
+
+-- CreateIndex
 CREATE INDEX "OAuthProvider_providerName_providerId_idx" ON "OAuthProvider"("providerName", "providerId");
 
 -- CreateIndex
@@ -98,6 +116,9 @@ CREATE UNIQUE INDEX "VerificationCode_userId_key" ON "VerificationCode"("userId"
 
 -- AddForeignKey
 ALTER TABLE "Credential" ADD CONSTRAINT "Credential_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ForgotPassword" ADD CONSTRAINT "ForgotPassword_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OAuthProvider" ADD CONSTRAINT "OAuthProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

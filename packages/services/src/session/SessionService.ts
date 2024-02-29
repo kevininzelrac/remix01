@@ -1,22 +1,26 @@
 import { parseCookie, serializeCookie } from "lucia/utils";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService";
 import type { ISessionService } from "~/types/ISessionService";
 import type { IUserService } from "~/types/IUserService";
-import type { IMailService } from "~/types/IMailService";
+import { MailType, type IMailService } from "~/types/IMailService";
 import type { IClockService } from "~/types/IClockService";
 import type { ILoggerService } from "~/types/ILoggerService";
 import type { IDatabaseService } from "~/types/IDatabaseService";
 import type { ServerContext } from "~/types/ServerContext";
 
 import type { User } from "@app/db";
-import { AssertionError, NotAuthenticatedError } from "@app/utils/errors";
+import {
+  AssertionError,
+  NotAuthenticatedError,
+  PermissionDeniedError,
+} from "@app/utils/errors";
 
 import { add } from "date-fns";
-import { VerificationEmailTemplate } from "~/mail/templates";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -302,12 +306,13 @@ export class SessionService implements ISessionService {
       });
     }
 
-    const template = new VerificationEmailTemplate(verificationCode.code);
-    return this._mailService.sendEmail(
-      template.getProps({
-        destination: [user.email],
-      }),
-    );
+    return this._mailService.sendEmail({
+      destination: [user.email],
+      params: {
+        type: MailType.VERIFY_EMAIL,
+        code: verificationCode.code,
+      },
+    });
   }
 
   _getNewVerificationCode(): { code: string; expiresAt: Date } {
@@ -367,6 +372,80 @@ export class SessionService implements ISessionService {
 
     return user;
   }
+
+  sendForgotPasswordEmail = async (email: string, url: URL): Promise<void> => {
+    const transaction = this._databaseService.transaction();
+    const user = await this._userService.getByEmail(email);
+    if (!user) {
+      return;
+    }
+
+    const credential = await transaction.credential.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+    if (!credential) {
+      return;
+    }
+
+    const expiresAt = add(this._clockService.getCurrentDateTime(), {
+      hours: 1,
+    });
+    const code = uuid();
+
+    const forgotPassword = await transaction.forgotPassword.upsert({
+      create: {
+        userId: user.id,
+        expiresAt,
+        code,
+      },
+      update: {
+        expiresAt,
+        code,
+      },
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const sentUrl = new URL(url);
+    sentUrl.searchParams.append("code", forgotPassword.code);
+    return this._mailService.sendEmail({
+      destination: [email],
+      params: {
+        type: MailType.FORGOT_PASSWORD,
+        url: sentUrl.toString(),
+      },
+    });
+  };
+
+  resetPassword = async (code: string, password: string): Promise<void> => {
+    const transaction = this._databaseService.transaction();
+
+    const forgotPassword = await transaction.forgotPassword.findUnique({
+      where: {
+        code,
+      },
+    });
+
+    if (
+      !forgotPassword ||
+      forgotPassword.expiresAt <= this._clockService.getCurrentDateTime()
+    ) {
+      throw new PermissionDeniedError();
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await transaction.credential.update({
+      data: {
+        passwordHash,
+      },
+      where: {
+        userId: forgotPassword.userId,
+      },
+    });
+  };
 }
 
 export type SessionServiceOptions = {

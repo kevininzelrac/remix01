@@ -1,5 +1,5 @@
 import { AssertionError, ClientErrorType } from "@app/utils/errors";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, NavLink, useActionData } from "@remix-run/react";
 
 import { Label, Input, Button, PasswordInput } from "~/components";
 import { OAuthMenu } from "~/components/auth";
@@ -61,6 +61,7 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign In
           </Button>
+          <NavLink to={PAGES.FORGOT_PASSWORD}>Forgot password</NavLink>
           {response?.error?.messages.map((message) => (
             <em key={message}>{message}</em>
           ))}

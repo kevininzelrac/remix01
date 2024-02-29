@@ -1,7 +1,17 @@
 import type { Transporter } from "nodemailer";
 import { createTransport } from "nodemailer";
 
-import type { MailProps, IMailService } from "~/types/IMailService";
+import {
+  MailProps,
+  IMailService,
+  MailType,
+  MailParams,
+} from "~/types/IMailService";
+
+type RendererOutput = {
+  subject: string;
+  html: string;
+};
 
 export class LocalMailService implements IMailService {
   constructor(
@@ -13,9 +23,41 @@ export class LocalMailService implements IMailService {
     await this._transport.sendMail({
       from: props.source ?? this._defaultFrom,
       to: props.destination,
-      subject: props.subject,
-      html: props.body,
+      ...this._getRendererOutput(props.params),
     });
+  }
+
+  private _getRendererOutput(params: MailParams): RendererOutput {
+    switch (params.type) {
+      case MailType.VERIFY_EMAIL: {
+        return this._getVerifyEmailRendererOutput(params);
+      }
+      case MailType.FORGOT_PASSWORD: {
+        return this._getForgotPasswordRendererOutput(params);
+      }
+    }
+  }
+
+  private _getVerifyEmailRendererOutput(
+    params: MailParams & { type: MailType.VERIFY_EMAIL },
+  ): RendererOutput {
+    return {
+      subject: `${params.code} - Verification Code`,
+      html: `
+        <p>To verify your email use the code ${params.code}.</p>
+      `.trim(),
+    };
+  }
+
+  private _getForgotPasswordRendererOutput(
+    params: MailParams & { type: MailType.FORGOT_PASSWORD },
+  ): RendererOutput {
+    return {
+      subject: "Reset your password",
+      html: `
+        <p>Click <a href="${params.url}">here</a> to reset your password.</p>
+      `.trim(),
+    };
   }
 }
 
