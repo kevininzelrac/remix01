@@ -12,3 +12,5 @@ We are also missing the following features:
 - Add an admin interface using refine.dev
 - Validate and Deploy app using Github actions
 - Add background workers
+- Add console varaint for mail service
+- Add observability (opentracing)
