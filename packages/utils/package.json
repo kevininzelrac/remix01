@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run clean && npm run build:compile",
     "build:compile": "tsc && tsc-alias",
-    "build:watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
+    "build:watch": "tsc-watch --onSuccess tsc-alias",
     "clean": "rm -rf dist",
     "dev": "npm run clean && npm run build:watch",
     "format": "eslint . --max-warnings=0 --fix",
