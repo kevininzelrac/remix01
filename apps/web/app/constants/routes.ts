@@ -9,5 +9,6 @@ export const PAGES = {
   AUTH_CALLBACK_API: (providerName: string) =>
     `/api/auth/callback/${providerName}`,
   HOME: "/",
+  SETUP: "/h/setup",
   WIZARD: (wizardStep: WizardStep) => `/h/wizard/${wizardStep}`,
 };

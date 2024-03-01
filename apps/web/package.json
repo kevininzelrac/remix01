@@ -17,9 +17,15 @@
   "dependencies": {
     "@app/services": "*",
     "@app/utils": "*",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-slot": "^1.0.2",
     "@remix-run/node": "^2.7.2",
     "@remix-run/react": "^2.7.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "isbot": "^4",
+    "lucide-react": "^0.343.0",
     "mime-types": "^2.1.35",
     "server-image-core": "^0.2.2",
     "server-image-react": "^0.2.2",
@@ -27,6 +33,7 @@
     "server-image-transformer-sharp": "^0.2.2",
     "sharp": "^0.33.2",
     "tailwind-merge": "^2.2.1",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {
