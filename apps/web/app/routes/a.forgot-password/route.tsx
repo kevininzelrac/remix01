@@ -2,7 +2,9 @@ import { Form } from "@remix-run/react";
 
 import { useSearchParams } from "@remix-run/react";
 
-import { Button, Input, PasswordInput } from "~/components";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { PasswordInput } from "~/components/input";
 import { ActionType } from "./constants";
 
 export { action } from "./action.server";

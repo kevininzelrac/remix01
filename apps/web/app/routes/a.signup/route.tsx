@@ -1,6 +1,9 @@
 import { Form, Link } from "@remix-run/react";
 
-import { Label, Input, Button, PasswordInput } from "~/components";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { PasswordInput } from "~/components/input";
 import { OAuthMenu } from "~/components/auth";
 import { PAGES } from "~/constants";
 

@@ -1,6 +1,7 @@
 import { Form } from "@remix-run/react";
 
-import { Button, Input } from "~/components";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import { RESEND_CODE, SUBMIT_CODE } from "./constants";
 
 export { action } from "./action.server";
@@ -39,10 +40,7 @@ export default function VerificationPage() {
         </div>
         <Form method="POST">
           <input type="hidden" name="type" value={RESEND_CODE} />
-          <Button
-            type="submit"
-            className="border border-input bg-background hover:bg-accent hover:text-accent-foreground w-full"
-          >
+          <Button type="submit" className="border border-input w-full">
             Resend Code
           </Button>
         </Form>

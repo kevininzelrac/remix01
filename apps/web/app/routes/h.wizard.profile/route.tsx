@@ -1,17 +1,18 @@
 import { Form, useLoaderData } from "@remix-run/react";
 
 import {
-  AvatarInput,
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-  Input,
-  Label,
-} from "~/components";
+} from "~/components/ui/card";
+
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { AvatarInput } from "~/components/input";
 
 import { loader } from "./loader.server";
 import { AssertionError } from "@app/utils/errors";

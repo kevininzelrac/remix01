@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 
-import { Button } from "~/components/button";
+import { Button } from "~/components/ui/button";
 import { PAGES } from "~/constants";
 
 export function OAuthMenu() {

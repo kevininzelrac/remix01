@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/card";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
-import { AvatarInput } from "~/components";
+import { AvatarInput } from "~/components/input";
 
 const gridElements = [
   {

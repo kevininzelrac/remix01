@@ -1,4 +1,4 @@
-import { Input, type InputProps } from "./Input";
+import { Input, type InputProps } from "~/components/ui/input";
 
 export type AvatarInputProps = InputProps;
 
