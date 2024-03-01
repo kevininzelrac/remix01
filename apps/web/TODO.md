@@ -13,3 +13,4 @@ We are also missing the following features:
 - Validate and Deploy app using Github actions
 - Add background workers
 - Add observability (opentracing)
+- Add a migration system that allows TS as well as SQL
