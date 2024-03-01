@@ -14,3 +14,4 @@ We are also missing the following features:
 - Add background workers
 - Add observability (opentracing)
 - Add a migration system that allows TS as well as SQL
+- Add a K8s deployment
