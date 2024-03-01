@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
@@ -53,24 +54,6 @@ const gridElements = [
 export default function Component() {
   return (
     <div>
-      <div className="flex items-center space-x-4">
-        <Select value="personal">
-          <SelectTrigger>
-            <SelectValue
-              className="w-[200px]"
-              placeholder="Switch portafolios"
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="personal">Personal</SelectItem>
-            <SelectItem value="work">Work</SelectItem>
-            <SelectItem value="client">Client</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button size="sm" variant="outline">
-          New portafolio
-        </Button>
-      </div>
       <Card>
         <CardHeader>
           <CardTitle>Personal information</CardTitle>
@@ -91,7 +74,28 @@ export default function Component() {
             <AvatarInput id="avatar" name="avatar" defaultValue="file.png" />
           </div>
         </CardContent>
+        <CardFooter>
+          <Button type="submit">Update personal details</Button>
+        </CardFooter>
       </Card>
+      <div className="flex items-center space-x-4">
+        <Select value="personal">
+          <SelectTrigger>
+            <SelectValue
+              className="w-[200px]"
+              placeholder="Switch portafolios"
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="personal">Personal</SelectItem>
+            <SelectItem value="work">Work</SelectItem>
+            <SelectItem value="client">Client</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button size="sm" variant="outline">
+          New portafolio
+        </Button>
+      </div>
       <section className="w-full py-12">
         <div className="container px-4 md:px-6 grid gap-6 md:gap-8">
           <div className="grid gap-1">
