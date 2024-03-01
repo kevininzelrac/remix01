@@ -2,6 +2,7 @@ import { getConsoleLoggerService } from "@app/services/logger/ConsoleLoggerServi
 import { getUserService } from "@app/services/models/UserService";
 import { getSessionService } from "@app/services/session/SessionService";
 import { getOAuthProviderFactoryService } from "@app/services/session/OAuthProviderFactoryService";
+import { getConsoleMailService } from "@app/services/mail/ConsoleMailService";
 import { getLocalMailService } from "@app/services/mail/LocalMailService";
 import { getClockService } from "@app/services/clock/ClockService";
 import { getLocalFileSystemService } from "@app/services/fs/LocalFileSystemService";
@@ -23,6 +24,7 @@ import {
   GMAIL_USER,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+  MAIL_SERVICE_VARIANT,
   NODE_ENV,
   READ_DB_URL,
   REFRESH_TOKEN_DURATION,
@@ -59,16 +61,29 @@ function getServerContainer(): Container {
     RegistrationLifetime.SINGLETON,
   );
 
-  container.register(
-    "mailService",
-    getLocalMailService({
-      host: "smtp.gmail.com",
-      user: GMAIL_USER,
-      secret: GMAIL_SECRET,
-      from: DEFAULT_MAIL_FROM,
-    }),
-    RegistrationLifetime.SINGLETON,
-  );
+  switch (MAIL_SERVICE_VARIANT) {
+    case "console": {
+      container.register(
+        "mailService",
+        getConsoleMailService(),
+        RegistrationLifetime.SINGLETON,
+      );
+      break;
+    }
+    case "local": {
+      container.register(
+        "mailService",
+        getLocalMailService({
+          host: "smtp.gmail.com",
+          user: GMAIL_USER,
+          secret: GMAIL_SECRET,
+          from: DEFAULT_MAIL_FROM,
+        }),
+        RegistrationLifetime.SINGLETON,
+      );
+      break;
+    }
+  }
 
   container.register(
     "oauthProviderFactoryService",

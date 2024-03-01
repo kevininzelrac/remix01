@@ -1,25 +1,38 @@
 import { z } from "zod";
 
-const schema = z.object({
-  NODE_ENV: z.union([z.literal("development"), z.literal("production")]),
-  PORT: z.string().transform(Number),
-  READ_DB_URL: z.string(),
-  WRITE_DB_URL: z.string(),
-  BASE_URL: z.string(),
-  ACCESS_TOKEN_SECRET: z.string(),
-  ACCESS_TOKEN_DURATION: z.string(),
-  REFRESH_TOKEN_SECRET: z.string(),
-  REFRESH_TOKEN_DURATION: z.string(),
-  FACEBOOK_CLIENT_ID: z.string(),
-  FACEBOOK_CLIENT_SECRET: z.string(),
-  GITHUB_CLIENT_ID: z.string(),
-  GITHUB_CLIENT_SECRET: z.string(),
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
-  DEFAULT_MAIL_FROM: z.string(),
-  GMAIL_USER: z.string(),
-  GMAIL_SECRET: z.string(),
-});
+const schema = z
+  .object({
+    NODE_ENV: z.union([z.literal("development"), z.literal("production")]),
+    PORT: z.string().transform(Number),
+    READ_DB_URL: z.string(),
+    WRITE_DB_URL: z.string(),
+    BASE_URL: z.string(),
+    ACCESS_TOKEN_SECRET: z.string(),
+    ACCESS_TOKEN_DURATION: z.string(),
+    REFRESH_TOKEN_SECRET: z.string(),
+    REFRESH_TOKEN_DURATION: z.string(),
+    FACEBOOK_CLIENT_ID: z.string(),
+    FACEBOOK_CLIENT_SECRET: z.string(),
+    GITHUB_CLIENT_ID: z.string(),
+    GITHUB_CLIENT_SECRET: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+    MAIL_SERVICE_VARIANT: z.union([z.literal("console"), z.literal("local")]),
+    DEFAULT_MAIL_FROM: z.string().default(""),
+    GMAIL_USER: z.string().default(""),
+    GMAIL_SECRET: z.string().default(""),
+  })
+  .refine(
+    (data) => {
+      return (
+        data.MAIL_SERVICE_VARIANT !== "local" ||
+        (data.DEFAULT_MAIL_FROM && data.GMAIL_USER && data.GMAIL_SECRET)
+      );
+    },
+    {
+      message: "If using the local mail variant you must configure it.",
+    },
+  );
 
 const data = schema.parse(process.env);
 
@@ -51,6 +64,7 @@ export const GOOGLE_CLIENT_ID = data.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = data.GOOGLE_CLIENT_SECRET;
 
 // Mail
+export const MAIL_SERVICE_VARIANT = data.MAIL_SERVICE_VARIANT;
 export const DEFAULT_MAIL_FROM = data.DEFAULT_MAIL_FROM;
 export const GMAIL_USER = data.GMAIL_USER;
 export const GMAIL_SECRET = data.GMAIL_SECRET;
