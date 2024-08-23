@@ -8,10 +8,11 @@ The application that we want to build has the following:
 
 We are also missing the following features:
 - Add tests for some of the things we are adding.
-- Add an authorization service (???)
+- Add an authorization service using CASL
 - Add an admin interface using refine.dev
 - Validate and Deploy app using Github actions
 - Add background workers
-- Add observability (opentracing)
+- Add observability (opentracing/datadog)
 - Add a migration system that allows TS as well as SQL
 - Add a K8s deployment
+- Add an audit log/audit trail for Prisma
