@@ -1,37 +1,74 @@
-class RuleSet<F, R extends {} = {}> {
-  constructor(queryEngine: QueryEngine<F>) {}
+class RuleSet<Repository extends {} = {}> {
+  constructor(private rules: Repository = {} as unknown as Repository) {}
 
-  public allow<A extends string, T extends string>(
-    action: A,
-    subjectType: T
-  ): RuleSet<F, AddRule<F, R, A, T, boolean>>;
+  /* Signature */
+  public allow<Action extends string, SubjectType extends string, Filter>(
+    action: Action,
+    subjectType: SubjectType
+  ): AddRule<Repository, Action, SubjectType, BooleanFilter<Filter>>;
   public allow<
-    A extends string,
-    T extends string,
-    C extends BaseConditionType<F>,
+    Action extends string,
+    SubjectType extends string,
+    Condition extends AbstractFilter<unknown[], unknown>,
   >(
-    action: A,
-    subjectType: T,
-    getCondition: C
-  ): RuleSet<F, AddRule<F, R, A, T, C>>;
+    action: Action,
+    subjectType: SubjectType,
+    condition: Condition
+  ): AddRule<Repository, Action, SubjectType, Condition>;
+
+  /* Implementation */
   public allow<
-    A extends string,
-    T extends string,
-    C extends BaseConditionType<F>,
+    Action extends string,
+    SubjectType extends string,
+    Condition extends AbstractFilter<unknown[], unknown>,
   >(
-    action: A,
-    subjectType: T,
-    getCondition?: C
-  ): RuleSet<F, AddRule<F, R, A, T, C>> {
+    action: Action,
+    subjectType: SubjectType,
+    condition?: Condition
+  ): AddRule<Repository, Action, SubjectType, Condition> {
+    if (condition === undefined) {
+      condition = new BooleanFilter(true) as any;
+    }
+    const newThis = this as any;
+    if (!(action in newThis.rules)) {
+      newThis[action] = {};
+    }
+    if (!(subjectType in newThis.rules[action])) {
+      newThis[action][subjectType] = [];
+    }
+    newThis[action][subjectType].push(condition);
+    return newThis;
+  }
+
+  /* Signature */
+  public forbid<Action extends string, SubjectType extends string, Filter>(
+    action: Action,
+    subjectType: SubjectType
+  ): AddRule<Repository, Action, SubjectType, BooleanFilter<Filter>>;
+  public forbid<
+    Action extends string,
+    SubjectType extends string,
+    Condition extends AbstractFilter<unknown[], unknown>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    condition: Condition
+  ): AddRule<Repository, Action, SubjectType, Condition>;
+
+  /* Implementation */
+  public forbid<
+    Action extends string,
+    SubjectType extends string,
+    Condition extends AbstractFilter<unknown[], unknown>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    condition?: Condition
+  ): AddRule<Repository, Action, SubjectType, Condition> {
     throw new Error("Not implemented.");
   }
 
   /*
-  public forbid<
-    A extends string,
-    T extends string,
-  >(action: A, subjectType: T) {}
-
   public can<A extends keyof R, T extends keyof R[A]>(action: A, subjectType: T) {}
 
   public cannot(action: A, subjectType: T) {}
@@ -147,9 +184,9 @@ function main() {
   const filter = test.read.Post[0];
 }
 
-interface QueryEngine<Filter> {
-  and(filters: Filter[]): Filter;
-  negate(filter: Filter): Filter;
+interface QueryEngine {
+  and<Filter>(filters: Filter[]): Filter;
+  negate<Filter>(filter: Filter): Filter;
 }
 
 abstract class AbstractFilter<Args extends unknown[], Filter> {
