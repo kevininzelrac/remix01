@@ -1,0 +1,36 @@
+{
+  "name": "@app/db",
+  "version": "1.0.0",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build:schema": "prisma-import --force && prisma generate",
+    "format": "eslint . --max-warnings=0 --fix",
+    "lint": "eslint . --max-warnings=0",
+    "migrate:dev": "npm run build:schema && prisma migrate dev",
+    "migrate:reset": "prisma migrate reset --force",
+    "postinstall": "npm run build:schema",
+    "typecheck": "tsc --build"
+  },
+  "dependencies": {
+    "@app/utils": "*",
+    "@prisma/client": "^5.6.0",
+    "@prisma/extension-read-replicas": "^0.3.0"
+  },
+  "devDependencies": {
+    "@app/config": "*",
+    "prisma": "^5.6.0",
+    "prisma-import": "^1.0.5"
+  },
+  "prisma": {
+    "import": {
+      "schemas": "schema/models/**/*.prisma",
+      "output": "schema/schema.prisma"
+    },
+    "schema": "schema/schema.prisma"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
