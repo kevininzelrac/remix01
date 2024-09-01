@@ -174,23 +174,21 @@ type _AbstractFilterFilterType<F> =
   F extends AbstractFilter<unknown[], infer Filter> ? Filter : never;
 type _AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
-type _ToCondition<V> = V extends (...args: any[]) => any
-  ? FunctionFilter<Parameters<V>, _UnwrapAwaitable<ReturnType<V>>>
-  // If exactly undefined
-  : [V] extends [undefined]
-    ? undefined extends V
-      ? BooleanFilter<unknown>
-      : LiteralFilter<V>
-    : LiteralFilter<V>;
+type _ToCondition<V> =
+  V extends AbstractFilter<unknown[], unknown>
+    ? V
+    : V extends (...args: any[]) => any
+      ? FunctionFilter<Parameters<V>, _UnwrapAwaitable<ReturnType<V>>>
+      : // If exactly undefined
+        [V] extends [undefined]
+        ? undefined extends V
+          ? BooleanFilter<unknown>
+          : LiteralFilter<V>
+        : LiteralFilter<V>;
 type _UnwrapAwaitable<T> = T extends Promise<infer I> ? I : T;
 
-type Test_1 = {};
-type Test_2 = AddRule<Test_1, "read", "Post", AbstractFilter<[], string>>;
-type Test_3 = AddRule<Test_2, "read", "Post", AbstractFilter<[string], string>>;
-
-function main() {
-  const test: Test_3 = {} as any;
-  const filter = test.read.Post[0];
+class Rule<FilterType extends AbstractFilter<unknown[], unknown>> {
+  constructor(public filters: FilterType[] = []) {}
 }
 
 interface QueryEngine {
@@ -235,4 +233,11 @@ class FunctionFilter<Args extends unknown[], Filter> extends AbstractFilter<
   }
 }
 
-const rules = new RuleSet();
+type Test_1 = {};
+type Test_2 = AddRule<Test_1, "read", "Post", AbstractFilter<[], string>>;
+type Test_3 = AddRule<Test_2, "read", "Post", AbstractFilter<[string], string>>;
+
+function main() {
+  const test: Test_3 = {} as any;
+  const filter = test.read.Post[0];
+}
