@@ -174,6 +174,15 @@ type _AbstractFilterFilterType<F> =
   F extends AbstractFilter<unknown[], infer Filter> ? Filter : never;
 type _AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
+type _ToCondition<V> = V extends (...args: any[]) => any
+  ? FunctionFilter<Parameters<V>, _UnwrapAwaitable<ReturnType<V>>>
+  // If exactly undefined
+  : [V] extends [undefined]
+    ? undefined extends V
+      ? BooleanFilter<unknown>
+      : LiteralFilter<V>
+    : LiteralFilter<V>;
+type _UnwrapAwaitable<T> = T extends Promise<infer I> ? I : T;
 
 type Test_1 = {};
 type Test_2 = AddRule<Test_1, "read", "Post", AbstractFilter<[], string>>;
