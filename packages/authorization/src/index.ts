@@ -167,6 +167,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
     throw new Error("Not implemented.");
   }
 
+  // Signature/Implementation
   public accessible<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
