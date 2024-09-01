@@ -83,13 +83,13 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
         condition = new LiteralFilter(condition);
       }
     }
-    if (!(subjectType in this.rules)) {
-      (this as any).rules[subjectType] = {};
+    if (!(action in this.rules)) {
+      (this as any).rules[action] = {};
     }
-    if (!(action in (this as any).rules[subjectType])) {
-      (this as any).rules[subjectType][action] = new Rule();
+    if (!(subjectType in (this as any).rules[action])) {
+      (this as any).rules[action][subjectType] = new Rule();
     }
-    const rule: Rule<any> = (this as any).rules[subjectType][action];
+    const rule: Rule<any> = (this as any).rules[action][subjectType];
     rule.filters.push(condition);
     return this;
   }
