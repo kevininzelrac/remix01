@@ -308,7 +308,7 @@ type _AbstractFilterFilterType<F> =
 type _AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
 
-interface QueryEngine<SubjectTypeFilters extends {}> {}
+abstract class QueryEngine<SubjectTypeFilters extends {}> {}
 
 abstract class AbstractFilter<Args extends any[], Filter> {
   abstract getFilter(...args: Args): Awaitable<Filter>;
