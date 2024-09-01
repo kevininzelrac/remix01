@@ -24,26 +24,6 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends (
-      ...args: unknown[]
-    ) => Awaitable<SubjectTypeFilters[SubjectType]>,
-  >(
-    action: Action,
-    subjectType: SubjectType,
-    condition: Condition
-  ): RuleSet<
-    SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
-    >
-  >;
-  public allow<
-    Action extends string,
-    SubjectType extends keyof SubjectTypeFilters,
     Condition extends SubjectTypeFilters[SubjectType],
   >(
     action: Action,
@@ -62,10 +42,27 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends AbstractFilter<
-      unknown[],
-      SubjectTypeFilters[SubjectType]
-    >,
+    Condition extends (
+      ...args: any[]
+    ) => Awaitable<SubjectTypeFilters[SubjectType]>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    condition: Condition
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+    >
+  >;
+  public allow<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+    Condition extends AbstractFilter<any[], SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -106,7 +103,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   public forbid<
     Action extends string,
     SubjectType extends string,
-    Condition extends AbstractFilter<unknown[], unknown>,
+    Condition extends AbstractFilter<any[], unknown>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -117,7 +114,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   public forbid<
     Action extends string,
     SubjectType extends string,
-    Condition extends AbstractFilter<unknown[], unknown>,
+    Condition extends AbstractFilter<any[], unknown>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -134,7 +131,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   */
 }
 
-class Rule<FilterType extends AbstractFilter<unknown[], unknown>> {
+class Rule<FilterType extends AbstractFilter<any[], unknown>> {
   constructor(public filters: FilterType[] = []) {}
 }
 
@@ -146,17 +143,17 @@ type Awaitable<T> = T | Promise<T>;
 type ToAbstractFilter<
   Filter,
   Condition extends
-    | ((...args: unknown[]) => Awaitable<Filter>)
+    | ((...args: any[]) => Awaitable<Filter>)
     | Filter
-    | AbstractFilter<unknown[], Filter>
+    | AbstractFilter<any[], Filter>
     | undefined,
 > = [Condition] extends [undefined]
   ? BooleanFilter<Filter>
-  : Condition extends AbstractFilter<unknown[], Filter>
+  : Condition extends AbstractFilter<any[], Filter>
     ? Condition
     : Condition extends Filter
       ? AbstractFilter<[], Filter>
-      : Condition extends (...args: unknown[]) => Awaitable<Filter>
+      : Condition extends (...args: any[]) => Awaitable<Filter>
         ? FunctionFilter<Parameters<Condition>, Filter>
         : never;
 
@@ -168,7 +165,7 @@ type AddRule<
   Repository extends {},
   Action extends string,
   SubjectType extends keyof SubjectTypeFilters,
-  Condition extends AbstractFilter<unknown[], unknown>,
+  Condition extends AbstractFilter<any[], unknown>,
   _RuleType = _AddRule_1<
     SubjectType extends keyof Repository
       ? Repository[SubjectType] extends {}
@@ -190,8 +187,8 @@ type AddRule<
 type _AddRule_1<
   SubjectTypeRepository extends {},
   Action extends string,
-  Condition extends AbstractFilter<unknown[], unknown>,
-  _FilterType extends AbstractFilter<unknown[], unknown> = _AddRule_2<
+  Condition extends AbstractFilter<any[], unknown>,
+  _FilterType extends AbstractFilter<any[], unknown> = _AddRule_2<
     Action extends keyof SubjectTypeRepository
       ? SubjectTypeRepository[Action] extends Rule<
           infer _ExistingRuleFilterType
@@ -211,9 +208,9 @@ type _AddRule_1<
  * Create an AbstractFilter by compounding the existing types.
  */
 type _AddRule_2<
-  Existing extends AbstractFilter<unknown[], unknown>,
-  Condition extends AbstractFilter<unknown[], unknown>,
-  _CompoundArgs extends unknown[] = _AddRule_3<Existing, Condition>,
+  Existing extends AbstractFilter<any[], unknown>,
+  Condition extends AbstractFilter<any[], unknown>,
+  _CompoundArgs extends any[] = _AddRule_3<Existing, Condition>,
   _InferredFilter = _AddRule_4<Existing, Condition>,
 > = [_InferredFilter] extends [never]
   ? never
@@ -226,13 +223,13 @@ type _AddRule_2<
  * and the new condition.
  */
 type _AddRule_3<
-  Existing extends AbstractFilter<unknown[], unknown>,
-  Condition extends AbstractFilter<unknown[], unknown>,
-  _ExistingArgs extends unknown[] = _AbstractFilterArgsType<Existing>,
-  _ConditionArgs extends unknown[] = _AbstractFilterArgsType<Condition>,
-> = _ExistingArgs extends [..._ConditionArgs, ...unknown[]]
+  Existing extends AbstractFilter<any[], unknown>,
+  Condition extends AbstractFilter<any[], unknown>,
+  _ExistingArgs extends any[] = _AbstractFilterArgsType<Existing>,
+  _ConditionArgs extends any[] = _AbstractFilterArgsType<Condition>,
+> = _ExistingArgs extends [..._ConditionArgs, ...any[]]
   ? _ExistingArgs
-  : _ConditionArgs extends [..._ExistingArgs, ...unknown[]]
+  : _ConditionArgs extends [..._ExistingArgs, ...any[]]
     ? _ConditionArgs
     : never;
 
@@ -240,8 +237,8 @@ type _AddRule_3<
  * If both filter types match, return that. Otherwise the type is invalid.
  */
 type _AddRule_4<
-  Existing extends AbstractFilter<unknown[], unknown>,
-  Condition extends AbstractFilter<unknown[], unknown>,
+  Existing extends AbstractFilter<any[], unknown>,
+  Condition extends AbstractFilter<any[], unknown>,
   _InferredExistingFilter = _AbstractFilterFilterType<Existing>,
   _InferredConditionFilter = _AbstractFilterFilterType<Condition>,
 > = _InferredExistingFilter extends _InferredConditionFilter
@@ -251,17 +248,17 @@ type _AddRule_4<
   : never;
 
 type _AbstractFilterFilterType<F> =
-  F extends AbstractFilter<unknown[], infer Filter> ? Filter : never;
+  F extends AbstractFilter<any[], infer Filter> ? Filter : never;
 type _AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
 
 interface QueryEngine<SubjectTypeFilters extends {}> {}
 
-abstract class AbstractFilter<Args extends unknown[], Filter> {
+abstract class AbstractFilter<Args extends any[], Filter> {
   abstract getFilter(...args: Args): Awaitable<Filter>;
 }
 
-class BooleanFilter<Filter> extends AbstractFilter<unknown[], Filter> {
+class BooleanFilter<Filter> extends AbstractFilter<any[], Filter> {
   constructor(private flag: boolean) {
     super();
   }
@@ -271,7 +268,7 @@ class BooleanFilter<Filter> extends AbstractFilter<unknown[], Filter> {
   }
 }
 
-class LiteralFilter<Filter> extends AbstractFilter<unknown[], Filter> {
+class LiteralFilter<Filter> extends AbstractFilter<any[], Filter> {
   constructor(private filter: Filter) {
     super();
   }
@@ -281,7 +278,7 @@ class LiteralFilter<Filter> extends AbstractFilter<unknown[], Filter> {
   }
 }
 
-class FunctionFilter<Args extends unknown[], Filter> extends AbstractFilter<
+class FunctionFilter<Args extends any[], Filter> extends AbstractFilter<
   Args,
   Filter
 > {
@@ -296,7 +293,10 @@ class FunctionFilter<Args extends unknown[], Filter> extends AbstractFilter<
 
 type Test_SubjectTypeFilters = {
   posts: number;
-  comments: string;
+  comments: {
+    first: number;
+    second?: number;
+  };
 };
 type Test_1 = {};
 type Test_2 = AddRule<
@@ -319,7 +319,6 @@ function main() {
   const filter = test.posts.read.filters[0];
 }
 
-const queryEngine = new PrismaQueryEngine();
-const rules = new RuleSet(
-  queryEngine as any as QueryEngine<Test_SubjectTypeFilters>
-).allow();
+const rules = new RuleSet({} as any as QueryEngine<Test_SubjectTypeFilters>)
+  .allow("read", "posts")
+  .allow("create", "comments");
