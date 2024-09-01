@@ -169,18 +169,18 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
 
   // Signature/Implementation
   public accessible<
-    Action extends string,
-    SubjectType extends keyof SubjectTypeFilters,
+    Action extends keyof Repository,
+    SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
   >(
     action: Action,
     subjectType: SubjectType
   ): Awaitable<SubjectTypeFilters[SubjectType]> {
-    throw new Error("Not implemented.")
+    throw new Error("Not implemented.");
   }
 
   /*
   FIXME: HAVE NOT DECIDED HOW THESE MUST WORK.
-  public can<A extends keyof R, T extends keyof R[A]>(action: A, subjectType: T) {}
+  public can(action: A, subjectType: T) {}
   public cannot(action: A, subjectType: T) {}
   */
 }
@@ -221,30 +221,32 @@ type AddRule<
   SubjectType extends keyof SubjectTypeFilters,
   Condition extends AbstractFilter<any[], unknown>,
   _RuleType = _AddRule_1<
-    SubjectType extends keyof Repository
-      ? Repository[SubjectType] extends {}
-        ? Repository[SubjectType]
+    SubjectTypeFilters,
+    Action extends keyof Repository
+      ? Repository[Action] extends {}
+        ? Repository[Action]
         : never
       : {},
-    Action,
+    SubjectType,
     Condition
   >,
 > = [_RuleType] extends [never]
   ? never
   : Omit<Repository, SubjectType> & {
-      [key in SubjectType]: _RuleType;
+      [key in Action]: _RuleType;
     };
 
 /**
  * Set the compounded abstract filter at the second level.
  */
 type _AddRule_1<
-  SubjectTypeRepository extends {},
-  Action extends string,
+  SubjectTypeFilters extends {},
+  ActionRepository extends {},
+  SubjectType extends keyof SubjectTypeFilters,
   Condition extends AbstractFilter<any[], unknown>,
   _FilterType extends AbstractFilter<any[], unknown> = _AddRule_2<
-    Action extends keyof SubjectTypeRepository
-      ? SubjectTypeRepository[Action] extends Rule<
+    SubjectType extends keyof ActionRepository
+      ? ActionRepository[SubjectType] extends Rule<
           infer _ExistingRuleFilterType
         >
         ? _ExistingRuleFilterType
@@ -254,8 +256,8 @@ type _AddRule_1<
   >,
 > = [_FilterType] extends [never]
   ? never
-  : Omit<SubjectTypeRepository, Action> & {
-      [key in Action]: Rule<_FilterType>;
+  : Omit<ActionRepository, SubjectType> & {
+      [key in SubjectType]: Rule<_FilterType>;
     };
 
 /**
@@ -375,4 +377,5 @@ function main() {
 
 const rules = new RuleSet({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
-  .forbid("create", "comments", { first: 100 });
+  .forbid("create", "comments", { first: 100 })
+  .accessible("read", "posts");
