@@ -94,40 +94,93 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
     return this;
   }
 
-  /*
   // Signature
-  public forbid<Action extends string, SubjectType extends string, Filter>(
-    action: Action,
-    subjectType: SubjectType
-  ): AddRule<Repository, Action, SubjectType, BooleanFilter<Filter>>;
   public forbid<
     Action extends string,
-    SubjectType extends string,
-    Condition extends AbstractFilter<any[], unknown>,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(
+    action: Action,
+    subjectType: SubjectType
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      BooleanFilter<SubjectTypeFilters[SubjectType]>
+    >
+  >;
+  public forbid<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+    Condition extends SubjectTypeFilters[SubjectType],
   >(
     action: Action,
     subjectType: SubjectType,
     condition: Condition
-  ): AddRule<Repository, Action, SubjectType, Condition>;
-
-  // Implementation
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      LiteralFilter<Condition>
+    >
+  >;
   public forbid<
     Action extends string,
-    SubjectType extends string,
-    Condition extends AbstractFilter<any[], unknown>,
+    SubjectType extends keyof SubjectTypeFilters,
+    Condition extends (
+      ...args: any[]
+    ) => Awaitable<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
-    condition?: Condition
-  ): AddRule<Repository, Action, SubjectType, Condition> {
+    condition: Condition
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+    >
+  >;
+  public forbid<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+    Condition extends AbstractFilter<any[], SubjectTypeFilters[SubjectType]>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    condition: Condition
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, Condition>
+  >;
+
+  // Implementation
+  public forbid(action: any, subjectType: any, condition?: any): any {
     throw new Error("Not implemented.");
   }
 
+  public accessible<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(
+    action: Action,
+    subjectType: SubjectType
+  ): Awaitable<SubjectTypeFilters[SubjectType]> {
+    throw new Error("Not implemented.")
+  }
+
+  /*
+  FIXME: HAVE NOT DECIDED HOW THESE MUST WORK.
   public can<A extends keyof R, T extends keyof R[A]>(action: A, subjectType: T) {}
-
   public cannot(action: A, subjectType: T) {}
-
-  public accessible(action: A, subjectType: T): F {}
   */
 }
 
@@ -321,4 +374,4 @@ function main() {
 
 const rules = new RuleSet({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
-  .allow("create", "comments");
+  .forbid("create", "comments", { first: 100 });
