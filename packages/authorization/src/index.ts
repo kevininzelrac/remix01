@@ -190,7 +190,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
       );
     }
 
-    const filterset = await Promise.all(
+    const filterset = (await Promise.all(
       rule.filters.map(async (item) => {
         const filter = await (
           item as AbstractFilter<Args, SubjectTypeFilters[SubjectType]>
@@ -206,15 +206,9 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
           return this.queryEngine.none();
         }
       })
-    ) as SubjectTypeFilters[SubjectType][];
+    )) as SubjectTypeFilters[SubjectType][];
 
-    let result = filterset[0];
-    for (let idx = 1; idx < filterset.length; idx += 1) {
-      result = this.queryEngine.and(result, filterset[idx]);
-      idx += 1;
-    }
-
-    return result;
+    return this.queryEngine.and(...filterset);
   }
 
   /*
@@ -363,8 +357,7 @@ abstract class QueryEngine<SubjectTypeFilters extends {}> {
     SubjectType extends keyof SubjectTypeFilters,
   >(): SubjectTypeFilters[SubjectType];
   abstract and<SubjectType extends keyof SubjectTypeFilters>(
-    lhs: SubjectTypeFilters[SubjectType],
-    rhs: SubjectTypeFilters[SubjectType]
+    ...terms: SubjectTypeFilters[SubjectType][]
   ): SubjectTypeFilters[SubjectType];
 }
 
