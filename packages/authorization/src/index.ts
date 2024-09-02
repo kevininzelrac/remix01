@@ -182,15 +182,20 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
           Args,
           SubjectTypeFilters[SubjectType]
         >;
-        const filter = await filterGenerator.getFilter(...args);
+        let filter = (await filterGenerator.getFilter(
+          ...args
+        )) as SubjectTypeFilters[SubjectType] | boolean;
 
         if (typeof filter !== "boolean") {
           if (filterGenerator.negate) {
-            return this.queryEngine.negate(filter);
+            filter = this.queryEngine.negate(filter);
           }
           return filter;
         }
 
+        if (filterGenerator.negate) {
+          filter = !filter;
+        }
         if (filter) {
           return this.queryEngine.all();
         } else {
