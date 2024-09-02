@@ -78,18 +78,15 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
     if (!(condition instanceof AbstractFilter)) {
       if (typeof condition === "function") {
         condition = new FunctionFilter(condition);
-      } else if (typeof condition === undefined) {
+      } else if (typeof condition === "undefined") {
         condition = new LiteralFilter(true);
       } else {
         condition = new LiteralFilter(condition);
       }
     }
-    if (!(action in this.rules)) {
-      (this as any).rules[action] = {};
-    }
-    if (!(subjectType in (this as any).rules[action])) {
-      (this as any).rules[action][subjectType] = new Rule();
-    }
+    (this as any).rules[action] = (this as any).rules[action] ?? {};
+    (this as any).rules[action][subjectType] =
+      (this as any).rules[action][subjectType] ?? new Rule();
     const rule: Rule<any> = (this as any).rules[action][subjectType];
     rule.filters.push(condition);
     return this;
@@ -170,14 +167,54 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   }
 
   // Signature/Implementation
-  public accessible<
+  public async accessible<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    CurrentRule extends Repository[Action][SubjectType] &
+      Rule<AbstractFilter<any[], unknown>>,
+    Args extends _RuleArgs<CurrentRule>,
   >(
     action: Action,
-    subjectType: SubjectType
-  ): Awaitable<SubjectTypeFilters[SubjectType]> {
-    throw new Error("Not implemented.");
+    subjectType: SubjectType,
+    ...args: Args
+  ): Promise<SubjectTypeFilters[SubjectType]> {
+    const rule: CurrentRule = this.rules[action][subjectType] as any;
+    if (!rule) {
+      throw new Error(
+        `No rule found for action: ${action as string}, subject type: ${subjectType as string}.`
+      );
+    }
+    if (rule.filters.length === 0) {
+      throw new Error(
+        `No filters found on rule for action: ${action as string}, subject type: ${subjectType as string}.`
+      );
+    }
+
+    const filterset = await Promise.all(
+      rule.filters.map(async (item) => {
+        const filter = await (
+          item as AbstractFilter<Args, SubjectTypeFilters[SubjectType]>
+        ).getFilter(...args);
+
+        if (typeof filter !== "boolean") {
+          return filter;
+        }
+
+        if (filter) {
+          return this.queryEngine.all();
+        } else {
+          return this.queryEngine.none();
+        }
+      })
+    ) as SubjectTypeFilters[SubjectType][];
+
+    let result = filterset[0];
+    for (let idx = 1; idx < filterset.length; idx += 1) {
+      result = this.queryEngine.and(result, filterset[idx]);
+      idx += 1;
+    }
+
+    return result;
   }
 
   /*
@@ -315,8 +352,21 @@ type _AbstractFilterFilterType<F> =
   F extends AbstractFilter<any[], infer Filter> ? Filter : never;
 type _AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
+type _RuleArgs<R> =
+  R extends Rule<AbstractFilter<infer Args, unknown>> ? Args : never;
 
-abstract class QueryEngine<SubjectTypeFilters extends {}> {}
+abstract class QueryEngine<SubjectTypeFilters extends {}> {
+  abstract all<
+    SubjectType extends keyof SubjectTypeFilters,
+  >(): SubjectTypeFilters[SubjectType];
+  abstract none<
+    SubjectType extends keyof SubjectTypeFilters,
+  >(): SubjectTypeFilters[SubjectType];
+  abstract and<SubjectType extends keyof SubjectTypeFilters>(
+    lhs: SubjectTypeFilters[SubjectType],
+    rhs: SubjectTypeFilters[SubjectType]
+  ): SubjectTypeFilters[SubjectType];
+}
 
 abstract class AbstractFilter<Args extends any[], Filter> {
   abstract getFilter: FunctionFilterCallback<Args, Filter>;
@@ -352,26 +402,6 @@ type Test_SubjectTypeFilters = {
     second?: number;
   };
 };
-type Test_1 = {};
-type Test_2 = AddRule<
-  Test_SubjectTypeFilters,
-  Test_1,
-  "read",
-  "posts",
-  AbstractFilter<[], number>
->;
-type Test_3 = AddRule<
-  Test_SubjectTypeFilters,
-  Test_2,
-  "read",
-  "posts",
-  AbstractFilter<[string, number], number>
->;
-
-function main() {
-  const test: Test_3 = {} as any;
-  const filter = test.posts.read.filters[0];
-}
 
 const rules = new RuleSet({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
