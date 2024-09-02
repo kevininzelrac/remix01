@@ -18,7 +18,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
       Repository,
       Action,
       SubjectType,
-      BooleanFilter<SubjectTypeFilters[SubjectType]>
+      LiteralFilter<SubjectTypeFilters[SubjectType]>
     >
   >;
   public allow<
@@ -75,10 +75,10 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   // Implementation
   public allow(action: any, subjectType: any, condition?: any): any {
     if (!(condition instanceof AbstractFilter)) {
-      if (typeof condition === undefined) {
-        condition = new BooleanFilter(true);
-      } else if (typeof condition === "function") {
+      if (typeof condition === "function") {
         condition = new FunctionFilter(condition);
+      } else if (typeof condition === undefined) {
+        condition = new LiteralFilter(true);
       } else {
         condition = new LiteralFilter(condition);
       }
@@ -108,7 +108,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
       Repository,
       Action,
       SubjectType,
-      BooleanFilter<SubjectTypeFilters[SubjectType]>
+      LiteralFilter<SubjectTypeFilters[SubjectType]>
     >
   >;
   public forbid<
@@ -197,19 +197,22 @@ type Awaitable<T> = T | Promise<T>;
 type ToAbstractFilter<
   Filter,
   Condition extends
-    | ((...args: any[]) => Awaitable<Filter>)
+    | ((...args: any[]) => Awaitable<Filter | boolean>)
     | Filter
+    | boolean
     | AbstractFilter<any[], Filter>
     | undefined,
 > = [Condition] extends [undefined]
-  ? BooleanFilter<Filter>
+  ? LiteralFilter<Filter>
   : Condition extends AbstractFilter<any[], Filter>
     ? Condition
-    : Condition extends Filter
-      ? AbstractFilter<[], Filter>
-      : Condition extends (...args: any[]) => Awaitable<Filter>
-        ? FunctionFilter<Parameters<Condition>, Filter>
-        : never;
+    : Condition extends boolean
+      ? LiteralFilter<Filter>
+      : Condition extends Filter
+        ? LiteralFilter<Filter>
+        : Condition extends (...args: any[]) => Awaitable<Filter | boolean>
+          ? FunctionFilter<Parameters<Condition>, Filter>
+          : never;
 
 /**
  * Add a rule to the ruleset.
@@ -311,25 +314,15 @@ type _AbstractFilterArgsType<F> =
 abstract class QueryEngine<SubjectTypeFilters extends {}> {}
 
 abstract class AbstractFilter<Args extends any[], Filter> {
-  abstract getFilter(...args: Args): Awaitable<Filter>;
-}
-
-class BooleanFilter<Filter> extends AbstractFilter<any[], Filter> {
-  constructor(private flag: boolean) {
-    super();
-  }
-
-  getFilter(): Filter {
-    throw new Error("Not implemented");
-  }
+  abstract getFilter(...args: Args): Awaitable<Filter | boolean>;
 }
 
 class LiteralFilter<Filter> extends AbstractFilter<any[], Filter> {
-  constructor(private filter: Filter) {
+  constructor(private filter: Filter | boolean) {
     super();
   }
 
-  getFilter(): Filter {
+  getFilter(): Filter | boolean {
     return this.filter;
   }
 }
@@ -338,11 +331,11 @@ class FunctionFilter<Args extends any[], Filter> extends AbstractFilter<
   Args,
   Filter
 > {
-  constructor(private fn: (...args: Args) => Awaitable<Filter>) {
+  constructor(private fn: (...args: Args) => Awaitable<Filter | boolean>) {
     super();
   }
 
-  getFilter(...args: Args): Awaitable<Filter> {
+  getFilter(...args: Args): Awaitable<Filter | boolean> {
     return this.fn(...args);
   }
 }
