@@ -1,8 +1,24 @@
-class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
-  constructor(
+class RuleSet<
+  SubjectTypeFilters extends {},
+  Repository extends {
+    [Action in string]?: {
+      [SubjectType in keyof SubjectTypeFilters]?: Rule<
+        AbstractFilter<any[], SubjectTypeFilters[SubjectType]>
+      >;
+    };
+  } = {},
+> {
+  private constructor(
     private queryEngine: QueryEngine<SubjectTypeFilters>,
-    private rules: Repository = {} as unknown as Repository
+    private rules: Repository
   ) {}
+
+  // Constructors
+  public static new<STF extends {}>(
+    queryEngine: QueryEngine<STF>
+  ): RuleSet<STF, {}> {
+    return new RuleSet(queryEngine, {});
+  }
 
   // Signature
   public allow<
@@ -74,7 +90,10 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   >;
 
   // Implementation
-  public allow(action: any, subjectType: any, condition?: any): any {
+  public allow<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(action: Action, subjectType: SubjectType, condition?: any): any {
     return this._addRule(false, action, subjectType, condition);
   }
 
@@ -148,7 +167,10 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   >;
 
   // Implementation
-  public forbid(action: any, subjectType: any, condition?: any): any {
+  public forbid<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(action: Action, subjectType: SubjectType, condition?: any): any {
     return this._addRule(true, action, subjectType, condition);
   }
 
@@ -156,15 +178,18 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   public async accessible<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
-    CurrentRule extends Repository[Action][SubjectType] &
-      Rule<AbstractFilter<any[], unknown>>,
-    Args extends _RuleArgs<CurrentRule>,
+    Args extends _RuleArgs<Repository[Action][SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
     ...args: Args
   ): Promise<SubjectTypeFilters[SubjectType]> {
-    const rule: CurrentRule = this.rules[action][subjectType] as any;
+    const actionConfig = this.rules[action];
+    if (!actionConfig) {
+      throw new Error(`No rule found for action: ${action as string}.`);
+    }
+
+    const rule = actionConfig[subjectType];
     if (!rule) {
       throw new Error(
         `No rule found for action: ${action as string}, subject type: ${subjectType as string}.`
@@ -177,31 +202,29 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
     }
 
     const filterset = (await Promise.all(
-      rule.filters.map(async (item) => {
-        const filterGenerator = item as AbstractFilter<
-          Args,
-          SubjectTypeFilters[SubjectType]
-        >;
-        let filter = (await filterGenerator.getFilter(
-          ...args
-        )) as SubjectTypeFilters[SubjectType] | boolean;
+      rule.filters.map(
+        async (item: AbstractFilter<Args, SubjectTypeFilters[SubjectType]>) => {
+          let filter = (await item.getFilter(...args)) as
+            | boolean
+            | SubjectTypeFilters[SubjectType];
 
-        if (typeof filter !== "boolean") {
-          if (filterGenerator.negate) {
-            filter = this.queryEngine.negate(filter);
+          if (typeof filter !== "boolean") {
+            if (item.negate) {
+              filter = this.queryEngine.negate(filter);
+            }
+            return filter;
           }
-          return filter;
-        }
 
-        if (filterGenerator.negate) {
-          filter = !filter;
+          if (item.negate) {
+            filter = !filter;
+          }
+          if (filter) {
+            return this.queryEngine.all();
+          } else {
+            return this.queryEngine.none();
+          }
         }
-        if (filter) {
-          return this.queryEngine.all();
-        } else {
-          return this.queryEngine.none();
-        }
-      })
+      )
     )) as SubjectTypeFilters[SubjectType][];
 
     return this.queryEngine.and(...filterset);
@@ -214,10 +237,13 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   */
 
   // Private methods
-  private _addRule(
+  private _addRule<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(
     negate: boolean,
-    action: any,
-    subjectType: any,
+    action: Action,
+    subjectType: SubjectType,
     condition?: any
   ): any {
     if (!(condition instanceof AbstractFilter)) {
@@ -229,10 +255,10 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
         condition = new LiteralFilter(negate, condition);
       }
     }
-    (this as any).rules[action] = (this as any).rules[action] ?? {};
-    (this as any).rules[action][subjectType] =
-      (this as any).rules[action][subjectType] ?? new Rule();
-    const rule: Rule<any> = (this as any).rules[action][subjectType];
+    this.rules[action] = this.rules[action] ?? ({} as any);
+    this.rules[action]![subjectType] =
+      this.rules[action]![subjectType] ?? (new Rule() as any);
+    const rule = this.rules[action]![subjectType]!;
     rule.filters.push(condition);
     return this;
   }
@@ -427,7 +453,7 @@ type Test_SubjectTypeFilters = {
   };
 };
 
-const rules = new RuleSet({} as any as QueryEngine<Test_SubjectTypeFilters>)
+const rules = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
   .forbid("create", "comments", { first: 100 })
   .accessible("read", "posts");
