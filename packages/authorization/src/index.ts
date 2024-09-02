@@ -75,21 +75,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
 
   // Implementation
   public allow(action: any, subjectType: any, condition?: any): any {
-    if (!(condition instanceof AbstractFilter)) {
-      if (typeof condition === "function") {
-        condition = new FunctionFilter(condition);
-      } else if (typeof condition === "undefined") {
-        condition = new LiteralFilter(true);
-      } else {
-        condition = new LiteralFilter(condition);
-      }
-    }
-    (this as any).rules[action] = (this as any).rules[action] ?? {};
-    (this as any).rules[action][subjectType] =
-      (this as any).rules[action][subjectType] ?? new Rule();
-    const rule: Rule<any> = (this as any).rules[action][subjectType];
-    rule.filters.push(condition);
-    return this;
+    return this._addRule(false, action, subjectType, condition);
   }
 
   // Signature
@@ -163,7 +149,7 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
 
   // Implementation
   public forbid(action: any, subjectType: any, condition?: any): any {
-    throw new Error("Not implemented.");
+    return this._addRule(true, action, subjectType, condition);
   }
 
   // Signature/Implementation
@@ -192,11 +178,16 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
 
     const filterset = (await Promise.all(
       rule.filters.map(async (item) => {
-        const filter = await (
-          item as AbstractFilter<Args, SubjectTypeFilters[SubjectType]>
-        ).getFilter(...args);
+        const filterGenerator = item as AbstractFilter<
+          Args,
+          SubjectTypeFilters[SubjectType]
+        >;
+        const filter = await filterGenerator.getFilter(...args);
 
         if (typeof filter !== "boolean") {
+          if (filterGenerator.negate) {
+            return this.queryEngine.negate(filter);
+          }
           return filter;
         }
 
@@ -216,6 +207,30 @@ class RuleSet<SubjectTypeFilters extends {}, Repository extends {} = {}> {
   public can(action: A, subjectType: T) {}
   public cannot(action: A, subjectType: T) {}
   */
+
+  // Private methods
+  private _addRule(
+    negate: boolean,
+    action: any,
+    subjectType: any,
+    condition?: any
+  ): any {
+    if (!(condition instanceof AbstractFilter)) {
+      if (typeof condition === "function") {
+        condition = new FunctionFilter(negate, condition);
+      } else if (typeof condition === "undefined") {
+        condition = new LiteralFilter(negate, true);
+      } else {
+        condition = new LiteralFilter(negate, condition);
+      }
+    }
+    (this as any).rules[action] = (this as any).rules[action] ?? {};
+    (this as any).rules[action][subjectType] =
+      (this as any).rules[action][subjectType] ?? new Rule();
+    const rule: Rule<any> = (this as any).rules[action][subjectType];
+    rule.filters.push(condition);
+    return this;
+  }
 }
 
 class Rule<FilterType extends AbstractFilter<any[], unknown>> {
@@ -359,15 +374,23 @@ abstract class QueryEngine<SubjectTypeFilters extends {}> {
   abstract and<SubjectType extends keyof SubjectTypeFilters>(
     ...terms: SubjectTypeFilters[SubjectType][]
   ): SubjectTypeFilters[SubjectType];
+  abstract negate<SubjectType extends keyof SubjectTypeFilters>(
+    condition: SubjectTypeFilters[SubjectType]
+  ): SubjectTypeFilters[SubjectType];
 }
 
 abstract class AbstractFilter<Args extends any[], Filter> {
+  constructor(public negate: boolean) {}
+
   abstract getFilter: FunctionFilterCallback<Args, Filter>;
 }
 
 class LiteralFilter<Filter> extends AbstractFilter<any[], Filter> {
-  constructor(private filter: Filter | boolean) {
-    super();
+  constructor(
+    negate: boolean,
+    private filter: Filter | boolean
+  ) {
+    super(negate);
   }
 
   getFilter = () => {
@@ -379,8 +402,11 @@ class FunctionFilter<Args extends any[], Filter> extends AbstractFilter<
   Args,
   Filter
 > {
-  constructor(private fn: FunctionFilterCallback<Args, Filter>) {
-    super();
+  constructor(
+    negate: boolean,
+    private fn: FunctionFilterCallback<Args, Filter>
+  ) {
+    super(negate);
   }
 
   getFilter: FunctionFilterCallback<Args, Filter> = (...args) => {
