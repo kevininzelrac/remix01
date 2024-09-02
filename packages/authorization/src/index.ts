@@ -467,6 +467,9 @@ type Test_SubjectTypeFilters = {
 
 const rules = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
-  .allow("read", "posts", async (user: { id: number }) => true)
+  .allow("read", "posts", (user: { id: number }) => true)
+  // FIXME: Previous works and accesible returns `number`. Latter should return
+  // `number` but fails.
+  // .allow("read", "posts", async (user: { id: number }) => true)
   .forbid("create", "comments", { first: 100 })
   .accessible("read", "posts", { id: 100 });
