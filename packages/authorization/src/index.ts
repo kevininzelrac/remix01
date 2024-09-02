@@ -3,7 +3,7 @@ class RuleSet<
   Repository extends {
     [Action in string]?: {
       [SubjectType in keyof SubjectTypeFilters]?: Rule<
-        AbstractFilter<any[], SubjectTypeFilters[SubjectType]>
+        AbstractFilter<any[], Awaitable<SubjectTypeFilters[SubjectType]>>
       >;
     };
   } = {},
@@ -175,15 +175,14 @@ class RuleSet<
   }
 
   // Signature/Implementation
-  public async accessible<
+  public accessible<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
-    Args extends _RuleArgs<Repository[Action][SubjectType]>,
-  >(
-    action: Action,
-    subjectType: SubjectType,
-    ...args: Args
-  ): Promise<SubjectTypeFilters[SubjectType]> {
+    Args extends RuleArgs<Repository[Action][SubjectType]>,
+    Filter extends RuleFilter<Repository[Action][SubjectType]>,
+  >(action: Action, subjectType: SubjectType, ...args: Args): Filter {
+    throw new Error("Nor implemented");
+    /*
     const actionConfig = this.rules[action];
     if (!actionConfig) {
       throw new Error(`No rule found for action: ${action as string}.`);
@@ -228,14 +227,13 @@ class RuleSet<
     )) as SubjectTypeFilters[SubjectType][];
 
     return this.queryEngine.and(...filterset);
+    */
   }
 
   /*
   FIXME: HAVE NOT DECIDED HOW THESE MUST WORK.
   public can(action: A, subjectType: T) {}
   public cannot(action: A, subjectType: T) {}
-
-  FIXME: Can we implement an API that detects if a promise is returned from the rule checks?
   */
 
   // Private methods
@@ -273,7 +271,7 @@ class Rule<FilterType extends AbstractFilter<any[], unknown>> {
 type Awaitable<T> = T | Promise<T>;
 type FunctionFilterCallback<Args extends any[], Filter> = (
   ...args: Args
-) => Awaitable<Filter | boolean>;
+) => Filter | boolean;
 
 /**
  * Convert from all possible condition types to abstract filter.
@@ -382,20 +380,32 @@ type _AddRule_3<
 type _AddRule_4<
   Existing extends AbstractFilter<any[], unknown>,
   Condition extends AbstractFilter<any[], unknown>,
-  _InferredExistingFilter = _AbstractFilterFilterType<Existing>,
-  _InferredConditionFilter = _AbstractFilterFilterType<Condition>,
-> = _InferredExistingFilter extends _InferredConditionFilter
-  ? _InferredConditionFilter extends _InferredExistingFilter
-    ? _InferredExistingFilter
-    : never
-  : never;
+  _InferredExistingFilter = _UnwrapPromise<_AbstractFilterFilterType<Existing>>,
+  _InferredConditionFilter = _UnwrapPromise<
+    _AbstractFilterFilterType<Condition>
+  >,
+  _InferredFilter = _InferredExistingFilter extends _InferredConditionFilter
+    ? _InferredConditionFilter extends _InferredExistingFilter
+      ? _InferredExistingFilter
+      : never
+    : never,
+> = [_InferredFilter] extends [never]
+  ? never
+  : _AbstractFilterFilterType<Existing> extends Promise<any>
+    ? Promise<_InferredFilter>
+    : _AbstractFilterFilterType<Condition> extends Promise<any>
+      ? Promise<_InferredFilter>
+      : _InferredFilter;
 
+type _UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
 type _AbstractFilterFilterType<F> =
   F extends AbstractFilter<any[], infer Filter> ? Filter : never;
 type _AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
-type _RuleArgs<R> =
+type RuleArgs<R> =
   R extends Rule<AbstractFilter<infer Args, unknown>> ? Args : never;
+type RuleFilter<R> =
+  R extends Rule<AbstractFilter<any[], infer Filter>> ? Filter : never;
 
 abstract class QueryEngine<SubjectTypeFilters extends {}> {
   abstract all<
@@ -457,5 +467,6 @@ type Test_SubjectTypeFilters = {
 
 const rules = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
+  .allow("read", "posts", async (user: { id: number }) => true)
   .forbid("create", "comments", { first: 100 })
-  .accessible("read", "posts");
+  .accessible("read", "posts", { id: 100 });
