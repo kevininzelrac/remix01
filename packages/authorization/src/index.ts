@@ -234,6 +234,8 @@ class RuleSet<
   FIXME: HAVE NOT DECIDED HOW THESE MUST WORK.
   public can(action: A, subjectType: T) {}
   public cannot(action: A, subjectType: T) {}
+
+  FIXME: Can we implement an API that detects if a promise is returned from the rule checks?
   */
 
   // Private methods
