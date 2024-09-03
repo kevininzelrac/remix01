@@ -79,6 +79,27 @@ class RuleSet<
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
+    Condition extends PromiseFunctionFilterCallback<
+      any[],
+      SubjectTypeFilters[SubjectType]
+    >,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    condition: Condition
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+    >
+  >;
+  public allow<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
     Condition extends AbstractFilter<any[], SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
@@ -272,6 +293,9 @@ type Awaitable<T> = T | Promise<T>;
 type FunctionFilterCallback<Args extends any[], Filter> = (
   ...args: Args
 ) => Filter | boolean;
+type PromiseFunctionFilterCallback<Args extends any[], Filter> = (
+  ...args: Args
+) => Promise<Filter | boolean>;
 
 /**
  * Convert from all possible condition types to abstract filter.
@@ -467,9 +491,9 @@ type Test_SubjectTypeFilters = {
 
 const rules = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
-  .allow("read", "posts", (user: { id: number }) => true)
+  // .allow("read", "posts", (user: { id: number }) => true)
   // FIXME: Previous works and accesible returns `number`. Latter should return
   // `number` but fails.
-  // .allow("read", "posts", async (user: { id: number }) => true)
+  .allow("read", "posts", async (user: { id: number }) => true)
   .forbid("create", "comments", { first: 100 })
   .accessible("read", "posts", { id: 100 });
