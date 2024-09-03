@@ -58,7 +58,7 @@ class RuleSet<
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends FunctionFilterCallback<
+    Condition extends PromiseFunctionFilterCallback<
       any[],
       SubjectTypeFilters[SubjectType]
     >,
@@ -73,13 +73,13 @@ class RuleSet<
       Repository,
       Action,
       SubjectType,
-      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+      FunctionFilter<Parameters<Condition>, Promise<SubjectTypeFilters[SubjectType]>>
     >
   >;
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends PromiseFunctionFilterCallback<
+    Condition extends FunctionFilterCallback<
       any[],
       SubjectTypeFilters[SubjectType]
     >,
@@ -156,7 +156,7 @@ class RuleSet<
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends FunctionFilterCallback<
+    Condition extends PromiseFunctionFilterCallback<
       any[],
       SubjectTypeFilters[SubjectType]
     >,
@@ -171,13 +171,13 @@ class RuleSet<
       Repository,
       Action,
       SubjectType,
-      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+      FunctionFilter<Parameters<Condition>, Promise<SubjectTypeFilters[SubjectType]>>
     >
   >;
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends PromiseFunctionFilterCallback<
+    Condition extends FunctionFilterCallback<
       any[],
       SubjectTypeFilters[SubjectType]
     >,
@@ -512,9 +512,6 @@ type Test_SubjectTypeFilters = {
 
 const rules = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
-  // .allow("read", "posts", (user: { id: number }) => true)
-  // FIXME: Previous works and accesible returns `number`. Latter should return
-  // `number` but fails.
   .allow("read", "posts", async (user: { id: number }) => true)
   .forbid("create", "comments", { first: 100 })
   .accessible("read", "posts", { id: 100 });
