@@ -73,7 +73,10 @@ class RuleSet<
       Repository,
       Action,
       SubjectType,
-      FunctionFilter<Parameters<Condition>, Promise<SubjectTypeFilters[SubjectType]>>
+      FunctionFilter<
+        Parameters<Condition>,
+        Promise<SubjectTypeFilters[SubjectType]>
+      >
     >
   >;
   public allow<
@@ -171,7 +174,10 @@ class RuleSet<
       Repository,
       Action,
       SubjectType,
-      FunctionFilter<Parameters<Condition>, Promise<SubjectTypeFilters[SubjectType]>>
+      FunctionFilter<
+        Parameters<Condition>,
+        Promise<SubjectTypeFilters[SubjectType]>
+      >
     >
   >;
   public forbid<
@@ -221,10 +227,9 @@ class RuleSet<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
     Args extends RuleArgs<Repository[Action][SubjectType]>,
-    Filter extends RuleFilter<Repository[Action][SubjectType]>,
+    Filter extends RuleFilter<Repository[Action][SubjectType]> &
+      SubjectTypeFilters[SubjectType],
   >(action: Action, subjectType: SubjectType, ...args: Args): Filter {
-    throw new Error("Nor implemented");
-    /*
     const actionConfig = this.rules[action];
     if (!actionConfig) {
       throw new Error(`No rule found for action: ${action as string}.`);
@@ -236,40 +241,43 @@ class RuleSet<
         `No rule found for action: ${action as string}, subject type: ${subjectType as string}.`
       );
     }
+
     if (rule.filters.length === 0) {
       throw new Error(
         `No filters found on rule for action: ${action as string}, subject type: ${subjectType as string}.`
       );
     }
 
-    const filterset = (await Promise.all(
-      rule.filters.map(
-        async (item: AbstractFilter<Args, SubjectTypeFilters[SubjectType]>) => {
-          let filter = (await item.getFilter(...args)) as
-            | boolean
-            | SubjectTypeFilters[SubjectType];
-
-          if (typeof filter !== "boolean") {
-            if (item.negate) {
-              filter = this.queryEngine.negate(filter);
-            }
-            return filter;
-          }
-
-          if (item.negate) {
-            filter = !filter;
-          }
-          if (filter) {
-            return this.queryEngine.all();
-          } else {
-            return this.queryEngine.none();
-          }
-        }
+    const filterset = rule.filters.map((item) =>
+      (item as AbstractFilter<Args, SubjectTypeFilters[SubjectType]>).getFilter(
+        ...args
       )
-    )) as SubjectTypeFilters[SubjectType][];
+    );
 
-    return this.queryEngine.and(...filterset);
-    */
+    if (this._hasPromiseElement(filterset)) {
+      return Promise.all(filterset).then(
+        (conditions: (boolean | SubjectTypeFilters[SubjectType])[]) =>
+          this._getQueryEngineCondition(
+            subjectType,
+            rule.filters as AbstractFilter<
+              any[],
+              SubjectTypeFilters[SubjectType]
+            >[],
+            conditions
+          )
+      );
+    } else {
+      return this._getQueryEngineCondition(
+        subjectType,
+        rule.filters as AbstractFilter<
+          any[],
+          SubjectTypeFilters[SubjectType]
+        >[],
+        filterset as (boolean | SubjectTypeFilters[SubjectType])[]
+      );
+    }
+
+    throw new Error("Nor implemented");
   }
 
   /*
@@ -303,6 +311,49 @@ class RuleSet<
     const rule = this.rules[action]![subjectType]!;
     rule.filters.push(condition);
     return this;
+  }
+
+  private _hasPromiseElement<T>(
+    array: (T | Promise<T>)[]
+  ): array is Promise<T>[] {
+    return array.some((item) => this._isPromise(item));
+  }
+
+  private _isPromise<T>(value: T | Promise<T>): value is Promise<T> {
+    return (
+      value !== null &&
+      (typeof value === "object" || typeof value === "function") &&
+      typeof (value as Promise<T>).then === "function"
+    );
+  }
+
+  private _getQueryEngineCondition<
+    SubjectType extends keyof SubjectTypeFilters,
+  >(
+    subjectType: SubjectType,
+    filters: AbstractFilter<any[], SubjectTypeFilters[SubjectType]>[],
+    conditions: (boolean | SubjectTypeFilters[SubjectType])[]
+  ): SubjectTypeFilters[SubjectType] {
+    const items: SubjectTypeFilters[SubjectType][] = conditions.map(
+      (condition, idx) => {
+        const negate = filters[idx].negate;
+
+        if (typeof condition === "boolean") {
+          if (condition) {
+            condition = this.queryEngine.all(subjectType);
+          } else {
+            condition = this.queryEngine.none(subjectType);
+          }
+        }
+
+        if (negate) {
+          return this.queryEngine.negate(subjectType, condition);
+        }
+        return condition;
+      }
+    );
+
+    return this.queryEngine.and(subjectType, ...items);
   }
 }
 
@@ -453,16 +504,18 @@ type RuleFilter<R> =
   R extends Rule<AbstractFilter<any[], infer Filter>> ? Filter : never;
 
 abstract class QueryEngine<SubjectTypeFilters extends {}> {
-  abstract all<
-    SubjectType extends keyof SubjectTypeFilters,
-  >(): SubjectTypeFilters[SubjectType];
-  abstract none<
-    SubjectType extends keyof SubjectTypeFilters,
-  >(): SubjectTypeFilters[SubjectType];
+  abstract all<SubjectType extends keyof SubjectTypeFilters>(
+    subjectType: SubjectType
+  ): SubjectTypeFilters[SubjectType];
+  abstract none<SubjectType extends keyof SubjectTypeFilters>(
+    subjectType: SubjectType
+  ): SubjectTypeFilters[SubjectType];
   abstract and<SubjectType extends keyof SubjectTypeFilters>(
+    subjectType: SubjectType,
     ...terms: SubjectTypeFilters[SubjectType][]
   ): SubjectTypeFilters[SubjectType];
   abstract negate<SubjectType extends keyof SubjectTypeFilters>(
+    subjectType: SubjectType,
     condition: SubjectTypeFilters[SubjectType]
   ): SubjectTypeFilters[SubjectType];
 }
@@ -470,7 +523,9 @@ abstract class QueryEngine<SubjectTypeFilters extends {}> {
 abstract class AbstractFilter<Args extends any[], Filter> {
   constructor(public negate: boolean) {}
 
-  abstract getFilter: FunctionFilterCallback<Args, Filter>;
+  abstract getFilter:
+    | FunctionFilterCallback<Args, Filter>
+    | PromiseFunctionFilterCallback<Args, Filter>;
 }
 
 class LiteralFilter<Filter> extends AbstractFilter<any[], Filter> {
@@ -492,13 +547,17 @@ class FunctionFilter<Args extends any[], Filter> extends AbstractFilter<
 > {
   constructor(
     negate: boolean,
-    private fn: FunctionFilterCallback<Args, Filter>
+    private fn:
+      | FunctionFilterCallback<Args, Filter>
+      | PromiseFunctionFilterCallback<Args, Filter>
   ) {
     super(negate);
   }
 
-  getFilter: FunctionFilterCallback<Args, Filter> = (...args) => {
-    return this.fn(...args);
+  getFilter:
+    | FunctionFilterCallback<Args, Filter>
+    | PromiseFunctionFilterCallback<Args, Filter> = (...args) => {
+    return this.fn(...args) as any;
   };
 }
 
