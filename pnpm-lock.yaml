@@ -69,6 +69,24 @@ importers:
         specifier: ^7.1.0
         version: 7.1.0(eslint@8.57.0)(typescript@5.3.3)
 
+  packages/authorization:
+    devDependencies:
+      '@app/config':
+        specifier: '*'
+        version: link:../config
+
+  packages/config: {}
+
+  packages/test:
+    dependencies:
+      '@app/authorization':
+        specifier: '*'
+        version: link:../authorization
+    devDependencies:
+      '@app/config':
+        specifier: '*'
+        version: link:../config
+
 packages:
 
   '@aashutoshrathi/word-wrap@1.2.6':
