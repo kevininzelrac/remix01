@@ -1,3 +1,4 @@
+// FIXME: Separate into declaration file and impl file. Test types using tsd
 class RuleSet<
   SubjectTypeFilters extends {},
   Repository extends {
