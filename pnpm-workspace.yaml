@@ -3,3 +3,4 @@ packages:
   # - packages/*
   - packages/authorization
   - packages/config
+  - packages/test
