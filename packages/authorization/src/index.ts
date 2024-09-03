@@ -266,18 +266,16 @@ class RuleSet<
             conditions
           )
       );
-    } else {
-      return this._getQueryEngineCondition(
-        subjectType,
-        rule.filters as AbstractFilter<
-          any[],
-          SubjectTypeFilters[SubjectType]
-        >[],
-        filterset as (boolean | SubjectTypeFilters[SubjectType])[]
-      );
     }
 
-    throw new Error("Nor implemented");
+    return this._getQueryEngineCondition(
+      subjectType,
+      rule.filters as AbstractFilter<
+        any[],
+        SubjectTypeFilters[SubjectType]
+      >[],
+      filterset as (boolean | SubjectTypeFilters[SubjectType])[]
+    );
   }
 
   /*
