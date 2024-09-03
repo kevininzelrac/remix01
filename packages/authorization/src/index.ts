@@ -177,6 +177,27 @@ class RuleSet<
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
+    Condition extends PromiseFunctionFilterCallback<
+      any[],
+      SubjectTypeFilters[SubjectType]
+    >,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    condition: Condition
+  ): RuleSet<
+    SubjectTypeFilters,
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+    >
+  >;
+  public forbid<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
     Condition extends AbstractFilter<any[], SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
