@@ -229,11 +229,37 @@ export class RuleSet<
     ) as any; // Trust me
   }
 
-  /*
-  FIXME: HAVE NOT DECIDED HOW THESE MUST WORK.
-  public can(action: A, subjectType: T) {}
-  public cannot(action: A, subjectType: T) {}
-  */
+  public can<
+    Action extends keyof Repository,
+    SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
+    IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    ...args: Args
+  ): IsPromise extends true ? Promise<boolean> : boolean {
+    throw new Error();
+  }
+
+  public cannot<
+    Action extends keyof Repository,
+    SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
+    IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    ...args: Args
+  ): IsPromise extends true ? Promise<boolean> : boolean {
+    const result = this.can(action, subjectType, ...args);
+
+    if (this._isPromise(result)) {
+      return result.then((value) => !value) as any; // Trust me
+    }
+
+    return !(result as boolean) as any; // Trust me
+  }
 
   // Private methods
   private _addRule(
