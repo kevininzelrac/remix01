@@ -3,7 +3,9 @@ import { AbstractFilter } from "./filters/AbstractFilter";
 
 type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
 type AbstractFilterArgsType<F> =
-  F extends AbstractFilter<infer Args, unknown> ? Args : never;
+  F extends AbstractFilter<infer Args, any> ? Args : never;
+type AbstractFilterReturnType<F> =
+  F extends AbstractFilter<any[], infer ReturnType> ? ReturnType : never;
 
 export type RuleArgs<R> =
   R extends Rule<AbstractFilter<infer Args, any>> ? Args : never;
@@ -24,7 +26,10 @@ export type AddRule<
   Repository extends {},
   Action extends string,
   SubjectType extends keyof SubjectTypeFilters,
-  Condition extends AbstractFilter<any[], unknown>,
+  Condition extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  >,
   _RuleType = AddRule_1<
     SubjectTypeFilters,
     Action extends keyof Repository
@@ -47,8 +52,16 @@ type AddRule_1<
   SubjectTypeFilters extends {},
   ActionRepository extends {},
   SubjectType extends keyof SubjectTypeFilters,
-  Condition extends AbstractFilter<any[], unknown>,
-  _FilterType extends AbstractFilter<any[], unknown> = AddRule_2<
+  Condition extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  >,
+  _FilterType extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  > = AddRule_2<
+    SubjectTypeFilters,
+    SubjectType,
     SubjectType extends keyof ActionRepository
       ? ActionRepository[SubjectType] extends Rule<
           infer _ExistingRuleFilterType
@@ -68,10 +81,20 @@ type AddRule_1<
  * Create an AbstractFilter by compounding the existing types.
  */
 type AddRule_2<
-  Existing extends AbstractFilter<any[], unknown>,
-  Condition extends AbstractFilter<any[], unknown>,
+  SubjectTypeFilters extends {},
+  SubjectType extends keyof SubjectTypeFilters,
+  Existing extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  >,
+  Condition extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  >,
   _CompoundArgs extends any[] = AddRule_3<Existing, Condition>,
-  _InferredFilter = AddRule_4<Existing, Condition>,
+  _InferredFilter extends FilterReturnType<
+    SubjectTypeFilters[SubjectType]
+  > = AddRule_4<SubjectTypeFilters, SubjectType, Existing, Condition>,
 > = [_InferredFilter] extends [never]
   ? never
   : [_CompoundArgs] extends [never]
@@ -83,8 +106,8 @@ type AddRule_2<
  * and the new condition.
  */
 type AddRule_3<
-  Existing extends AbstractFilter<any[], unknown>,
-  Condition extends AbstractFilter<any[], unknown>,
+  Existing extends AbstractFilter<any[], any>,
+  Condition extends AbstractFilter<any[], any>,
   _ExistingArgs extends any[] = AbstractFilterArgsType<Existing>,
   _ConditionArgs extends any[] = AbstractFilterArgsType<Condition>,
 > = _ExistingArgs extends [..._ConditionArgs, ...any[]]
@@ -97,19 +120,33 @@ type AddRule_3<
  * If both filter types match, return that. Otherwise the type is invalid.
  */
 type AddRule_4<
-  Existing extends AbstractFilter<any[], unknown>,
-  Condition extends AbstractFilter<any[], unknown>,
-  _InferredExistingFilter = UnwrapPromise<AbstractFilterFilterType<Existing>>,
-  _InferredConditionFilter = UnwrapPromise<AbstractFilterFilterType<Condition>>,
-  _InferredFilter = _InferredExistingFilter extends _InferredConditionFilter
+  SubjectTypeFilters extends {},
+  SubjectType extends keyof SubjectTypeFilters,
+  Existing extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  >,
+  Condition extends AbstractFilter<
+    any[],
+    FilterReturnType<SubjectTypeFilters[SubjectType]>
+  >,
+  _InferredExistingFilter extends FilterLiteralType<
+    SubjectTypeFilters[SubjectType]
+  > = UnwrapPromise<AbstractFilterReturnType<Existing>>,
+  _InferredConditionFilter extends FilterLiteralType<
+    SubjectTypeFilters[SubjectType]
+  > = UnwrapPromise<AbstractFilterReturnType<Condition>>,
+  _InferredFilter extends FilterLiteralType<
+    SubjectTypeFilters[SubjectType]
+  > = _InferredExistingFilter extends _InferredConditionFilter
     ? _InferredConditionFilter extends _InferredExistingFilter
       ? _InferredExistingFilter
       : never
     : never,
 > = [_InferredFilter] extends [never]
   ? never
-  : AbstractFilterFilterType<Existing> extends Promise<any>
+  : AbstractFilterReturnType<Existing> extends Promise<any>
     ? Promise<_InferredFilter>
-    : AbstractFilterFilterType<Condition> extends Promise<any>
+    : AbstractFilterReturnType<Condition> extends Promise<any>
       ? Promise<_InferredFilter>
       : _InferredFilter;
