@@ -116,4 +116,8 @@ type GetCompoundArgs<
 type GetCompoundIsPromise<
   ExistingIsPromise extends boolean,
   IncomingIsPromise extends boolean,
-> = ExistingIsPromise | IncomingIsPromise;
+> = ExistingIsPromise extends true
+  ? true
+  : IncomingIsPromise extends true
+    ? true
+    : false;
