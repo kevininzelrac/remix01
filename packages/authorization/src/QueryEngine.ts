@@ -1,4 +1,8 @@
-export abstract class QueryEngine<SubjectTypeFilters extends {}> {
+import { BaseSubjectTypeFilters } from "./types";
+
+export abstract class QueryEngine<
+  SubjectTypeFilters extends BaseSubjectTypeFilters,
+> {
   abstract all<SubjectType extends keyof SubjectTypeFilters>(
     subjectType: SubjectType
   ): SubjectTypeFilters[SubjectType];

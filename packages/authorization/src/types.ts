@@ -1,6 +1,7 @@
 import { Rule } from "./Rule";
 import { AbstractFilter } from "./filters/AbstractFilter";
 
+type NotPromise<T> = T extends Promise<any> ? never : T;
 type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
 type AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, any> ? Args : never;
@@ -17,12 +18,15 @@ export type FilterPromiseType<Filter> = Promise<boolean> | Promise<Filter>;
 export type FilterReturnType<Filter> =
   | FilterLiteralType<Filter>
   | FilterPromiseType<Filter>;
+export type BaseSubjectTypeFilters = {
+  [key in string]?: NotPromise<any>;
+};
 
 /**
  * Add a rule to the ruleset.
  */
 export type AddRule<
-  SubjectTypeFilters extends {},
+  SubjectTypeFilters extends BaseSubjectTypeFilters,
   Repository extends {},
   Action extends string,
   SubjectType extends keyof SubjectTypeFilters,
@@ -49,7 +53,7 @@ export type AddRule<
  * Set the compounded abstract filter at the second level.
  */
 type AddRule_1<
-  SubjectTypeFilters extends {},
+  SubjectTypeFilters extends BaseSubjectTypeFilters,
   ActionRepository extends {},
   SubjectType extends keyof SubjectTypeFilters,
   Condition extends AbstractFilter<
@@ -81,7 +85,7 @@ type AddRule_1<
  * Create an AbstractFilter by compounding the existing types.
  */
 type AddRule_2<
-  SubjectTypeFilters extends {},
+  SubjectTypeFilters extends BaseSubjectTypeFilters,
   SubjectType extends keyof SubjectTypeFilters,
   Existing extends AbstractFilter<
     any[],
@@ -120,7 +124,7 @@ type AddRule_3<
  * If both filter types match, return that. Otherwise the type is invalid.
  */
 type AddRule_4<
-  SubjectTypeFilters extends {},
+  SubjectTypeFilters extends BaseSubjectTypeFilters,
   SubjectType extends keyof SubjectTypeFilters,
   Existing extends AbstractFilter<
     any[],

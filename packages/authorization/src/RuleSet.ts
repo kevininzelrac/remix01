@@ -5,6 +5,7 @@ import { FunctionFilter } from "./filters/FunctionFilter";
 import { LiteralFilter } from "./filters/LiteralFilter";
 import {
   AddRule,
+  BaseSubjectTypeFilters,
   FilterLiteralType,
   FilterPromiseType,
   FilterReturnType,
@@ -13,7 +14,7 @@ import {
 } from "./types";
 
 export class RuleSet<
-  SubjectTypeFilters extends {},
+  SubjectTypeFilters extends BaseSubjectTypeFilters,
   Repository extends {
     [Action in string]?: {
       [SubjectType in keyof SubjectTypeFilters]?: Rule<
@@ -287,13 +288,10 @@ export class RuleSet<
   */
 
   // Private methods
-  private _addRule<
-    Action extends string,
-    SubjectType extends keyof SubjectTypeFilters,
-  >(
+  private _addRule(
     negate: boolean,
-    action: Action,
-    subjectType: SubjectType,
+    action: keyof Repository,
+    subjectType: keyof SubjectTypeFilters,
     condition: any
   ): any {
     if (!(condition instanceof AbstractFilter)) {
@@ -351,9 +349,12 @@ export class RuleSet<
       }
 
       if (negate) {
-        return this.queryEngine.negate(subjectType, condition);
+        return this.queryEngine.negate(
+          subjectType,
+          condition as SubjectTypeFilters[SubjectType]
+        );
       }
-      return condition;
+      return condition as SubjectTypeFilters[SubjectType];
     });
 
     return this.queryEngine.and(subjectType, ...items);
