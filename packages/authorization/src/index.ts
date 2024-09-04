@@ -1,4 +1,3 @@
-// FIXME: Test types using tsd
 export { AbstractFilter } from "./filters/AbstractFilter";
 export { FunctionFilter } from "./filters/FunctionFilter";
 export { LiteralFilter } from "./filters/LiteralFilter";
