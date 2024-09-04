@@ -4,24 +4,20 @@ import { AbstractFilter } from "./filters/AbstractFilter";
 import { FunctionFilter } from "./filters/FunctionFilter";
 import { LiteralFilter } from "./filters/LiteralFilter";
 import {
+  AbstractFilterArgsType,
+  AbstractFilterReturnType,
   AddRule,
+  BaseRepository,
   BaseSubjectTypeFilters,
   FilterLiteralType,
-  FilterPromiseType,
   FilterReturnType,
   RuleArgs,
-  RuleReturnType,
+  RuleIsPromise,
 } from "./types";
 
 export class RuleSet<
   SubjectTypeFilters extends BaseSubjectTypeFilters,
-  Repository extends {
-    [Action in string]?: {
-      [SubjectType in keyof SubjectTypeFilters]?: Rule<
-        AbstractFilter<any[], FilterReturnType<SubjectTypeFilters[SubjectType]>>
-      >;
-    };
-  } = {},
+  Repository extends BaseRepository<SubjectTypeFilters> = {},
 > {
   constructor(
     private queryEngine: QueryEngine<SubjectTypeFilters>,
@@ -43,13 +39,7 @@ export class RuleSet<
     subjectType: SubjectType
   ): RuleSet<
     SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      LiteralFilter<SubjectTypeFilters[SubjectType]>
-    >
+    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
   >;
   public allow<
     Action extends string,
@@ -61,20 +51,14 @@ export class RuleSet<
     condition: Condition
   ): RuleSet<
     SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      LiteralFilter<Condition>
-    >
+    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
   >;
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
     Condition extends (
       ...args: any[]
-    ) => FilterPromiseType<SubjectTypeFilters[SubjectType]>,
+    ) => FilterReturnType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -86,30 +70,8 @@ export class RuleSet<
       Repository,
       Action,
       SubjectType,
-      FunctionFilter<
-        Parameters<Condition>,
-        Promise<SubjectTypeFilters[SubjectType]>
-      >
-    >
-  >;
-  public allow<
-    Action extends string,
-    SubjectType extends keyof SubjectTypeFilters,
-    Condition extends (
-      ...args: any[]
-    ) => FilterLiteralType<SubjectTypeFilters[SubjectType]>,
-  >(
-    action: Action,
-    subjectType: SubjectType,
-    condition: Condition
-  ): RuleSet<
-    SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+      Parameters<Condition>,
+      Promise<any> extends ReturnType<Condition> ? true : false
     >
   >;
   public allow<
@@ -125,7 +87,14 @@ export class RuleSet<
     condition: Condition
   ): RuleSet<
     SubjectTypeFilters,
-    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, Condition>
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      AbstractFilterArgsType<Condition>,
+      Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
+    >
   >;
 
   // Implementation
@@ -144,13 +113,7 @@ export class RuleSet<
     subjectType: SubjectType
   ): RuleSet<
     SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      LiteralFilter<SubjectTypeFilters[SubjectType]>
-    >
+    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
   >;
   public forbid<
     Action extends string,
@@ -162,20 +125,14 @@ export class RuleSet<
     condition: Condition
   ): RuleSet<
     SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      LiteralFilter<Condition>
-    >
+    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
   >;
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
     Condition extends (
       ...args: any[]
-    ) => FilterPromiseType<SubjectTypeFilters[SubjectType]>,
+    ) => FilterReturnType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -187,30 +144,8 @@ export class RuleSet<
       Repository,
       Action,
       SubjectType,
-      FunctionFilter<
-        Parameters<Condition>,
-        Promise<SubjectTypeFilters[SubjectType]>
-      >
-    >
-  >;
-  public forbid<
-    Action extends string,
-    SubjectType extends keyof SubjectTypeFilters,
-    Condition extends (
-      ...args: any[]
-    ) => FilterLiteralType<SubjectTypeFilters[SubjectType]>,
-  >(
-    action: Action,
-    subjectType: SubjectType,
-    condition: Condition
-  ): RuleSet<
-    SubjectTypeFilters,
-    AddRule<
-      SubjectTypeFilters,
-      Repository,
-      Action,
-      SubjectType,
-      FunctionFilter<Parameters<Condition>, SubjectTypeFilters[SubjectType]>
+      AbstractFilterArgsType<Condition>,
+      Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
     >
   >;
   public forbid<
@@ -226,7 +161,14 @@ export class RuleSet<
     condition: Condition
   ): RuleSet<
     SubjectTypeFilters,
-    AddRule<SubjectTypeFilters, Repository, Action, SubjectType, Condition>
+    AddRule<
+      SubjectTypeFilters,
+      Repository,
+      Action,
+      SubjectType,
+      AbstractFilterArgsType<Condition>,
+      Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
+    >
   >;
 
   // Implementation
@@ -241,8 +183,14 @@ export class RuleSet<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
-    Filter extends RuleReturnType<Repository[Action][SubjectType]>,
-  >(action: Action, subjectType: SubjectType, ...args: Args): Filter {
+    IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    ...args: Args
+  ): IsPromise extends true
+    ? Promise<SubjectTypeFilters[SubjectType]>
+    : SubjectTypeFilters[SubjectType] {
     const actionConfig = this.rules[action];
     if (!actionConfig) {
       throw new Error(`No rule found for action: ${action as string}.`);
