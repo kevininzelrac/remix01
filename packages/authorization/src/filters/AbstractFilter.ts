@@ -1,10 +1,4 @@
-import { FilterReturnType } from "~/types";
-
-export abstract class AbstractFilter<
-  Filter,
-  Args extends any[],
-  ReturnType extends FilterReturnType<Filter>,
-> {
+export abstract class AbstractFilter<Args extends any[], ReturnType> {
   constructor(public negate: boolean) {}
 
   abstract getFilter(...args: Args): ReturnType;

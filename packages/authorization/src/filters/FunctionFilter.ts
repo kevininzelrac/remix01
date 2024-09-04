@@ -1,11 +1,9 @@
-import { FilterReturnType } from "~/types";
 import { AbstractFilter } from "./AbstractFilter";
 
 export class FunctionFilter<
-  Filter,
   Args extends any[],
-  ReturnType extends FilterReturnType<Filter>,
-> extends AbstractFilter<Filter, Args, ReturnType> {
+  ReturnType,
+> extends AbstractFilter<Args, ReturnType> {
   constructor(
     negate: boolean,
     private fn: (...args: Args) => ReturnType
