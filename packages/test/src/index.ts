@@ -8,7 +8,7 @@ type Test_SubjectTypeFilters = {
   };
 };
 
-const rules = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
+const test = RuleSet.new({} as any as QueryEngine<Test_SubjectTypeFilters>)
   .allow("read", "posts")
   .allow("read", "posts", async (user: { id: number }) => true)
   .forbid("create", "comments", { first: 100 })
