@@ -241,7 +241,7 @@ module "@app/authorization" {
       | PromiseFunctionFilterCallback<Args, Filter>;
   }
 
-  class LiteralFilter<Filter> extends AbstractFilter<any[], Filter> {
+  class LiteralFilter<Filter> extends AbstractFilter<[], Filter> {
     constructor(
       negate: boolean,
       private filter: Filter | boolean
@@ -286,6 +286,16 @@ type FunctionFilterCallback<Args extends any[], Filter> = (
 type PromiseFunctionFilterCallback<Args extends any[], Filter> = (
   ...args: Args
 ) => Promise<Filter | boolean>;
+type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
+type AbstractFilterFilterType<F> =
+  F extends AbstractFilter<any[], infer Filter> ? Filter : never;
+type AbstractFilterArgsType<F> =
+  F extends AbstractFilter<infer Args, unknown> ? Args : never;
+type RuleArgs<R> =
+  R extends Rule<AbstractFilter<infer Args, unknown>> ? Args : never;
+type RuleFilter<R> =
+  R extends Rule<AbstractFilter<any[], infer Filter>> ? Filter : never;
+
 
 /**
  * Add a rule to the ruleset.
@@ -311,17 +321,6 @@ type AddRule<
   : Omit<Repository, SubjectType> & {
       [key in Action]: _RuleType;
     };
-
-type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
-type AbstractFilterFilterType<F> =
-  F extends AbstractFilter<any[], infer Filter> ? Filter : never;
-type AbstractFilterArgsType<F> =
-  F extends AbstractFilter<infer Args, unknown> ? Args : never;
-type RuleArgs<R> =
-  R extends Rule<AbstractFilter<infer Args, unknown>> ? Args : never;
-type RuleFilter<R> =
-  R extends Rule<AbstractFilter<any[], infer Filter>> ? Filter : never;
-
 /**
  * Set the compounded abstract filter at the second level.
  */
