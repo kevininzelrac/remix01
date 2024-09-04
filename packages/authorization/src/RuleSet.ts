@@ -1,3 +1,4 @@
+import { EvaluatedRule } from "./EvaluatedRule";
 import { QueryEngine } from "./QueryEngine";
 import { Rule } from "./Rule";
 import { AbstractFilter, EvaluationContext } from "./filters/AbstractFilter";
@@ -179,6 +180,26 @@ export class RuleSet<
     return this._addRule(true, action, subjectType, condition);
   }
 
+  public getRule<
+    Action extends keyof Repository,
+    SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
+    IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
+  >(
+    action: Action,
+    subjectType: SubjectType,
+    ...args: Args
+  ): IsPromise extends true
+    ? Promise<EvaluatedRule<SubjectTypeFilters, SubjectType>>
+    : EvaluatedRule<SubjectTypeFilters, SubjectType> {
+    return this._handleEvaluatedRule(
+      action,
+      subjectType,
+      args,
+      (evaluatedRule) => evaluatedRule
+    );
+  }
+
   public accessible<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
@@ -191,17 +212,11 @@ export class RuleSet<
   ): IsPromise extends true
     ? Promise<SubjectTypeFilters[SubjectType]>
     : SubjectTypeFilters[SubjectType] {
-    const rule = this._getRule(action, subjectType);
-
-    const evaluationContexts: EvaluationContext<
-      FilterReturnType<SubjectTypeFilters[SubjectType]>
-    >[] = rule.filters.map((item) => item.getEvaluationContext(...args));
-
-    return this._handleResolvedEvaluationContexts(
+    return this._handleEvaluatedRule(
+      action,
       subjectType,
-      evaluationContexts,
-      (resolvedEvaluationContexts) =>
-        this._getQueryEngineCondition(subjectType, resolvedEvaluationContexts)
+      args,
+      (evaluatedRule) => evaluatedRule.accessible()
     );
   }
 
@@ -215,17 +230,11 @@ export class RuleSet<
     subjectType: SubjectType,
     ...args: Args
   ): IsPromise extends true ? Promise<boolean> : boolean {
-    const rule = this._getRule(action, subjectType);
-
-    const evaluationContexts: EvaluationContext<
-      FilterReturnType<SubjectTypeFilters[SubjectType]>
-    >[] = rule.filters.map((item) => item.getEvaluationContext(...args));
-
-    return this._handleResolvedEvaluationContexts(
+    return this._handleEvaluatedRule(
+      action,
       subjectType,
-      evaluationContexts,
-      (resolvedEvaluationContexts) =>
-        this._evaluateCanDo(subjectType, resolvedEvaluationContexts)
+      args,
+      (evaluatedRule) => evaluatedRule.can()
     );
   }
 
@@ -239,13 +248,12 @@ export class RuleSet<
     subjectType: SubjectType,
     ...args: Args
   ): IsPromise extends true ? Promise<boolean> : boolean {
-    const result = this.can(action, subjectType, ...args);
-
-    if (this._isPromise(result)) {
-      return result.then((value) => !value) as any; // Trust me
-    }
-
-    return !(result as boolean) as any; // Trust me
+    return this._handleEvaluatedRule(
+      action,
+      subjectType,
+      args,
+      (evaluatedRule) => evaluatedRule.can()
+    );
   }
 
   // Private methods
@@ -265,16 +273,16 @@ export class RuleSet<
       }
     }
 
-    this.rules[action] = this.rules[action] ?? ({} as any);
+    this.rules[action] = this.rules[action] ?? ({} as any); // Trust me
     this.rules[action]![subjectType] =
-      this.rules[action]![subjectType] ?? (new Rule() as any);
+      this.rules[action]![subjectType] ?? (new Rule() as any); // Trust me
 
     const rule = this.rules[action]![subjectType]!;
     rule.filters.push(condition);
     return this;
   }
 
-  private _getRule<
+  private _getInternalRule<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
@@ -304,92 +312,35 @@ export class RuleSet<
     return rule;
   }
 
-  private _hasPromiseElement<T>(
-    array: (T | Promise<T>)[]
-  ): array is Promise<T>[] {
-    return array.some((item) => this._isPromise<T>(item));
-  }
-
-  private _isPromise<T>(value: any): value is Promise<T> {
-    return (
-      value !== null &&
-      (typeof value === "object" || typeof value === "function") &&
-      typeof value.then === "function"
-    );
-  }
-
-  private _evaluateCanDo<SubjectType extends keyof SubjectTypeFilters>(
-    _subjectType: SubjectType,
-    conditions: EvaluationContext<
-      FilterLiteralType<SubjectTypeFilters[SubjectType]>
-    >[]
-  ): boolean {
-    let queryFound = false;
-    for (const { negate, filter } of conditions) {
-      if (typeof filter === "boolean") {
-        if (negate) {
-          return !filter;
-        }
-        return filter;
-      }
-      queryFound = true;
-    }
-    return queryFound;
-  }
-
-  private _getQueryEngineCondition<
-    SubjectType extends keyof SubjectTypeFilters,
-  >(
-    subjectType: SubjectType,
-    conditions: EvaluationContext<
-      FilterLiteralType<SubjectTypeFilters[SubjectType]>
-    >[]
-  ): SubjectTypeFilters[SubjectType] {
-    const items = conditions.map(({ negate, filter }) => {
-      if (typeof filter === "boolean") {
-        if (filter) {
-          filter = this.queryEngine.all(subjectType);
-        } else {
-          filter = this.queryEngine.none(subjectType);
-        }
-      }
-
-      if (negate) {
-        return this.queryEngine.negate(
-          subjectType,
-          filter as SubjectTypeFilters[SubjectType]
-        );
-      }
-      return filter as SubjectTypeFilters[SubjectType];
-    });
-
-    return this.queryEngine.and(subjectType, ...items);
-  }
-
-  private _handleResolvedEvaluationContexts<
-    IsPromise extends boolean,
-    SubjectType extends keyof SubjectTypeFilters,
+  private _handleEvaluatedRule<
+    Action extends keyof Repository,
+    SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
+    IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
     Callback extends (
-      evaluationContexts: EvaluationContext<
-        FilterLiteralType<SubjectTypeFilters[SubjectType]>
-      >[]
+      evaluatedRule: EvaluatedRule<SubjectTypeFilters, SubjectType>
     ) => any,
   >(
-    _subjectType: SubjectType,
-    evaluationContexts: EvaluationContext<
-      FilterReturnType<SubjectTypeFilters[SubjectType]>
-    >[],
+    action: Action,
+    subjectType: SubjectType,
+    args: Args,
     callback: Callback
   ): IsPromise extends true
     ? Promise<ReturnType<Callback>>
     : ReturnType<Callback> {
+    const rule = this._getInternalRule(action, subjectType);
+
+    const evaluationContexts: EvaluationContext<
+      FilterReturnType<SubjectTypeFilters[SubjectType]>
+    >[] = rule.filters.map((item) => item.getEvaluationContext(...args));
+
     const filterset = evaluationContexts.map((item) => item.filter);
 
-    if (this._hasPromiseElement(filterset)) {
+    if (hasPromiseElement(filterset)) {
       // After this point: IsPromise is true
       const resolvedFiltersetPromise: Promise<
         FilterLiteralType<SubjectTypeFilters[SubjectType]>[]
-      > = Promise.all(filterset) as any;
+      > = Promise.all(filterset) as any; // Trust me
 
       return resolvedFiltersetPromise
         .then((resolvedFilterset) =>
@@ -404,14 +355,38 @@ export class RuleSet<
           )
         )
         .then((resolvedEvaluationContexts) =>
-          callback(resolvedEvaluationContexts)
+          callback(
+            new EvaluatedRule(
+              subjectType,
+              this.queryEngine,
+              resolvedEvaluationContexts
+            )
+          )
         ) as any; // Trust me
     }
 
     return callback(
-      evaluationContexts as EvaluationContext<
-        FilterLiteralType<SubjectTypeFilters[SubjectType]>
-      >[]
+      new EvaluatedRule(
+        subjectType,
+        this.queryEngine,
+        evaluationContexts as EvaluationContext<
+          FilterLiteralType<SubjectTypeFilters[SubjectType]>
+        >[]
+      )
     ) as any; // Trust me
   }
+}
+
+function hasPromiseElement<T>(
+  array: (T | Promise<T>)[]
+): array is Promise<T>[] {
+  return array.some((item) => isPromise<T>(item));
+}
+
+function isPromise<T>(value: any): value is Promise<T> {
+  return (
+    value !== null &&
+    (typeof value === "object" || typeof value === "function") &&
+    typeof value.then === "function"
+  );
 }
