@@ -12,9 +12,7 @@ module "@app/authorization" {
   > {
     public static new<STF extends {}>(
       queryEngine: QueryEngine<STF>
-    ): RuleSet<STF, {}> {
-      return new RuleSet(queryEngine, {});
-    }
+    ): RuleSet<STF, {}>;
 
     public allow<
       Action extends string,
@@ -248,10 +246,6 @@ module "@app/authorization" {
     ) {
       super(negate);
     }
-
-    getFilter = () => {
-      return this.filter;
-    };
   }
 
   class FunctionFilter<Args extends any[], Filter> extends AbstractFilter<
@@ -266,12 +260,6 @@ module "@app/authorization" {
     ) {
       super(negate);
     }
-
-    getFilter:
-      | FunctionFilterCallback<Args, Filter>
-      | PromiseFunctionFilterCallback<Args, Filter> = (...args) => {
-      return this.fn(...args) as any;
-    };
   }
 }
 
@@ -295,7 +283,6 @@ type RuleArgs<R> =
   R extends Rule<AbstractFilter<infer Args, unknown>> ? Args : never;
 type RuleFilter<R> =
   R extends Rule<AbstractFilter<any[], infer Filter>> ? Filter : never;
-
 
 /**
  * Add a rule to the ruleset.
