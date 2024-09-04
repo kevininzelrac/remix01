@@ -2,29 +2,24 @@ import { Rule } from "./Rule";
 import { AbstractFilter } from "./filters/AbstractFilter";
 
 type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
-type AbstractFilterFilterType<F> =
-  F extends AbstractFilter<any[], infer Filter> ? Filter : never;
 type AbstractFilterArgsType<F> =
   F extends AbstractFilter<infer Args, unknown> ? Args : never;
 
 export type RuleArgs<R> =
-  R extends Rule<AbstractFilter<any, infer Args, any>> ? Args : never;
+  R extends Rule<AbstractFilter<infer Args, any>> ? Args : never;
 export type RuleReturnType<R> =
-  R extends Rule<AbstractFilter<any, any[], infer ReturnType>>
-    ? ReturnType
-    : never;
+  R extends Rule<AbstractFilter<any[], infer ReturnType>> ? ReturnType : never;
 
 export type FilterLiteralType<Filter> = boolean | Filter;
+export type FilterPromiseType<Filter> = Promise<boolean> | Promise<Filter>;
 export type FilterReturnType<Filter> =
-  | boolean
-  | Filter
-  | Promise<boolean>
-  | Promise<Filter>;
+  | FilterLiteralType<Filter>
+  | FilterPromiseType<Filter>;
 
 /**
  * Add a rule to the ruleset.
  */
-type AddRule<
+export type AddRule<
   SubjectTypeFilters extends {},
   Repository extends {},
   Action extends string,

@@ -4,7 +4,9 @@ import { AbstractFilter } from "./filters/AbstractFilter";
 import { FunctionFilter } from "./filters/FunctionFilter";
 import { LiteralFilter } from "./filters/LiteralFilter";
 import {
+  AddRule,
   FilterLiteralType,
+  FilterPromiseType,
   FilterReturnType,
   RuleArgs,
   RuleReturnType,
@@ -69,10 +71,9 @@ export class RuleSet<
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends PromiseFunctionFilterCallback<
-      any[],
-      SubjectTypeFilters[SubjectType]
-    >,
+    Condition extends (
+      ...args: any[]
+    ) => FilterPromiseType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -93,10 +94,9 @@ export class RuleSet<
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends FunctionFilterCallback<
-      any[],
-      SubjectTypeFilters[SubjectType]
-    >,
+    Condition extends (
+      ...args: any[]
+    ) => FilterLiteralType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -114,7 +114,10 @@ export class RuleSet<
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends AbstractFilter<any[], SubjectTypeFilters[SubjectType]>,
+    Condition extends AbstractFilter<
+      any[],
+      FilterReturnType<SubjectTypeFilters[SubjectType]>
+    >,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -123,6 +126,14 @@ export class RuleSet<
     SubjectTypeFilters,
     AddRule<SubjectTypeFilters, Repository, Action, SubjectType, Condition>
   >;
+
+  // Implementation
+  public allow<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(action: Action, subjectType: SubjectType, condition?: any): any {
+    return this._addRule(false, action, subjectType, condition);
+  }
 
   public forbid<
     Action extends string,
@@ -161,10 +172,9 @@ export class RuleSet<
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends PromiseFunctionFilterCallback<
-      any[],
-      SubjectTypeFilters[SubjectType]
-    >,
+    Condition extends (
+      ...args: any[]
+    ) => FilterPromiseType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -185,10 +195,9 @@ export class RuleSet<
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends FunctionFilterCallback<
-      any[],
-      SubjectTypeFilters[SubjectType]
-    >,
+    Condition extends (
+      ...args: any[]
+    ) => FilterLiteralType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -206,7 +215,10 @@ export class RuleSet<
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-    Condition extends AbstractFilter<any[], SubjectTypeFilters[SubjectType]>,
+    Condition extends AbstractFilter<
+      any[],
+      FilterReturnType<SubjectTypeFilters[SubjectType]>
+    >,
   >(
     action: Action,
     subjectType: SubjectType,
@@ -217,11 +229,10 @@ export class RuleSet<
   >;
 
   // Implementation
-  public allow(action, subjectType, condition) {
-    return this._addRule(false, action, subjectType, condition);
-  }
-
-  public forbid(action, subjectType, condition) {
+  public forbid<
+    Action extends string,
+    SubjectType extends keyof SubjectTypeFilters,
+  >(action: Action, subjectType: SubjectType, condition?: any): any {
     return this._addRule(true, action, subjectType, condition);
   }
 
@@ -279,7 +290,12 @@ export class RuleSet<
   private _addRule<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
-  >(negate: boolean, action: Action, subjectType: SubjectType, condition) {
+  >(
+    negate: boolean,
+    action: Action,
+    subjectType: SubjectType,
+    condition: any
+  ): any {
     if (!(condition instanceof AbstractFilter)) {
       if (typeof condition === "function") {
         condition = new FunctionFilter(negate, condition);
@@ -317,7 +333,10 @@ export class RuleSet<
     SubjectType extends keyof SubjectTypeFilters,
   >(
     subjectType: SubjectType,
-    filters: AbstractFilter<SubjectTypeFilters[SubjectType], any[], any>[],
+    filters: AbstractFilter<
+      any[],
+      FilterReturnType<SubjectTypeFilters[SubjectType]>
+    >[],
     conditions: FilterLiteralType<SubjectTypeFilters[SubjectType]>[]
   ) {
     const items = conditions.map((condition, idx) => {
