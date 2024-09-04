@@ -15,7 +15,7 @@ export class RuleSet<
   Repository extends {
     [Action in string]?: {
       [SubjectType in keyof SubjectTypeFilters]?: Rule<
-        AbstractFilter<SubjectTypeFilters[SubjectType], any[], any>
+        AbstractFilter<any[], FilterReturnType<SubjectTypeFilters[SubjectType]>>
       >;
     };
   } = {},
