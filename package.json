@@ -4,14 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "turbo run format",
-    "migrate:dev": "npm run migrate:dev -w packages/db",
-    "migrate:reset": "npm run migrate:reset -w packages/db",
-    "typecheck": "turbo run typecheck",
-    "validate": "turbo run lint typecheck && turbo run build"
+    "migrate:dev": "pnpm run migrate:dev -w packages/db",
+    "migrate:reset": "pnpm run migrate:reset -w packages/db"
   },
   "author": "",
   "license": "ISC",
