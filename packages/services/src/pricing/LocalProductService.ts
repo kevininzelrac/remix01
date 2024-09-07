@@ -3,15 +3,15 @@ import { ProductError } from "@app/utils/errors";
 import { add } from "date-fns";
 
 import type { IClockService } from "../types/IClockService.js";
-import type { IDatabaseService } from "../types/IDatabaseService.js";
 import type { IProductService } from "../types/IProductService.js";
-import type { IUserService } from "../types/IUserService.js";
 import type { ServerContext } from "../types/ServerContext.js";
+import type { DatabaseService } from "../db/DatabaseService.js";
+import type { UserService } from "../models/UserService.js";
 
 export class LocalProductService implements IProductService {
   constructor(
-    private _databaseService: IDatabaseService,
-    private _userService: IUserService,
+    private _databaseService: DatabaseService,
+    private _userService: UserService,
     private _clockService: IClockService,
     private _productList: Product[],
   ) {}

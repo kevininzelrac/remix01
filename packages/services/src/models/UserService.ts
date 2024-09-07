@@ -1,12 +1,11 @@
 import type { Credential, User } from "@app/db";
 import { WizardStep } from "@app/utils/constants";
 
-import type { IDatabaseService } from "../types/IDatabaseService.js";
-import type { IUserService } from "../types/IUserService.js";
+import type { DatabaseService } from "../db/DatabaseService.js";
 import type { ServerContext } from "../types/ServerContext.js";
 
-export class UserService implements IUserService {
-  constructor(private _databaseService: IDatabaseService) {}
+export class UserService {
+  constructor(private _databaseService: DatabaseService) {}
 
   getById(id: string): Promise<User | null> {
     return this._databaseService.transaction().user.findUnique({

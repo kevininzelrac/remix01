@@ -5,12 +5,9 @@ import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { IOAuthProviderFactoryService } from "../types/IOAuthProviderFactoryService.js";
-import type { ISessionService } from "../types/ISessionService.js";
-import type { IUserService } from "../types/IUserService.js";
 import { MailType, type IMailService } from "../types/IMailService.js";
 import type { IClockService } from "../types/IClockService.js";
 import type { ILoggerService } from "../types/ILoggerService.js";
-import type { IDatabaseService } from "../types/IDatabaseService.js";
 import type { ServerContext } from "../types/ServerContext.js";
 
 import type { User } from "@app/db";
@@ -21,6 +18,8 @@ import {
 } from "@app/utils/errors";
 
 import { add } from "date-fns";
+import type { DatabaseService } from "../db/DatabaseService.js";
+import type { UserService } from "../models/UserService.js";
 
 const credentialSchema = z.object({
   email: z.string(),
@@ -45,7 +44,7 @@ export type TokenConfiguration = {
   duration: string;
 };
 
-export class SessionService implements ISessionService {
+export class SessionService {
   constructor(
     private _cookieName: string,
     private _cookieSerializeOptions: CookieSerializeOptions,
@@ -53,12 +52,12 @@ export class SessionService implements ISessionService {
     private _refreshTokenConfiguration: TokenConfiguration,
     private _signInRedirectUri: URL,
     private _signOutRedirectUri: URL,
-    private _databaseService: IDatabaseService,
+    private _databaseService: DatabaseService,
     private _clockService: IClockService,
     private _loggerService: ILoggerService,
     private _mailService: IMailService,
     private _oauthProviderFactoryService: IOAuthProviderFactoryService,
-    private _userService: IUserService,
+    private _userService: UserService,
   ) {}
 
   async handleCredentialSignIn(request: Request): Promise<Response> {
