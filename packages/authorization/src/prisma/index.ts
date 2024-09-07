@@ -1,28 +1,47 @@
 import { QueryEngine } from "..";
 
+type SubsetOfType<T, U> = {
+  [K in keyof T]: T[K] extends U ? K : never;
+}[keyof T];
+
+type PickByType<T, U> = Pick<T, SubsetOfType<T, U>>;
+
+type PrismaWhereCondition = {
+  NOT?: any;
+  AND?: any[];
+  OR?: any[];
+};
+
 type PrismaSubject = {
   fields: { [fieldName in string]?: any };
   findMany: (args: { where?: any }) => any;
 };
 
-type BasePrismaClient<T extends string> = {
-  [SubjectType in T]: PrismaSubject;
+type BasePrismaClient = {
+  [SubjectType in string]?: PrismaSubject;
 };
 
-type GetSubjectTypeFilters<PrismaClient extends BasePrismaClient<any>> = {
-  [SubjectType in keyof PrismaClient]: "findMany" extends keyof PrismaClient[SubjectType]
-    ? PrismaClient[SubjectType]["findMany"] extends (...args: any[]) => any
-      ? Extract<
-          Parameters<PrismaClient[SubjectType]["findMany"]>[0],
-          { where?: any }
-        >["where"]
-      : never
+type GetSubjectTypeFilters<PrismaClient extends {}> =
+  PrismaClient extends BasePrismaClient
+    ? {
+        [SubjectType in keyof PrismaClient]: "findMany" extends keyof PrismaClient[SubjectType]
+          ? PrismaClient[SubjectType]["findMany"] extends (
+              ...args: any[]
+            ) => any
+            ? NonNullable<
+                Extract<
+                  Parameters<PrismaClient[SubjectType]["findMany"]>[0],
+                  { where?: any }
+                >["where"]
+              >
+            : never
+          : never;
+      }
     : never;
-};
 
-export class PrismaQueryEngine<
-  PrismaClient extends BasePrismaClient<any>,
-> extends QueryEngine<GetSubjectTypeFilters<PrismaClient>> {
+export class PrismaQueryEngine<PrismaClient extends {}> extends QueryEngine<
+  GetSubjectTypeFilters<PickByType<PrismaClient, PrismaSubject>>
+> {
   constructor(private client: PrismaClient) {
     super();
   }
@@ -87,4 +106,20 @@ class TestPrismaClient {
   }
 }
 
-const prismaEngine = new PrismaQueryEngine(new TestPrismaClient());
+const testPrismaClient = {
+  credential: {
+    fields: {},
+    findMany(arg: { where?: CredentialWhere }): any[] {
+      return [];
+    },
+  },
+  somethingElse: 100,
+};
+
+const prismaEngine = new PrismaQueryEngine(testPrismaClient);
+type Test1 = typeof prismaEngine extends PrismaQueryEngine<infer T> ? T : never;
+type Test2 = typeof prismaEngine extends QueryEngine<infer T> ? T : never;
+
+type Test3 = GetSubjectTypeFilters<PickByType<Test1, PrismaSubject>>;
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+type Test4 = Expand<Test2>;
