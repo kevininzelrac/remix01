@@ -5,6 +5,7 @@ export default {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   testEnvironment: "node",
+  testMatch: ["**/*.spec.ts(x)?"],
   testPathIgnorePatterns: ["/dist/"],
   transform: {
     "^.+.tsx?$": ["ts-jest", { useESM: true }],
