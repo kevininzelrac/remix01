@@ -6,7 +6,7 @@ export class LiteralFilter<LiteralType> extends AbstractFilter<
 > {
   constructor(
     negate: boolean,
-    private filter: LiteralType
+    private filter: LiteralType,
   ) {
     super(negate);
   }

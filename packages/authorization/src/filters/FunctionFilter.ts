@@ -1,12 +1,13 @@
 import { AbstractFilter } from "./AbstractFilter";
 
 export class FunctionFilter<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Args extends any[],
   ReturnType,
 > extends AbstractFilter<Args, ReturnType> {
   constructor(
     negate: boolean,
-    private fn: (...args: Args) => ReturnType
+    private fn: (...args: Args) => ReturnType,
   ) {
     super(negate);
   }

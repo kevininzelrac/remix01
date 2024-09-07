@@ -18,15 +18,17 @@ import {
 
 export class RuleSet<
   SubjectTypeFilters extends BaseSubjectTypeFilters,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   Repository extends BaseRepository<SubjectTypeFilters> = {},
 > {
   constructor(
     private queryEngine: QueryEngine<SubjectTypeFilters>,
-    private rules: Repository
+    private rules: Repository,
   ) {}
 
-  public static new<STF extends {}>(
-    queryEngine: QueryEngine<STF>
+  public static new<STF extends object>(
+    queryEngine: QueryEngine<STF>,
+    // eslint-disable-next-line @typescript-eslint/ban-types
   ): RuleSet<STF, {}> {
     return new RuleSet(queryEngine, {});
   }
@@ -37,7 +39,7 @@ export class RuleSet<
     SubjectType extends keyof SubjectTypeFilters,
   >(
     action: Action,
-    subjectType: SubjectType
+    subjectType: SubjectType,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
@@ -49,7 +51,7 @@ export class RuleSet<
   >(
     action: Action,
     subjectType: SubjectType,
-    condition: Condition
+    condition: Condition,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
@@ -58,12 +60,13 @@ export class RuleSet<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
     Condition extends (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...args: any[]
     ) => FilterReturnType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
-    condition: Condition
+    condition: Condition,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<
@@ -72,6 +75,7 @@ export class RuleSet<
       Action,
       SubjectType,
       Parameters<Condition>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Promise<any> extends ReturnType<Condition> ? true : false
     >
   >;
@@ -79,13 +83,14 @@ export class RuleSet<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
     Condition extends AbstractFilter<
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       any[],
       FilterReturnType<SubjectTypeFilters[SubjectType]>
     >,
   >(
     action: Action,
     subjectType: SubjectType,
-    condition: Condition
+    condition: Condition,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<
@@ -94,6 +99,7 @@ export class RuleSet<
       Action,
       SubjectType,
       AbstractFilterArgsType<Condition>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
     >
   >;
@@ -102,6 +108,7 @@ export class RuleSet<
   public allow<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   >(action: Action, subjectType: SubjectType, condition?: any): any {
     return this._addRule(false, action, subjectType, condition);
   }
@@ -111,7 +118,7 @@ export class RuleSet<
     SubjectType extends keyof SubjectTypeFilters,
   >(
     action: Action,
-    subjectType: SubjectType
+    subjectType: SubjectType,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
@@ -123,7 +130,7 @@ export class RuleSet<
   >(
     action: Action,
     subjectType: SubjectType,
-    condition: Condition
+    condition: Condition,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<SubjectTypeFilters, Repository, Action, SubjectType, [], false>
@@ -132,12 +139,13 @@ export class RuleSet<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
     Condition extends (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...args: any[]
     ) => FilterReturnType<SubjectTypeFilters[SubjectType]>,
   >(
     action: Action,
     subjectType: SubjectType,
-    condition: Condition
+    condition: Condition,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<
@@ -146,6 +154,7 @@ export class RuleSet<
       Action,
       SubjectType,
       AbstractFilterArgsType<Condition>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
     >
   >;
@@ -153,13 +162,14 @@ export class RuleSet<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
     Condition extends AbstractFilter<
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       any[],
       FilterReturnType<SubjectTypeFilters[SubjectType]>
     >,
   >(
     action: Action,
     subjectType: SubjectType,
-    condition: Condition
+    condition: Condition,
   ): RuleSet<
     SubjectTypeFilters,
     AddRule<
@@ -168,6 +178,7 @@ export class RuleSet<
       Action,
       SubjectType,
       AbstractFilterArgsType<Condition>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
     >
   >;
@@ -176,6 +187,7 @@ export class RuleSet<
   public forbid<
     Action extends string,
     SubjectType extends keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   >(action: Action, subjectType: SubjectType, condition?: any): any {
     return this._addRule(true, action, subjectType, condition);
   }
@@ -183,6 +195,7 @@ export class RuleSet<
   public getRule<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
     IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
   >(
@@ -196,13 +209,14 @@ export class RuleSet<
       action,
       subjectType,
       args,
-      (evaluatedRule) => evaluatedRule
+      (evaluatedRule) => evaluatedRule,
     );
   }
 
   public accessible<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
     IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
   >(
@@ -216,13 +230,14 @@ export class RuleSet<
       action,
       subjectType,
       args,
-      (evaluatedRule) => evaluatedRule.accessible()
+      (evaluatedRule) => evaluatedRule.accessible(),
     );
   }
 
   public can<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
     IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
   >(
@@ -234,13 +249,14 @@ export class RuleSet<
       action,
       subjectType,
       args,
-      (evaluatedRule) => evaluatedRule.can()
+      (evaluatedRule) => evaluatedRule.can(),
     );
   }
 
   public cannot<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
     IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
   >(
@@ -252,7 +268,7 @@ export class RuleSet<
       action,
       subjectType,
       args,
-      (evaluatedRule) => evaluatedRule.can()
+      (evaluatedRule) => evaluatedRule.can(),
     );
   }
 
@@ -261,7 +277,9 @@ export class RuleSet<
     negate: boolean,
     action: keyof Repository,
     subjectType: keyof SubjectTypeFilters,
-    condition: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    condition: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any {
     if (!(condition instanceof AbstractFilter)) {
       if (typeof condition === "function") {
@@ -273,8 +291,10 @@ export class RuleSet<
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.rules[action] = this.rules[action] ?? ({} as any); // Trust me
     this.rules[action]![subjectType] =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.rules[action]![subjectType] ?? (new Rule() as any); // Trust me
 
     const rule = this.rules[action]![subjectType]!;
@@ -285,11 +305,12 @@ export class RuleSet<
   private _getInternalRule<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
     IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
   >(
     action: Action,
-    subjectType: SubjectType
+    subjectType: SubjectType,
   ): Rule<SubjectTypeFilters, SubjectType, Args, IsPromise> {
     const actionConfig = this.rules[action];
     if (!actionConfig) {
@@ -299,13 +320,13 @@ export class RuleSet<
     const rule = actionConfig[subjectType];
     if (!rule) {
       throw new Error(
-        `No rule found for action: ${action as string}, subject type: ${subjectType as string}.`
+        `No rule found for action: ${action as string}, subject type: ${subjectType as string}.`,
       );
     }
 
     if (rule.filters.length === 0) {
       throw new Error(
-        `No filters found on rule for action: ${action as string}, subject type: ${subjectType as string}.`
+        `No filters found on rule for action: ${action as string}, subject type: ${subjectType as string}.`,
       );
     }
 
@@ -315,16 +336,18 @@ export class RuleSet<
   private _handleEvaluatedRule<
     Action extends keyof Repository,
     SubjectType extends keyof Repository[Action] & keyof SubjectTypeFilters,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Args extends RuleArgs<Repository[Action][SubjectType]> & any[],
     IsPromise extends RuleIsPromise<Repository[Action][SubjectType]>,
     Callback extends (
-      evaluatedRule: EvaluatedRule<SubjectTypeFilters, SubjectType>
+      evaluatedRule: EvaluatedRule<SubjectTypeFilters, SubjectType>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) => any,
   >(
     action: Action,
     subjectType: SubjectType,
     args: Args,
-    callback: Callback
+    callback: Callback,
   ): IsPromise extends true
     ? Promise<ReturnType<Callback>>
     : ReturnType<Callback> {
@@ -340,6 +363,7 @@ export class RuleSet<
       // After this point: IsPromise is true
       const resolvedFiltersetPromise: Promise<
         FilterLiteralType<SubjectTypeFilters[SubjectType]>[]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       > = Promise.all(filterset) as any; // Trust me
 
       return resolvedFiltersetPromise
@@ -351,17 +375,19 @@ export class RuleSet<
                 filter,
               }) as EvaluationContext<
                 FilterLiteralType<SubjectTypeFilters[SubjectType]>
-              >
-          )
+              >,
+          ),
         )
-        .then((resolvedEvaluationContexts) =>
-          callback(
-            new EvaluatedRule(
-              subjectType,
-              this.queryEngine,
-              resolvedEvaluationContexts
-            )
-          )
+        .then(
+          (resolvedEvaluationContexts) =>
+            callback(
+              new EvaluatedRule(
+                subjectType,
+                this.queryEngine,
+                resolvedEvaluationContexts,
+              ),
+            ),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ) as any; // Trust me
     }
 
@@ -371,18 +397,20 @@ export class RuleSet<
         this.queryEngine,
         evaluationContexts as EvaluationContext<
           FilterLiteralType<SubjectTypeFilters[SubjectType]>
-        >[]
-      )
+        >[],
+      ),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as any; // Trust me
   }
 }
 
 function hasPromiseElement<T>(
-  array: (T | Promise<T>)[]
+  array: (T | Promise<T>)[],
 ): array is Promise<T>[] {
   return array.some((item) => isPromise<T>(item));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isPromise<T>(value: any): value is Promise<T> {
   return (
     value !== null &&

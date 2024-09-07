@@ -4,10 +4,10 @@ export abstract class QueryEngine<
   SubjectTypeFilters extends BaseSubjectTypeFilters,
 > {
   abstract all<SubjectType extends keyof SubjectTypeFilters>(
-    subjectType: SubjectType
+    subjectType: SubjectType,
   ): SubjectTypeFilters[SubjectType];
   abstract none<SubjectType extends keyof SubjectTypeFilters>(
-    subjectType: SubjectType
+    subjectType: SubjectType,
   ): SubjectTypeFilters[SubjectType];
   abstract and<SubjectType extends keyof SubjectTypeFilters>(
     subjectType: SubjectType,
@@ -15,6 +15,6 @@ export abstract class QueryEngine<
   ): SubjectTypeFilters[SubjectType];
   abstract negate<SubjectType extends keyof SubjectTypeFilters>(
     subjectType: SubjectType,
-    condition: SubjectTypeFilters[SubjectType]
+    condition: SubjectTypeFilters[SubjectType],
   ): SubjectTypeFilters[SubjectType];
 }

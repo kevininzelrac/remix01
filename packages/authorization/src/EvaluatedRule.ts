@@ -13,7 +13,7 @@ export class EvaluatedRule<
     private queryEngine: QueryEngine<SubjectTypeFilters>,
     evaluationContexts: EvaluationContext<
       FilterLiteralType<SubjectTypeFilters[SubjectType]>
-    >[]
+    >[],
   ) {
     this.filters = evaluationContexts.map(({ negate, filter }) => {
       if (typeof filter === "boolean") {

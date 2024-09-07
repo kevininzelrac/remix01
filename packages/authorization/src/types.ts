@@ -1,15 +1,20 @@
 import { Rule } from "./Rule";
 import { AbstractFilter } from "./filters/AbstractFilter";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotPromise<T> = T extends Promise<any> ? never : T;
 export type AbstractFilterArgsType<F> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   F extends AbstractFilter<infer Args, any> ? Args : never;
 export type AbstractFilterReturnType<F> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   F extends AbstractFilter<any[], infer ReturnType> ? ReturnType : never;
 
 export type RuleArgs<R> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   R extends Rule<any, any, infer Args, any> ? Args : never;
 export type RuleIsPromise<R> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   R extends Rule<any, any, any, infer IsPromise> ? IsPromise : never;
 
 export type FilterLiteralType<Filter> = boolean | Filter;
@@ -19,6 +24,7 @@ export type FilterReturnType<Filter> =
   | Promise<Filter>;
 
 export type BaseSubjectTypeFilters = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key in string]?: NotPromise<any>;
 };
 export type BaseRepository<SubjectTypeFilters extends BaseSubjectTypeFilters> =
@@ -27,6 +33,7 @@ export type BaseRepository<SubjectTypeFilters extends BaseSubjectTypeFilters> =
       [SubjectType in keyof SubjectTypeFilters]?: Rule<
         SubjectTypeFilters,
         SubjectType,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         any[],
         boolean
       >;
@@ -41,17 +48,22 @@ export type AddRule<
   Repository extends BaseRepository<BaseSubjectTypeFilters>,
   Action extends string,
   SubjectType extends keyof SubjectTypeFilters,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Args extends any[],
   IsPromise extends boolean,
   // Implementation details
   _CurrentRule extends Rule<
     SubjectTypeFilters,
     SubjectType,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any
   > = GetRule<SubjectTypeFilters, Repository, Action, SubjectType>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _CurrentRuleArgs extends any[] = RuleArgs<_CurrentRule>,
   _CurrentRuleIsPromise extends boolean = RuleIsPromise<_CurrentRule>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _CompoundArgs extends any[] = GetCompoundArgs<_CurrentRuleArgs, Args>,
   _CompoundIsPromise extends boolean = GetCompoundIsPromise<
     _CurrentRuleIsPromise,
@@ -63,6 +75,7 @@ export type AddRule<
     ? never
     : Omit<Repository, Action> & {
         [key in Action]: Omit<
+          // eslint-disable-next-line @typescript-eslint/ban-types
           Action extends keyof Repository ? Repository[Action] : {},
           SubjectType
         > & {
@@ -88,7 +101,9 @@ type GetRule<
     ? Repository[Action][SubjectType] extends Rule<
         SubjectTypeFilters,
         SubjectType,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         any[],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         any
       >
       ? Repository[Action][SubjectType]
@@ -101,11 +116,15 @@ type GetRule<
  * and the new condition.
  */
 type GetCompoundArgs<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ExistingArgs extends any[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   IncomingArgs extends any[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > = ExistingArgs extends [...IncomingArgs, ...any[]]
   ? ExistingArgs
-  : IncomingArgs extends [...ExistingArgs, ...any[]]
+  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    IncomingArgs extends [...ExistingArgs, ...any[]]
     ? IncomingArgs
     : never;
 

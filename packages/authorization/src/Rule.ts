@@ -8,6 +8,7 @@ import {
 export class Rule<
   SubjectTypeFilters extends BaseSubjectTypeFilters,
   SubjectType extends keyof SubjectTypeFilters,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Args extends any[] = [],
   IsPromise extends boolean = false,
 > {
@@ -17,6 +18,6 @@ export class Rule<
       IsPromise extends true
         ? FilterReturnType<SubjectTypeFilters[SubjectType]>
         : FilterLiteralType<SubjectTypeFilters[SubjectType]>
-    >[] = []
+    >[] = [],
   ) {}
 }
