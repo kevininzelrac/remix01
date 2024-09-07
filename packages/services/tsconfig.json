@@ -2,7 +2,7 @@
   "extends": "@app/config/typescript/tsconfig.node.json",
   "include": ["**/*.ts"],
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
