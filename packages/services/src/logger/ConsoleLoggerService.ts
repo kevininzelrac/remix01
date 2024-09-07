@@ -1,4 +1,4 @@
-import { ILoggerService, LogLevel } from "~/types/ILoggerService.js";
+import { ILoggerService, LogLevel } from "../types/ILoggerService.js";
 
 export class ConsoleLoggerService implements ILoggerService {
   constructor(private _logLevel: LogLevel) {}

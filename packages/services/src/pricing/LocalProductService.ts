@@ -2,11 +2,11 @@ import { Plan, Product, Recurrence, WizardStep } from "@app/utils/constants";
 import { ProductError } from "@app/utils/errors";
 import { add } from "date-fns";
 
-import type { IClockService } from "~/types/IClockService.js";
-import type { IDatabaseService } from "~/types/IDatabaseService.js";
-import type { IProductService } from "~/types/IProductService.js";
-import type { IUserService } from "~/types/IUserService.js";
-import type { ServerContext } from "~/types/ServerContext.js";
+import type { IClockService } from "../types/IClockService.js";
+import type { IDatabaseService } from "../types/IDatabaseService.js";
+import type { IProductService } from "../types/IProductService.js";
+import type { IUserService } from "../types/IUserService.js";
+import type { ServerContext } from "../types/ServerContext.js";
 
 export class LocalProductService implements IProductService {
   constructor(

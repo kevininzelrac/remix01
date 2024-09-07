@@ -1,9 +1,9 @@
-import { EvaluatedRule } from "~/EvaluatedRule.js";
-import { QueryEngine } from "~/QueryEngine.js";
-import { Rule } from "~/Rule.js";
-import { AbstractFilter, EvaluationContext } from "~/filters/AbstractFilter.js";
-import { FunctionFilter } from "~/filters/FunctionFilter.js";
-import { LiteralFilter } from "~/filters/LiteralFilter.js";
+import { EvaluatedRule } from "./EvaluatedRule.js";
+import { QueryEngine } from "./QueryEngine.js";
+import { Rule } from "./Rule.js";
+import { AbstractFilter, EvaluationContext } from "./filters/AbstractFilter.js";
+import { FunctionFilter } from "./filters/FunctionFilter.js";
+import { LiteralFilter } from "./filters/LiteralFilter.js";
 import {
   AbstractFilterArgsType,
   AbstractFilterReturnType,
@@ -14,7 +14,7 @@ import {
   FilterReturnType,
   RuleArgs,
   RuleIsPromise,
-} from "~/types.js";
+} from "./types.js";
 
 export class RuleSet<
   SubjectTypeFilters extends BaseSubjectTypeFilters,

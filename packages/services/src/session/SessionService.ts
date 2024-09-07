@@ -4,14 +4,14 @@ import jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
-import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService.js";
-import type { ISessionService } from "~/types/ISessionService.js";
-import type { IUserService } from "~/types/IUserService.js";
-import { MailType, type IMailService } from "~/types/IMailService.js";
-import type { IClockService } from "~/types/IClockService.js";
-import type { ILoggerService } from "~/types/ILoggerService.js";
-import type { IDatabaseService } from "~/types/IDatabaseService.js";
-import type { ServerContext } from "~/types/ServerContext.js";
+import type { IOAuthProviderFactoryService } from "../types/IOAuthProviderFactoryService.js";
+import type { ISessionService } from "../types/ISessionService.js";
+import type { IUserService } from "../types/IUserService.js";
+import { MailType, type IMailService } from "../types/IMailService.js";
+import type { IClockService } from "../types/IClockService.js";
+import type { ILoggerService } from "../types/ILoggerService.js";
+import type { IDatabaseService } from "../types/IDatabaseService.js";
+import type { ServerContext } from "../types/ServerContext.js";
 
 import type { User } from "@app/db";
 import {

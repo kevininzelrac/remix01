@@ -2,8 +2,8 @@ import type { Auth, KeySchema } from "lucia";
 import { lucia } from "lucia";
 import { web } from "lucia/middleware";
 
-import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService.js";
-import type { IOAuthProviderService } from "~/types/IOAuthProviderService.js";
+import type { IOAuthProviderFactoryService } from "../types/IOAuthProviderFactoryService.js";
+import type { IOAuthProviderService } from "../types/IOAuthProviderService.js";
 
 import { FacebookOAuthProviderService } from "./providers/FacebookOAuthProviderService.js";
 import { GithubOAuthProviderService } from "./providers/GithubOAuthProviderService.js";

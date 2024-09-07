@@ -1,7 +1,7 @@
 import { DatabaseClient, PrismaClient, getClient } from "@app/db";
 import { AssertionError } from "@app/utils/errors";
 
-import type { IDatabaseService } from "~/types/IDatabaseService.js";
+import type { IDatabaseService } from "../types/IDatabaseService.js";
 
 export class DatabaseService implements IDatabaseService {
   private _complete: boolean;

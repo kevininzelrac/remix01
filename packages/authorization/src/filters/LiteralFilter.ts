@@ -1,4 +1,4 @@
-import { AbstractFilter } from "~/filters/AbstractFilter.js";
+import { AbstractFilter } from "./AbstractFilter.js";
 
 export class LiteralFilter<LiteralType> extends AbstractFilter<
   [],

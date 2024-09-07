@@ -1,5 +1,5 @@
-import { Rule } from "~/Rule.js";
-import { AbstractFilter } from "~/filters/AbstractFilter.js";
+import { Rule } from "./Rule.js";
+import { AbstractFilter } from "./filters/AbstractFilter.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotPromise<T> = T extends Promise<any> ? never : T;
