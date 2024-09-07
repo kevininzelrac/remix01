@@ -1,6 +1,6 @@
-import { QueryEngine } from ".";
-import { EvaluationContext } from "./filters/AbstractFilter";
-import { BaseSubjectTypeFilters, FilterLiteralType } from "./types";
+import { QueryEngine } from "./index.js";
+import { EvaluationContext } from "./filters/AbstractFilter.js";
+import { BaseSubjectTypeFilters, FilterLiteralType } from "./types.js";
 
 export class EvaluatedRule<
   SubjectTypeFilters extends BaseSubjectTypeFilters,

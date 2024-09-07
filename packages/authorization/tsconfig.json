@@ -1,5 +1,5 @@
 {
-  "extends": "@app/config/typescript/tsconfig.json",
+  "extends": "@app/config/typescript/tsconfig.node.json",
   "include": ["**/*.ts"],
   "compilerOptions": {
     "rootDir": "./src",
@@ -8,8 +8,5 @@
     "paths": {
       "~/*": ["./src/*"]
     },
-  },
-  "references": [
-    {"path": "../utils"}
-  ]
+  }
 }

@@ -1,5 +1,5 @@
-import { ClientError } from "./ClientError";
-import { ClientErrorType, type ClientErrorData } from "./types";
+import { ClientError } from "./ClientError.js";
+import { ClientErrorType, type ClientErrorData } from "./types.js";
 
 export class ProductError extends ClientError {
   private messages: string[];

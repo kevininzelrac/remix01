@@ -1,9 +1,9 @@
-import { AbstractFilter } from "./filters/AbstractFilter";
+import { AbstractFilter } from "./filters/AbstractFilter.js";
 import {
   BaseSubjectTypeFilters,
   FilterLiteralType,
   FilterReturnType,
-} from "./types";
+} from "./types.js";
 
 export class Rule<
   SubjectTypeFilters extends BaseSubjectTypeFilters,

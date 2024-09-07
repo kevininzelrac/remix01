@@ -1,9 +1,9 @@
-import { EvaluatedRule } from "./EvaluatedRule";
-import { QueryEngine } from "./QueryEngine";
-import { Rule } from "./Rule";
-import { AbstractFilter, EvaluationContext } from "./filters/AbstractFilter";
-import { FunctionFilter } from "./filters/FunctionFilter";
-import { LiteralFilter } from "./filters/LiteralFilter";
+import { EvaluatedRule } from "./EvaluatedRule.js";
+import { QueryEngine } from "./QueryEngine.js";
+import { Rule } from "./Rule.js";
+import { AbstractFilter, EvaluationContext } from "./filters/AbstractFilter.js";
+import { FunctionFilter } from "./filters/FunctionFilter.js";
+import { LiteralFilter } from "./filters/LiteralFilter.js";
 import {
   AbstractFilterArgsType,
   AbstractFilterReturnType,
@@ -14,11 +14,11 @@ import {
   FilterReturnType,
   RuleArgs,
   RuleIsPromise,
-} from "./types";
+} from "./types.js";
 
 export class RuleSet<
   SubjectTypeFilters extends BaseSubjectTypeFilters,
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   Repository extends BaseRepository<SubjectTypeFilters> = {},
 > {
   constructor(
@@ -28,7 +28,7 @@ export class RuleSet<
 
   public static new<STF extends object>(
     queryEngine: QueryEngine<STF>,
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ): RuleSet<STF, {}> {
     return new RuleSet(queryEngine, {});
   }

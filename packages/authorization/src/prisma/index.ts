@@ -1,4 +1,4 @@
-import { QueryEngine } from "../QueryEngine";
+import { QueryEngine } from "../QueryEngine.js";
 
 type PrismaSubject = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,5 @@
-import { Rule } from "./Rule";
-import { AbstractFilter } from "./filters/AbstractFilter";
+import { Rule } from "./Rule.js";
+import { AbstractFilter } from "./filters/AbstractFilter.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotPromise<T> = T extends Promise<any> ? never : T;
@@ -75,7 +75,7 @@ export type AddRule<
     ? never
     : Omit<Repository, Action> & {
         [key in Action]: Omit<
-          // eslint-disable-next-line @typescript-eslint/ban-types
+          // eslint-disable-next-line @typescript-eslint/no-empty-object-type
           Action extends keyof Repository ? Repository[Action] : {},
           SubjectType
         > & {

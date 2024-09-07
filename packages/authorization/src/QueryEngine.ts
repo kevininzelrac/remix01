@@ -1,4 +1,4 @@
-import { BaseSubjectTypeFilters } from "./types";
+import { BaseSubjectTypeFilters } from "./types.js";
 
 export abstract class QueryEngine<
   SubjectTypeFilters extends BaseSubjectTypeFilters,

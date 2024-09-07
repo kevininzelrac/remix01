@@ -1,2 +1,2 @@
-export * from "./pricing";
-export * from "./wizard";
+export * from "./pricing.js";
+export * from "./wizard.js";

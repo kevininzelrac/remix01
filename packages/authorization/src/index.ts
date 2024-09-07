@@ -1,5 +1,5 @@
-export { AbstractFilter } from "./filters/AbstractFilter";
-export { FunctionFilter } from "./filters/FunctionFilter";
-export { LiteralFilter } from "./filters/LiteralFilter";
-export { QueryEngine } from "./QueryEngine";
-export { RuleSet } from "./RuleSet";
+export { AbstractFilter } from "./filters/AbstractFilter.js";
+export { FunctionFilter } from "./filters/FunctionFilter.js";
+export { LiteralFilter } from "./filters/LiteralFilter.js";
+export { QueryEngine } from "./QueryEngine.js";
+export { RuleSet } from "./RuleSet.js";

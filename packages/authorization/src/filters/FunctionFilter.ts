@@ -1,4 +1,4 @@
-import { AbstractFilter } from "./AbstractFilter";
+import { AbstractFilter } from "./AbstractFilter.js";
 
 export class FunctionFilter<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,5 @@
-import { ClientError } from "./ClientError";
-import { ClientErrorType, type ClientErrorData } from "./types";
+import { ClientError } from "./ClientError.js";
+import { ClientErrorType, type ClientErrorData } from "./types.js";
 
 export class NotAuthenticatedError extends ClientError {
   private messages: string[];
