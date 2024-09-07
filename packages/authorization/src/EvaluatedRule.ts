@@ -48,7 +48,7 @@ export class EvaluatedRule<
   public can(): boolean {
     let queryFound = false;
     for (const filter of this.filters) {
-      if (typeof filter === "boolean") {
+      if (filter === false) {
         return filter;
       }
       queryFound = true;
