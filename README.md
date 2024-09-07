@@ -7,10 +7,19 @@ Recommended settings:
 ```json
 {
     "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always"
+    },
     "eslint.workingDirectories": [
         {"pattern": "./apps/*/"},
         {"pattern": "./packages/*/"}
     ],
-    "eslint.experimental.useFlatConfig": true
+    "eslint.useFlatConfig": true,
+    "json.schemas": [
+        {
+            "fileMatch": [ "*tsconfig*.json" ],
+            "url": "http://json.schemastore.org/tsconfig",
+        }
+    ],
 }
 ```
