@@ -1,13 +1,15 @@
 import { QueryEngine } from "..";
 
-type BasePrismaClient<T extends string> = {
-  [SubjectType in T]?: {
-    fields: { [fieldName in string]?: any };
-    findMany: (args: { where?: any }) => any;
-  };
+type PrismaSubject = {
+  fields: { [fieldName in string]?: any };
+  findMany: (args: { where?: any }) => any;
 };
 
-type GetSubjectTypeFilters<PrismaClient extends BasePrismaClient<never>> = {
+type BasePrismaClient<T extends string> = {
+  [SubjectType in T]: PrismaSubject;
+};
+
+type GetSubjectTypeFilters<PrismaClient extends BasePrismaClient<any>> = {
   [SubjectType in keyof PrismaClient]: "findMany" extends keyof PrismaClient[SubjectType]
     ? PrismaClient[SubjectType]["findMany"] extends (...args: any[]) => any
       ? Extract<
@@ -19,7 +21,7 @@ type GetSubjectTypeFilters<PrismaClient extends BasePrismaClient<never>> = {
 };
 
 export class PrismaQueryEngine<
-  PrismaClient extends BasePrismaClient<never>,
+  PrismaClient extends BasePrismaClient<any>,
 > extends QueryEngine<GetSubjectTypeFilters<PrismaClient>> {
   constructor(private client: PrismaClient) {
     super();
@@ -36,7 +38,7 @@ export class PrismaQueryEngine<
       [pickedColumn]: {
         equals: this.client[subjectType]!.fields[pickedColumn],
       },
-    };
+    } as any; // Trust me;
   }
   none<SubjectType extends keyof GetSubjectTypeFilters<PrismaClient>>(
     subjectType: SubjectType
@@ -49,7 +51,7 @@ export class PrismaQueryEngine<
       [pickedColumn]: {
         not: this.client[subjectType]!.fields[pickedColumn],
       },
-    };
+    } as any; // Trust me
   }
   and<SubjectType extends keyof GetSubjectTypeFilters<PrismaClient>>(
     _subjectType: SubjectType,
@@ -57,7 +59,7 @@ export class PrismaQueryEngine<
   ): GetSubjectTypeFilters<PrismaClient>[SubjectType] {
     return {
       AND: terms,
-    };
+    } as any; // Trust me
   }
   negate<SubjectType extends keyof GetSubjectTypeFilters<PrismaClient>>(
     _subjectType: SubjectType,
@@ -65,15 +67,24 @@ export class PrismaQueryEngine<
   ): GetSubjectTypeFilters<PrismaClient>[SubjectType] {
     return {
       NOT: condition,
-    };
+    } as any; // Trust me
   }
 }
+
+type CredentialWhere = {
+  NOT?: CredentialWhere;
+  AND?: CredentialWhere[];
+  OR?: CredentialWhere[];
+  id: number;
+};
 
 class TestPrismaClient {
   get credential(): {
     fields: {};
-    findMany(arg: { where?: { id: number } }): any[];
+    findMany(arg: { where?: CredentialWhere }): any[];
   } {
     throw new Error();
   }
 }
+
+const prismaEngine = new PrismaQueryEngine(new TestPrismaClient());
