@@ -1,2 +1,0 @@
-- Add functional tests for the code
-- Once happy with the way authorization works, deploy this as a scoped package
