@@ -38,7 +38,7 @@ describe("RuleSet", () => {
     );
   });
 
-  test("Test checks against functional allow rules", () => {
+  test("Test checks against functional forbid rules", () => {
     const simpleRuleSet = ruleSet
       .allow("create", "posts")
       .forbid(
