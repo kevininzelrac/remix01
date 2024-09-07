@@ -3,8 +3,7 @@
   "include": ["src/**/*", "__tests__/**/*"],
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./dist",
-    "baseUrl": "."
+    "outDir": "./dist"
   },
   "references": [
     {"path": "../utils"}

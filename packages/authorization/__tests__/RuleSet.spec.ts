@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "@jest/globals";
 import { RuleSet } from "../src/RuleSet.js";
 import { MockQueryEngine, SubjectTypeFilters } from "./utils.js";
+import { EvaluatedRule } from "../src/EvaluatedRule.js";
 
 describe("RuleSet", () => {
   let ruleSet: RuleSet<SubjectTypeFilters>;
@@ -90,6 +91,16 @@ describe("RuleSet", () => {
 
     expect(simpleRuleSet.can("create", "posts", { role: "admin" })).toEqual(
       false,
+    );
+  });
+
+  it("should return an evaluated rule when calling getRule", () => {
+    const simpleRuleSet = ruleSet
+      .allow("read", "posts")
+      .forbid("read", "users");
+
+    expect(simpleRuleSet.getRule("read", "posts")).toBeInstanceOf(
+      EvaluatedRule,
     );
   });
 });
