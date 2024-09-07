@@ -120,6 +120,55 @@ describe("RuleSet", () => {
     ).resolves.toEqual(false);
   });
 
+  it("should return correct filters when accessible is called", () => {
+    const simpleRuleSet = ruleSet
+      .allow("read", "posts")
+      .forbid(
+        "read",
+        "posts",
+        (user: { status: "subscribed" | "unsubscribed" }) => {
+          if (user.status === "unsubscribed") return true;
+          return {
+            author: "HIDDEN",
+          };
+        },
+      );
+
+    expect(
+      simpleRuleSet.accessible("read", "posts", { status: "unsubscribed" }),
+    ).toEqual({ AND: [true, false] });
+    expect(
+      simpleRuleSet.accessible("read", "posts", { status: "subscribed" }),
+    ).toEqual({ AND: [true, { NOT: { author: "HIDDEN" } }] });
+  });
+
+  it("should return correct filters when accessible is called if functional rule returns promise", () => {
+    const simpleRuleSet = ruleSet
+      .allow("read", "posts")
+      .forbid(
+        "read",
+        "posts",
+        async (user: { status: "subscribed" | "unsubscribed" }) => {
+          if (user.status === "unsubscribed") return true;
+          return {
+            author: "HIDDEN",
+          };
+        },
+      );
+
+    expect(
+      isPromise(
+        simpleRuleSet.accessible("read", "posts", { status: "unsubscribed" }),
+      ),
+    ).toEqual(true);
+    expect(
+      simpleRuleSet.accessible("read", "posts", { status: "unsubscribed" }),
+    ).resolves.toEqual({ AND: [true, false] });
+    expect(
+      simpleRuleSet.accessible("read", "posts", { status: "subscribed" }),
+    ).resolves.toEqual({ AND: [true, { NOT: { author: "HIDDEN" } }] });
+  });
+
   it("should return an evaluated rule when calling getRule", () => {
     const simpleRuleSet = ruleSet
       .allow("read", "posts")
@@ -128,5 +177,10 @@ describe("RuleSet", () => {
     expect(simpleRuleSet.getRule("read", "posts")).toBeInstanceOf(
       EvaluatedRule,
     );
+    expect(simpleRuleSet.getRule("read", "posts").can()).toEqual(true);
+    expect(simpleRuleSet.getRule("read", "users").cannot()).toEqual(true);
+    expect(simpleRuleSet.getRule("read", "posts").accessible()).toEqual({
+      AND: [true],
+    });
   });
 });
