@@ -155,7 +155,7 @@ export class RuleSet<
       SubjectType,
       Parameters<Condition>,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
+      Promise<any> extends ReturnType<Condition> ? true : false
     >
   >;
   public forbid<

@@ -3,6 +3,11 @@ import { RuleSet } from "../src/RuleSet.js";
 import { MockQueryEngine, SubjectTypeFilters } from "./utils.js";
 import { EvaluatedRule } from "../src/EvaluatedRule.js";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isPromise(value: any): value is Promise<any> {
+  return value && typeof value.then === "function";
+}
+
 describe("RuleSet", () => {
   let ruleSet: RuleSet<SubjectTypeFilters>;
 
@@ -92,6 +97,27 @@ describe("RuleSet", () => {
     expect(simpleRuleSet.can("create", "posts", { role: "admin" })).toEqual(
       false,
     );
+  });
+
+  it("should return a promise if any of the functional rules returns a promise", () => {
+    const simpleRuleSet = ruleSet
+      .allow("create", "posts")
+      .forbid(
+        "create",
+        "posts",
+        async (user: { role: "admin" | "author" | "reader" }) => {
+          return user.role === "reader";
+        },
+      );
+    expect(
+      isPromise(simpleRuleSet.can("create", "posts", { role: "admin" })),
+    ).toEqual(true);
+    expect(
+      simpleRuleSet.can("create", "posts", { role: "admin" }),
+    ).resolves.toEqual(true);
+    expect(
+      simpleRuleSet.can("create", "posts", { role: "reader" }),
+    ).resolves.toEqual(false);
   });
 
   it("should return an evaluated rule when calling getRule", () => {
