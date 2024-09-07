@@ -24,19 +24,9 @@ export class PrismaQueryEngine<PrismaClient extends {}> extends QueryEngine<
   }
 
   all<SubjectType extends keyof GetSubjectTypeFilters<PrismaClient>>(
-    subjectType: SubjectType
+    _subjectType: SubjectType
   ): GetSubjectTypeFilters<PrismaClient>[SubjectType] {
-    const pickedColumn =
-      "id" in (this.client[subjectType] as PrismaSubject).fields
-        ? "id"
-        : Object.keys((this.client[subjectType] as PrismaSubject).fields)[0];
-    return {
-      [pickedColumn]: {
-        equals: (this.client[subjectType] as PrismaSubject).fields[
-          pickedColumn
-        ],
-      },
-    } as any; // Trust me;
+    return {} as any; // Trust me;
   }
   none<SubjectType extends keyof GetSubjectTypeFilters<PrismaClient>>(
     subjectType: SubjectType
