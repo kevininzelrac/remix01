@@ -13,6 +13,7 @@
     "sourceMap": true,
     "composite": true,
     "skipLibCheck": true,
+    "emitDeclarationOnly": true,
 
     /* Strict Type-Checking Options */
     "noImplicitAny": true,

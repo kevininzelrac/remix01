@@ -11,7 +11,7 @@
     "migrate:dev": "pnpm run build:schema && prisma migrate dev",
     "migrate:reset": "prisma migrate reset --force",
     "postinstall": "pnpm run build:schema",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "@app/utils": "*",

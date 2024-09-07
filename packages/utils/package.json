@@ -7,7 +7,7 @@
   "scripts": {
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --build"
   },
   "devDependencies": {
     "@app/config": "*"
