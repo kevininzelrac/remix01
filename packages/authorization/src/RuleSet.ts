@@ -268,7 +268,7 @@ export class RuleSet<
       action,
       subjectType,
       args,
-      (evaluatedRule) => evaluatedRule.can(),
+      (evaluatedRule) => evaluatedRule.cannot(),
     );
   }
 

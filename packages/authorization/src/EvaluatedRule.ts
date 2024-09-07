@@ -15,18 +15,22 @@ export class EvaluatedRule<
       FilterLiteralType<SubjectTypeFilters[SubjectType]>
     >[],
   ) {
-    this.filters = evaluationContexts.map(({ negate, filter }) => {
-      if (typeof filter === "boolean") {
-        if (negate) {
-          return !filter;
+    this.filters = evaluationContexts.reduce(
+      (acc, { negate, filter }) => {
+        if (typeof filter === "boolean" && negate) {
+          // forbid returns false
+          if (!filter) {
+            return acc;
+          }
+          filter = !filter;
+        } else if (typeof filter !== "boolean" && negate) {
+          filter = this.queryEngine.negate(subjectType, filter);
         }
-        return filter;
-      }
-      if (negate) {
-        return this.queryEngine.negate(subjectType, filter);
-      }
-      return filter;
-    });
+        acc.push(filter);
+        return acc;
+      },
+      [] as FilterLiteralType<SubjectTypeFilters[SubjectType]>[],
+    );
   }
 
   public accessible(): SubjectTypeFilters[SubjectType] {
