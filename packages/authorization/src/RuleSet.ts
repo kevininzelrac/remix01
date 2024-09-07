@@ -153,7 +153,7 @@ export class RuleSet<
       Repository,
       Action,
       SubjectType,
-      AbstractFilterArgsType<Condition>,
+      Parameters<Condition>,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Promise<any> extends AbstractFilterReturnType<Condition> ? true : false
     >
