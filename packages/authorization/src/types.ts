@@ -25,7 +25,7 @@ export type FilterReturnType<Filter> =
 
 export type BaseSubjectTypeFilters = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key in string]?: NotPromise<any>;
+  [key in string]?: NonNullable<NotPromise<any>>;
 };
 export type BaseRepository<SubjectTypeFilters extends BaseSubjectTypeFilters> =
   {
