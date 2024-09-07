@@ -4,7 +4,6 @@
     "moduleResolution": "NodeNext",
   
     /* Basic Options */
-    "incremental": true,
     "declaration": true,
     "allowJs": true,
     "strict": true,
