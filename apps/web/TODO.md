@@ -19,3 +19,4 @@ We are also missing the following features:
 - Add a K8s deployment
 - Add an audit log/audit trail for Prisma
 - Use PGLite for tests
+- Add Kysely for more flexible queries
