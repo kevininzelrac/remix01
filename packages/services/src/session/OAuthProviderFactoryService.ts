@@ -2,12 +2,12 @@ import type { Auth, KeySchema } from "lucia";
 import { lucia } from "lucia";
 import { web } from "lucia/middleware";
 
-import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService";
-import type { IOAuthProviderService } from "~/types/IOAuthProviderService";
+import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService.js";
+import type { IOAuthProviderService } from "~/types/IOAuthProviderService.js";
 
-import { FacebookOAuthProviderService } from "./providers/FacebookOAuthProviderService";
-import { GithubOAuthProviderService } from "./providers/GithubOAuthProviderService";
-import { GoogleOAuthProviderService } from "./providers/GoogleOAuthProviderService";
+import { FacebookOAuthProviderService } from "./providers/FacebookOAuthProviderService.js";
+import { GithubOAuthProviderService } from "./providers/GithubOAuthProviderService.js";
+import { GoogleOAuthProviderService } from "./providers/GoogleOAuthProviderService.js";
 import { AssertionError } from "@app/utils/errors";
 
 const adapter = {

@@ -2,8 +2,8 @@ import type { Awaitable } from "@app/utils/types";
 import type { AwilixContainer } from "awilix";
 import * as awilix from "awilix";
 
-import type { ServerContext } from "./types/ServerContext";
-import { getRequestService } from "./request/RequestService";
+import type { ServerContext } from "./types/ServerContext.js";
+import { getRequestService } from "./request/RequestService.js";
 import { AssertionError } from "@app/utils/errors";
 
 export enum RegistrationLifetime {

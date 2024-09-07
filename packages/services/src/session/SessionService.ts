@@ -4,14 +4,14 @@ import jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
-import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService";
-import type { ISessionService } from "~/types/ISessionService";
-import type { IUserService } from "~/types/IUserService";
-import { MailType, type IMailService } from "~/types/IMailService";
-import type { IClockService } from "~/types/IClockService";
-import type { ILoggerService } from "~/types/ILoggerService";
-import type { IDatabaseService } from "~/types/IDatabaseService";
-import type { ServerContext } from "~/types/ServerContext";
+import type { IOAuthProviderFactoryService } from "~/types/IOAuthProviderFactoryService.js";
+import type { ISessionService } from "~/types/ISessionService.js";
+import type { IUserService } from "~/types/IUserService.js";
+import { MailType, type IMailService } from "~/types/IMailService.js";
+import type { IClockService } from "~/types/IClockService.js";
+import type { ILoggerService } from "~/types/ILoggerService.js";
+import type { IDatabaseService } from "~/types/IDatabaseService.js";
+import type { ServerContext } from "~/types/ServerContext.js";
 
 import type { User } from "@app/db";
 import {
@@ -260,6 +260,7 @@ export class SessionService implements ISessionService {
     let data;
     try {
       data = JSON.parse(cookies[this._cookieName]);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return null;
     }
@@ -270,6 +271,7 @@ export class SessionService implements ISessionService {
 
     try {
       jwt.verify(accessToken, this._accessTokenConfiguration.secret);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return null;
     }

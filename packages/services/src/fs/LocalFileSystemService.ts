@@ -1,4 +1,4 @@
-import type { IFileSystemService } from "~/types/IFileSystemService";
+import type { IFileSystemService } from "~/types/IFileSystemService.js";
 
 import fs from "node:fs";
 import path from "node:path";

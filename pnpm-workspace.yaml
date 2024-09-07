@@ -1,7 +1,3 @@
 packages:
   # - apps/*
-  # - packages/*
-  - packages/authorization
-  - packages/config
-  - packages/db
-  - packages/utils
+  - packages/*

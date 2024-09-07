@@ -1,4 +1,4 @@
-import type { IClockService } from "~/types/IClockService";
+import type { IClockService } from "~/types/IClockService.js";
 
 export class ClockService implements IClockService {
   getCurrentDateTime(): Date {

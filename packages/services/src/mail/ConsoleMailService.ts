@@ -1,4 +1,4 @@
-import { MailProps, IMailService } from "~/types/IMailService";
+import { MailProps, IMailService } from "~/types/IMailService.js";
 
 export class ConsoleMailService implements IMailService {
   async sendEmail(props: MailProps): Promise<void> {

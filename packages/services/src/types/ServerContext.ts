@@ -1,13 +1,13 @@
-import type { ILoggerService } from "./ILoggerService";
-import type { IUserService } from "./IUserService";
-import type { ISessionService } from "./ISessionService";
-import type { IOAuthProviderFactoryService } from "./IOAuthProviderFactoryService";
-import type { IMailService } from "./IMailService";
-import type { IClockService } from "./IClockService";
-import type { IFileSystemService } from "./IFileSystemService";
-import type { IDatabaseService } from "./IDatabaseService";
-import type { IProductService } from "./IProductService";
-import type { IRequestService } from "./IRequestService";
+import type { ILoggerService } from "./ILoggerService.js";
+import type { IUserService } from "./IUserService.js";
+import type { ISessionService } from "./ISessionService.js";
+import type { IOAuthProviderFactoryService } from "./IOAuthProviderFactoryService.js";
+import type { IMailService } from "./IMailService.js";
+import type { IClockService } from "./IClockService.js";
+import type { IFileSystemService } from "./IFileSystemService.js";
+import type { IDatabaseService } from "./IDatabaseService.js";
+import type { IProductService } from "./IProductService.js";
+import type { IRequestService } from "./IRequestService.js";
 
 export type ServerContext = {
   requestService: IRequestService;

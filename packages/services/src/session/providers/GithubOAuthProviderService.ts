@@ -6,7 +6,7 @@ import type {
   OAuthRedirect,
   OAuthResult,
   IOAuthProviderService,
-} from "~/types/IOAuthProviderService";
+} from "~/types/IOAuthProviderService.js";
 import { NotAuthenticatedError } from "@app/utils/errors";
 
 export class GithubOAuthProviderService implements IOAuthProviderService {

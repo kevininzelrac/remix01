@@ -6,7 +6,7 @@ import {
   IMailService,
   MailType,
   MailParams,
-} from "~/types/IMailService";
+} from "~/types/IMailService.js";
 
 type RendererOutput = {
   subject: string;
