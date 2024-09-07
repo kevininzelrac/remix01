@@ -5,6 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "build": "tsc --project tsconfig.build.json && tsc-alias --project tsconfig.build.json",
     "build:schema": "prisma-import --force && prisma generate",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",

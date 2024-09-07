@@ -1,6 +1,6 @@
 {
   "extends": "@app/config/typescript/tsconfig.base.json",
-  "include": ["**/*.ts"],
+  "include": ["src/**/*", "__tests__/**/*"],
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./dist",

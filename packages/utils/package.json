@@ -5,6 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "build": "tsc --project tsconfig.build.json && tsc-alias --project tsconfig.build.json",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --build"
