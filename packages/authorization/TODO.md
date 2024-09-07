@@ -1,4 +1,4 @@
-- Test types using tsd (if it makes sense)
+- Test types using tstyche (if it makes sense)
 - Add functional tests for the code
 - A big use case is going to be people trying to find if they can access ONE
   entity. Needs to come up with a good API for this use case.
