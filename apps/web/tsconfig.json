@@ -2,6 +2,10 @@
   "extends": "@app/config/typescript/tsconfig.base.json",
   "include": ["env.d.ts", "**/*.ts", "**/*.tsx"],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    },
     "jsx": "react-jsx"
   },
   "references": [
