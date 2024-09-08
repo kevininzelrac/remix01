@@ -1,5 +1,5 @@
 import { AssertionError } from "@app/utils/errors";
-import { middleware } from "~/server/middleware";
+import { middleware } from "~/server/middleware/index.js";
 
 export const loader = middleware.build(({ container, params }) => {
   const providerName = params.providerName;

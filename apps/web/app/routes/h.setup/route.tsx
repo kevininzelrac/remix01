@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectContent,
   Select,
-} from "~/components/ui/select";
-import { Button } from "~/components/ui/button";
+} from "~/components/ui/select.js";
+import { Button } from "~/components/ui/button.js";
 import {
   Card,
   CardContent,
@@ -13,10 +13,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card";
-import { Label } from "~/components/ui/label";
-import { Input } from "~/components/ui/input";
-import { AvatarInput } from "~/components/input";
+} from "~/components/ui/card.js";
+import { Label } from "~/components/ui/label.js";
+import { Input } from "~/components/ui/input.js";
+import { AvatarInput } from "~/components/input/AvatarInput.js";
 
 const gridElements = [
   {

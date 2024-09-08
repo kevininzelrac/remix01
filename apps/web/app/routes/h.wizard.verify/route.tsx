@@ -1,11 +1,11 @@
 import { Form } from "@remix-run/react";
 
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { RESEND_CODE, SUBMIT_CODE } from "./constants";
+import { Button } from "~/components/ui/button.js";
+import { Input } from "~/components/ui/input.js";
+import { RESEND_CODE, SUBMIT_CODE } from "./constants.js";
 
-export { action } from "./action.server";
-export { loader } from "./loader.server";
+export { action } from "./action.server.js";
+export { loader } from "./loader.server.js";
 
 export default function VerificationPage() {
   return (

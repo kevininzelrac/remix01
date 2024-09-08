@@ -3,9 +3,9 @@ import { redirect } from "@remix-run/node";
 import { z } from "zod";
 import * as mime from "mime-types";
 
-import { PAGES } from "~/constants";
-import { middleware } from "~/server/middleware";
-import { authGuard } from "~/server/permissions/authGuard.server";
+import { PAGES } from "~/constants/routes.js";
+import { middleware } from "~/server/middleware/index.js";
+import { authGuard } from "~/server/permissions/authGuard.server.js";
 import { BadRequestError } from "@app/utils/errors";
 
 const schema = z.object({

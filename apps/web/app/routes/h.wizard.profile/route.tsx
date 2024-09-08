@@ -7,18 +7,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card";
+} from "~/components/ui/card.js";
 
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { AvatarInput } from "~/components/input";
+import { Button } from "~/components/ui/button.js";
+import { Input } from "~/components/ui/input.js";
+import { Label } from "~/components/ui/label.js";
+import { AvatarInput } from "~/components/input/AvatarInput.js";
 
-import { loader } from "./loader.server";
+import { loader } from "./loader.server.js";
 import { AssertionError } from "@app/utils/errors";
 
 export { loader };
-export { action } from "./action.server";
+export { action } from "./action.server.js";
 
 export default function ProfilePage() {
   const result = useLoaderData<typeof loader>();

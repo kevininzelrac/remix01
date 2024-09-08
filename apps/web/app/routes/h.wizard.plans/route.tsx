@@ -1,10 +1,10 @@
 import { Recurrence } from "@app/utils/constants";
 import { Form, useLoaderData } from "@remix-run/react";
 
-import { loader } from "./loader.server";
+import { loader } from "./loader.server.js";
 import { AssertionError } from "@app/utils/errors";
 
-export { action } from "./action.server";
+export { action } from "./action.server.js";
 export { loader };
 
 export default function PlansPage() {

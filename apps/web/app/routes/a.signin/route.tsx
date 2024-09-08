@@ -1,15 +1,15 @@
 import { AssertionError, ClientErrorType } from "@app/utils/errors";
 import { Form, Link, NavLink, useActionData } from "@remix-run/react";
 
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { PasswordInput } from "~/components/input";
-import { OAuthMenu } from "~/components/auth";
-import { PAGES } from "~/constants";
-import type { action } from "./action.server";
+import { Button } from "~/components/ui/button.js";
+import { Input } from "~/components/ui/input.js";
+import { Label } from "~/components/ui/label.js";
+import { PasswordInput } from "~/components/input/PasswordInput.js";
+import { OAuthMenu } from "~/components/auth/OAuthMenu.js";
+import { PAGES } from "~/constants/routes.js";
+import type { action } from "./action.server.js";
 
-export { action } from "./action.server";
+export { action } from "./action.server.js";
 
 export default function SignInPage() {
   const response = useActionData<typeof action>();

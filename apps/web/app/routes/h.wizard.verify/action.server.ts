@@ -2,10 +2,10 @@ import { WizardStep } from "@app/utils/constants";
 import { redirect } from "@remix-run/node";
 import { z } from "zod";
 
-import { PAGES } from "~/constants";
-import { RESEND_CODE, SUBMIT_CODE } from "./constants";
-import { middleware } from "~/server/middleware";
-import { authGuard } from "~/server/permissions/authGuard.server";
+import { PAGES } from "~/constants/routes.js";
+import { RESEND_CODE, SUBMIT_CODE } from "./constants.js";
+import { middleware } from "~/server/middleware/index.js";
+import { authGuard } from "~/server/permissions/authGuard.server.js";
 import { BadRequestError } from "@app/utils/errors";
 import { AssertionError } from "@app/utils/errors";
 

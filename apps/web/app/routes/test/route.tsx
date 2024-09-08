@@ -1,6 +1,6 @@
 import { MimeType } from "server-image-core";
 
-import { Image } from "~/components/image";
+import { Image } from "~/components/image.js";
 
 const src =
   "https://cdn.vox-cdn.com/thumbor/XrQ1hlHUj8-ok5nWOZQBiWAzJxA=/85x0:1014x619/1200x800/filters:focal(85x0:1014x619)/cdn.vox-cdn.com/uploads/chorus_image/image/29585969/mgsvgz_ss_demo_002.0.jpg";
