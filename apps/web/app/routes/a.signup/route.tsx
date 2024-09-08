@@ -1,4 +1,4 @@
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 
 import { Button } from "~/components/ui/button.js";
 import { Input } from "~/components/ui/input.js";
@@ -6,10 +6,25 @@ import { Label } from "~/components/ui/label.js";
 import { PasswordInput } from "~/components/input/PasswordInput.js";
 import { OAuthMenu } from "~/components/auth/OAuthMenu.js";
 import { PAGES } from "~/constants/routes.js";
+import { ClientErrorType } from "@app/utils/errors/types";
+import type { action } from "./action.server.js";
+import { AssertionError } from "@app/utils/errors/AssertionError";
 
 export { action } from "./action.server.js";
 
 export default function SignInPage() {
+  const response = useActionData<typeof action>();
+
+  if (
+    response &&
+    !response.success &&
+    ![ClientErrorType.NOT_AUTHENTICATED, ClientErrorType.BAD_REQUEST].includes(
+      response.error.type,
+    )
+  ) {
+    throw new AssertionError(`Unexpected BE error ${response.error.type}`);
+  }
+
   return (
     <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full md:w-1/2 p-8">
@@ -39,7 +54,7 @@ export default function SignInPage() {
         <Form method="POST" className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" required />
+            <Input id="email" name="email" type="email" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -48,6 +63,11 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign up
           </Button>
+          {response?.error?.messages.map((message) => (
+            <em key={message} style={{ color: "red" }}>
+              {message}
+            </em>
+          ))}
         </Form>
         <div className="space-y-4">
           <p className="text-center text-gray-500">Or sign up with</p>

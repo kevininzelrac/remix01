@@ -16,10 +16,12 @@ export default function SignInPage() {
 
   if (
     response &&
-    !response?.success &&
-    response?.error.type != ClientErrorType.BAD_REQUEST
+    !response.success &&
+    ![ClientErrorType.NOT_AUTHENTICATED, ClientErrorType.BAD_REQUEST].includes(
+      response.error.type,
+    )
   ) {
-    throw new AssertionError(`Unexpected BE error ${response?.error.type}`);
+    throw new AssertionError(`Unexpected BE error ${response.error.type}`);
   }
 
   return (
@@ -64,9 +66,16 @@ export default function SignInPage() {
           <Button className="w-full" type="submit">
             Sign In
           </Button>
-          <NavLink to={PAGES.FORGOT_PASSWORD}>Forgot password</NavLink>
+          <NavLink
+            style={{ float: "right", marginTop: "0" }}
+            to={PAGES.FORGOT_PASSWORD}
+          >
+            Forgot password
+          </NavLink>
           {response?.error?.messages.map((message) => (
-            <em key={message}>{message}</em>
+            <em key={message} style={{ color: "red" }}>
+              {message}
+            </em>
           ))}
         </Form>
         <div className="space-y-4">
