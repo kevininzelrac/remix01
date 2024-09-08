@@ -10,10 +10,10 @@ import type { UserService } from "../models/UserService.js";
 
 export class LocalProductService implements IProductService {
   constructor(
+    private _productList: Product[],
     private _databaseService: DatabaseService,
     private _userService: UserService,
     private _clockService: IClockService,
-    private _productList: Product[],
   ) {}
 
   getProducts = async (): Promise<Product[]> => {
@@ -116,9 +116,9 @@ export const getLocalProductService =
   () =>
   (context: ServerContext): LocalProductService => {
     return new LocalProductService(
+      productList,
       context.databaseService,
       context.userService,
       context.clockService,
-      productList,
     );
   };
