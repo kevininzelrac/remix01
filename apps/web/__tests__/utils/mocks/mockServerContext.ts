@@ -1,8 +1,7 @@
-import type { ServerContext } from "~/server/interfaces";
-import { mockLoggerService } from "./mockLoggerService";
-import { mockUserService } from "./mockUserService";
+import type { ServerContext } from "@app/services/types/ServerContext";
+import { mockLoggerService } from "./mockLoggerService.js";
 
 export const mockServerContext: ServerContext = {
   loggerService: mockLoggerService,
-  userService: mockUserService,
-};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any;

@@ -1,4 +1,5 @@
-import type { ILoggerService } from "~/server/interfaces";
+import { jest } from "@jest/globals";
+import type { ILoggerService } from "@app/services/types/ILoggerService";
 
 export const mockLoggerService: ILoggerService = {
   debug: jest.fn(),

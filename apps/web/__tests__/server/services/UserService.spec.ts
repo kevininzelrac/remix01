@@ -1,5 +1,14 @@
-import { database, clearDatabase } from "__tests__/utils/database";
-import { UserService } from "~/server/services/models/UserService.server";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from "@jest/globals";
+import { database, clearDatabase } from "__tests__/utils/database.js";
+import { UserService } from "@app/services/models/UserService";
+import { WizardStep } from "@app/utils/constants/wizard";
 
 describe("UserService", () => {
   let userService: UserService;
@@ -14,6 +23,7 @@ describe("UserService", () => {
         id: "95818e89-2e0c-4749-9e3d-c44d71d22528",
         email: "pep.guardiola@mancity.com",
         fullName: "Pep Guardiola",
+        wizardStep: WizardStep.COMPLETE,
       },
     });
   });
@@ -51,13 +61,10 @@ describe("UserService", () => {
   });
 
   describe("getByEmailPasswordCombination", () => {
-    // eslint-disable-next-line jest/expect-expect
     it("should return an existing user if the email/password combination matches", () => {});
 
-    // eslint-disable-next-line jest/expect-expect
     it("should return null if the user does not exist by email", () => {});
 
-    // eslint-disable-next-line jest/expect-expect
     it("should return null if the password does not match", () => {});
   });
 });
