@@ -15,6 +15,7 @@ import { UserService } from "@app/services/models/UserService";
 import { WizardStep } from "@app/utils/constants/wizard";
 
 // FIXME: Move this into @app/services instead
+// FIXME: DB tests should use a transaction and roll back instead of writing to DB
 describe("UserService", () => {
   let userService: UserService;
 
