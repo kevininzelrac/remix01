@@ -14,6 +14,7 @@ import {
 import { UserService } from "@app/services/models/UserService";
 import { WizardStep } from "@app/utils/constants/wizard";
 
+// FIXME: Move this into @app/services instead
 describe("UserService", () => {
   let userService: UserService;
 
