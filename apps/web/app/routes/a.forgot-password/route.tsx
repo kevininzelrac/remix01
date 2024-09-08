@@ -5,9 +5,9 @@ import { useSearchParams } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { PasswordInput } from "~/components/input";
-import { ActionType } from "./constants";
+import { ActionType } from "./constants.js";
 
-export { action } from "./action.server";
+export { action } from "./action.server.js";
 
 export default function ForgotPasswordPage() {
   const [searchParams] = useSearchParams();

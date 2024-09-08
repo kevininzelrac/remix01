@@ -7,7 +7,7 @@ import { PasswordInput } from "~/components/input";
 import { OAuthMenu } from "~/components/auth";
 import { PAGES } from "~/constants";
 
-export { action } from "./action.server";
+export { action } from "./action.server.js";
 
 export default function SignInPage() {
   return (
