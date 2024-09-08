@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { middleware } from "../../server/middleware/index.js";
-import { ActionType } from "./constants.js";
+import { middleware } from "~/server/middleware";
+import { ActionType } from "./constants";
 import { BadRequestError } from "@app/utils/errors/BadRequestError";
-import { BASE_URL } from "../../server/constants.server.js";
-import { PAGES } from "../../constants/routes.js";
+import { BASE_URL } from "~/server/constants.server";
+import { PAGES } from "~/constants";
 import { redirect } from "@remix-run/node";
 
 const schema = z.union([
