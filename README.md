@@ -1,5 +1,11 @@
 # Remix Monorepo
 
+## Runnig scripts
+
+```
+pnpm run -r --stream <script name>
+```
+
 ## VS Code Setup
 
 Recommended settings:

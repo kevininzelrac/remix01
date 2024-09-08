@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "",
+    "dev": "",
     "format": "",
     "lint": "",
     "migrate:dev": "pnpm run migrate:dev -w packages/db",
