@@ -3,13 +3,13 @@ import type { Awaitable } from "@app/utils/types";
 import type { ServerContext } from "@app/services/types/ServerContext";
 import { json } from "@remix-run/node";
 
-import { serverContainer } from "../../context.server.js";
+import { serverContainer } from "~/server/context.server";
 
 import type {
   DataFunctionArgs,
   DataFunctionValue,
   RouteFunctionGeneric,
-} from "../types.js";
+} from "../types";
 
 export type DataFunctionArgsWithContainer = DataFunctionArgs & {
   container: ServerContext;

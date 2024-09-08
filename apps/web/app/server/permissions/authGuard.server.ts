@@ -2,7 +2,7 @@ import type { ServerContext } from "@app/services/types/ServerContext";
 import { WizardStep } from "@app/utils/constants";
 import { redirect } from "@remix-run/node";
 
-import { PAGES } from "../../constants/routes.js";
+import { PAGES } from "~/constants";
 
 export const authGuard = async (args: {
   container: ServerContext;

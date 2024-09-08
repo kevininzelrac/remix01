@@ -1,5 +1,5 @@
 import { WizardStep } from "@app/utils/constants";
-import { middleware } from "../../server/middleware";
+import { middleware } from "~/server/middleware";
 import { authGuard } from "~/server/permissions/authGuard.server";
 
 export const loader = middleware.build(async (args) => {

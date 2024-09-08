@@ -29,9 +29,9 @@ import {
   READ_DB_URL,
   REFRESH_TOKEN_DURATION,
   REFRESH_TOKEN_SECRET,
-} from "./constants.server.js";
+} from "./constants.server";
 
-import { PAGES } from "../constants/routes.js";
+import { PAGES } from "~/constants";
 
 export const serverContainer = getServerContainer();
 

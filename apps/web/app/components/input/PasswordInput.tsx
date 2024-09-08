@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button";
-import { EyeIcon } from "../components/icon";
+import { EyeIcon } from "~/components/icon";
 import { Input } from "~/components/ui/input";
 import { useCallback, useState } from "react";
 
