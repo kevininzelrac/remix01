@@ -1,6 +1,6 @@
-import { Button } from "~/components/ui/button";
-import { EyeIcon } from "~/components/icon";
-import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button.js";
+import { EyeIcon } from "~/components/icon/EyeIcon.js";
+import { Input } from "~/components/ui/input.js";
 import { useCallback, useState } from "react";
 
 export type PasswordInputProps = React.InputHTMLAttributes<HTMLInputElement>;
