@@ -6,25 +6,21 @@ import {
   expect,
   it,
 } from "@jest/globals";
-import {
-  database,
-  databaseService,
-  clearDatabase,
-} from "__tests__/utils/database.js";
+import { databaseService } from "__tests__/utils/database.js";
 import { UserService } from "@app/services/models/UserService";
 import { WizardStep } from "@app/utils/constants/wizard";
 
 // FIXME: Move this into @app/services instead
-// FIXME: DB tests should use a transaction and roll back instead of writing to DB
 describe("UserService", () => {
   let userService: UserService;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     userService = new UserService(databaseService);
   });
 
   beforeEach(async () => {
-    await database.user.create({
+    await databaseService.begin();
+    await databaseService.transaction().user.create({
       data: {
         id: "95818e89-2e0c-4749-9e3d-c44d71d22528",
         email: "pep.guardiola@mancity.com",
@@ -35,7 +31,7 @@ describe("UserService", () => {
   });
 
   afterEach(async () => {
-    await clearDatabase();
+    await databaseService.rollback();
   });
 
   describe("getById", () => {
