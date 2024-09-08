@@ -6,7 +6,11 @@ import {
   expect,
   it,
 } from "@jest/globals";
-import { database, clearDatabase } from "__tests__/utils/database.js";
+import {
+  database,
+  databaseService,
+  clearDatabase,
+} from "__tests__/utils/database.js";
 import { UserService } from "@app/services/models/UserService";
 import { WizardStep } from "@app/utils/constants/wizard";
 
@@ -14,7 +18,7 @@ describe("UserService", () => {
   let userService: UserService;
 
   beforeAll(() => {
-    userService = new UserService(database);
+    userService = new UserService(databaseService);
   });
 
   beforeEach(async () => {
