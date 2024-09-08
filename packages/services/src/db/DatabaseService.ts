@@ -7,6 +7,8 @@ export class DatabaseService {
   private _waiter: Promise<void> | null;
   private _commit: (() => void) | null;
   private _rollback: (() => void) | null;
+  private _onCommitCallbacks: (() => unknown)[];
+  private _onRollbackCallbacks: (() => unknown)[];
 
   constructor(private _prisma: PrismaClient) {
     this._transaction = null;
@@ -14,6 +16,8 @@ export class DatabaseService {
     this._waiter = null;
     this._commit = null;
     this._rollback = null;
+    this._onCommitCallbacks = [];
+    this._onRollbackCallbacks = [];
   }
 
   begin = async (): Promise<void> => {
@@ -40,21 +44,41 @@ export class DatabaseService {
   };
 
   commit = async (): Promise<void> => {
-    if (this._complete) return;
-    if (this._waiter === null || this._commit === null) {
-      throw new AssertionError("Commit occurs before transaction begins.");
+    try {
+      if (this._complete) return;
+      if (this._waiter === null || this._commit === null) {
+        throw new AssertionError("Commit occurs before transaction begins.");
+      }
+      this._commit();
+      await this._waiter;
+      await Promise.all(this._onCommitCallbacks.map((item) => item()));
+    } finally {
+      this._onCommitCallbacks = [];
+      this._onRollbackCallbacks = [];
     }
-    this._commit();
-    return this._waiter;
   };
 
   rollback = async (): Promise<void> => {
-    if (this._complete) return;
-    if (this._waiter === null || this._rollback === null) {
-      throw new AssertionError("Rollback occurs before transaction begins.");
+    try {
+      if (this._complete) return;
+      if (this._waiter === null || this._rollback === null) {
+        throw new AssertionError("Rollback occurs before transaction begins.");
+      }
+      this._rollback();
+      await this._waiter.catch(() => {});
+      await Promise.all(this._onRollbackCallbacks.map((item) => item()));
+    } finally {
+      this._onCommitCallbacks = [];
+      this._onRollbackCallbacks = [];
     }
-    this._rollback();
-    return this._waiter.catch(() => {});
+  };
+
+  onCommit = (callback: () => unknown): void => {
+    this._onCommitCallbacks.push(callback);
+  };
+
+  onRollback = (callback: () => unknown): void => {
+    this._onRollbackCallbacks.push(callback);
   };
 }
 
