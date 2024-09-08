@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { RouteFunction, RouteFunctionGeneric } from "./types";
+import type { RouteFunction, RouteFunctionGeneric } from "./types.js";
 
 export class Builder<T extends (args: any) => any = RouteFunctionGeneric> {
   constructor(private _middlewareList: any[] = []) {}

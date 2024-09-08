@@ -1,4 +1,4 @@
-import { database, clearDatabase } from "__tests__/utils/database";
+import { database, clearDatabase } from "../../utils/database";
 import { UserService } from "~/server/services/models/UserService.server";
 
 describe("UserService", () => {
