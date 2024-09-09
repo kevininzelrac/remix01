@@ -1,26 +1,18 @@
-import { PrismaClient } from "@prisma/client";
-import { MigrationParams, UmzugStorage } from "umzug";
-import type { CustomLogger } from "./logger.js";
+import { MigrationParams, Transaction } from "./types.js";
 
-type UmzugContext = {
-  logger: CustomLogger;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface IUmzugStorage extends UmzugStorage<UmzugContext> {}
-
-export class CustomUmzugStorage implements IUmzugStorage {
-  constructor(private client: PrismaClient) {}
-
-  async logMigration(params: MigrationParams<UmzugContext>): Promise<void> {
-    await this._ensureMigrationTable();
+export class Storage {
+  async logForwardMigration(
+    tx: Transaction,
+    params: MigrationParams,
+  ): Promise<void> {
+    await this._ensureMigrationTable(tx);
     const timestamp = new Date().toISOString();
     const { logs } = params.context.logger;
-    await this.client.$executeRaw`
+    await tx.$executeRaw`
       INSERT INTO _umzug_migrations (
         migration_name,
         migration_path,
-        performed_at,
+        applied_at,
         logs
       ) VALUES (
         ${params.name},
@@ -29,18 +21,21 @@ export class CustomUmzugStorage implements IUmzugStorage {
         ${logs}
       )
       ON CONFLICT (migration_name) DO UPDATE
-      SET performed_at = ${timestamp},
+      SET applied_at = ${timestamp},
           logs = ${logs},
           rolled_back_at = NULL
     `;
     params.context.logger.flush();
   }
 
-  async unlogMigration(params: MigrationParams<UmzugContext>): Promise<void> {
-    await this._ensureMigrationTable();
+  async logRollbackMigration(
+    tx: Transaction,
+    params: MigrationParams,
+  ): Promise<void> {
+    await this._ensureMigrationTable(tx);
     const timestamp = new Date().toISOString();
     const { logs } = params.context.logger;
-    await this.client.$executeRaw`
+    await tx.$executeRaw`
       UPDATE _umzug_migrations
       SET rolled_back_at = ${timestamp},
           rollback_logs = ${logs}
@@ -49,10 +44,10 @@ export class CustomUmzugStorage implements IUmzugStorage {
     params.context.logger.flush();
   }
 
-  async executed(): Promise<string[]> {
-    await this._ensureMigrationTable();
+  async getAppliedMigrations(tx: Transaction): Promise<string[]> {
+    await this._ensureMigrationTable(tx);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rows: any[] = await this.client.$queryRaw`
+    const rows: any[] = await tx.$queryRaw`
       SELECT *
       FROM _umzug_migrations
       WHERE rolled_back_at IS NULL
@@ -60,13 +55,13 @@ export class CustomUmzugStorage implements IUmzugStorage {
     return rows.map((item) => item.migration_name);
   }
 
-  async _ensureMigrationTable(): Promise<void> {
-    await this.client.$executeRaw`
+  private async _ensureMigrationTable(tx: Transaction): Promise<void> {
+    await tx.$executeRaw`
       CREATE TABLE IF NOT EXISTS _umzug_migrations (
         id SERIAL,
         migration_name TEXT NOT NULL UNIQUE,
         migration_path TEXT NOT NULL,
-        performed_at TIMESTAMPTZ NOT NULL,
+        applied_at TIMESTAMPTZ NOT NULL,
         logs JSON NOT NULL,
         rolled_back_at TIMESTAMPTZ,
         rollback_logs JSON,

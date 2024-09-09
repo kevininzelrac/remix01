@@ -1,8 +1,4 @@
-import { UmzugOptions } from "umzug";
-
-type LoggerType = UmzugOptions["logger"];
-
-export class CustomLogger {
+export class Logger {
   constructor(public logs: object[] = []) {}
 
   debug(message: Record<string, unknown>): void {
@@ -37,5 +33,3 @@ export class CustomLogger {
     });
   }
 }
-
-export const customLogger = new CustomLogger() satisfies LoggerType;

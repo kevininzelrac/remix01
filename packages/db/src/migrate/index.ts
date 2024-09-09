@@ -1,27 +1,10 @@
 /**
  * Inspired by https://github.com/prisma/prisma/issues/4688#issuecomment-1498670192
  */
-import { PrismaClient } from "@prisma/client";
 import { Command } from "commander";
-import { Umzug } from "umzug";
 import { confirm } from "@inquirer/prompts";
-import { CustomUmzugStorage } from "./storage.js";
-import { customLogger } from "./logger.js";
-
-enum MigrationType {
-  SQL = "sql",
-  TYPESCRIPT = "ts",
-}
-
-const client = new PrismaClient();
-const umzug = new Umzug({
-  migrations: { glob: "schema/migrationss/**/*.sql" },
-  logger: customLogger,
-  storage: new CustomUmzugStorage(client),
-  context: {
-    logger: customLogger,
-  },
-});
+import { create, down, pending, up } from "./migrator.js";
+import { MigrationType } from "./types.js";
 
 const program = new Command();
 program
@@ -38,15 +21,12 @@ program
     `Type of migration. Valid choices: ${migrationTypeList.join(", ")}. Default: ${MigrationType.SQL}`,
     MigrationType.SQL,
   )
-  .action(async (name: string, opts: { type: MigrationType }) => {
-    // FIXME: THIS NEEDS WORK TO BE COMPATIBLE WITH PRISMA
-    if (opts.type === MigrationType.TYPESCRIPT) {
-      await umzug.create({
-        name: name,
-        folder: "schema/migrationss",
-        allowExtension: ".ts",
-      });
+  .action((name: string, opts: { type: string }) => {
+    const type = opts.type;
+    if (!isMigrationType(type)) {
+      throw new Error(`Invalid migration type. Provided: ${type}.`);
     }
+    return create(type, name);
   });
 
 program
@@ -56,9 +36,7 @@ program
     "--to",
     "Name of migration to execute up to. If not supplied, runs all migrations.",
   )
-  .action(async (opts: { to?: string }) => {
-    await umzug.up(opts);
-  });
+  .action((opts: { to?: string }) => up(opts.to));
 
 program
   .command("down")
@@ -77,22 +55,20 @@ program
     ) {
       return;
     }
-    await umzug.down({
-      to: opts.to ?? 0,
-    });
+    await down(opts.to);
   });
 
 program
   .command("status")
   .description("Get migrations status")
   .action(async () => {
-    const pendingMigrations = await umzug.pending();
+    const pendingMigrations = await pending();
     if (pendingMigrations.length === 0) {
       return;
     }
     program.error(
       `Found pending migrations, execute \`migrate up\` to run them.\n${JSON.stringify(
-        pendingMigrations.map((mig) => mig.name),
+        pendingMigrations,
       )}`,
       {
         exitCode: 1,
@@ -101,12 +77,9 @@ program
     );
   });
 
-const go = async () => {
-  try {
-    await program.parseAsync();
-  } finally {
-    await client.$disconnect();
-  }
-};
+function isMigrationType(type: string): type is MigrationType {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Object.values(MigrationType).includes(type as any);
+}
 
-void go();
+void program.parseAsync();
