@@ -5,6 +5,8 @@ import { PrismaClient } from "@prisma/client";
 import { Command } from "commander";
 import { Umzug } from "umzug";
 import { confirm } from "@inquirer/prompts";
+import { CustomUmzugStorage } from "./storage.js";
+import { customLogger } from "./logger.js";
 
 enum MigrationType {
   SQL = "sql",
@@ -14,7 +16,11 @@ enum MigrationType {
 const client = new PrismaClient();
 const umzug = new Umzug({
   migrations: { glob: "schema/migrationss/**/*.sql" },
-  logger: console,
+  logger: customLogger,
+  storage: new CustomUmzugStorage(client),
+  context: {
+    logger: customLogger,
+  },
 });
 
 const program = new Command();
