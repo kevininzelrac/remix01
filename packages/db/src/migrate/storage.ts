@@ -26,7 +26,7 @@ export class Storage {
           logs = $4,
           rolled_back_at = NULL
     `,
-      [params.name, params.path || "", timestamp, logs],
+      [params.name, params.path || "", timestamp, JSON.stringify(logs)],
     );
     params.context.logger.flush();
   }
@@ -44,7 +44,7 @@ export class Storage {
           rollback_logs = $2
       WHERE migration_name = $3
     `,
-      [timestamp, logs, params.name],
+      [timestamp, JSON.stringify(logs), params.name],
     );
     params.context.logger.flush();
   }
