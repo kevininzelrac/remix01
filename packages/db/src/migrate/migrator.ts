@@ -1,12 +1,13 @@
-import { cp, mkdir, readFile, readdir, rm, stat } from "fs/promises";
-import { exec, spawn } from "child_process";
-import { dirname } from "path";
 import { UTCDate } from "@date-fns/utc";
+import { exec, spawn } from "child_process";
+import { cp, mkdir, readFile, readdir, rm, stat } from "fs/promises";
+import { dirname, relative, resolve } from "path";
+import pg from "pg";
+import { fileURLToPath } from "url";
 
 import { Storage } from "./storage.js";
 import { MigrationType } from "./types.js";
 import { Logger } from "./logger.js";
-import pg from "pg";
 
 type Params = {
   client: pg.Client;
@@ -211,7 +212,9 @@ const _applyMigration = async (name: string): Promise<void> => {
 
   if (migrationFiles.includes("migration.ts")) {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
-    const up: (params: Params) => Promise<void> = (await import(path)).up;
+    const up: (params: Params) => Promise<void> = (
+      await _importTypescriptMigration(path)
+    ).up;
     return _useTransaction(async (tx) => {
       await up({ client: tx, logger });
       await storage.logForwardMigration(tx, {
@@ -266,7 +269,9 @@ const _rollbackMigration = async (name: string): Promise<void> => {
 
   if (migrationFiles.includes("migration.ts")) {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
-    const down: (params: Params) => Promise<void> = (await import(path)).down;
+    const down: (params: Params) => Promise<void> = (
+      await _importTypescriptMigration(path)
+    ).down;
     return _useTransaction(async (tx) => {
       await down({ client: tx, logger });
       await storage.logRollbackMigration(tx, {
@@ -325,4 +330,17 @@ const _useTransaction = async (
     await client.query("ROLLBACK");
     throw error;
   }
+};
+
+const _importTypescriptMigration = (
+  filepath: string,
+): Promise<{
+  up: (params: Params) => Promise<void>;
+  down: (params: Params) => Promise<void>;
+}> => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const absolutePath = resolve(filepath);
+  const importPath = relative(__dirname, absolutePath);
+  return import(importPath);
 };

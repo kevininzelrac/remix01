@@ -65,9 +65,9 @@ export class Storage {
         migration_name TEXT NOT NULL UNIQUE,
         migration_path TEXT NOT NULL,
         applied_at TIMESTAMPTZ NOT NULL,
-        logs JSON NOT NULL,
+        logs JSONB NOT NULL,
         rolled_back_at TIMESTAMPTZ,
-        rollback_logs JSON
+        rollback_logs JSONB
       )
     `);
   }
