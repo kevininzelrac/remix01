@@ -15,7 +15,6 @@ We are also missing the following features:
 - Validate and Deploy app using Github actions
 - Add background workers
 - Add observability (opentracing/datadog)
-- Add a migration system that allows TS as well as SQL
 - Add a K8s/Terraform/etc. deployment
 - Add an audit log/audit trail for Prisma
 - Use PGLite for tests
