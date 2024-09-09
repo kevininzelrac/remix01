@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { mkdir, readFile, readdir, writeFile } from "fs/promises";
+import { cp, mkdir, readFile, readdir, rm } from "fs/promises";
 import { exec } from "child_process";
+import { dirname } from "path";
 
 import { Storage } from "./storage.js";
 import { MigrationType, Transaction } from "./types.js";
@@ -21,6 +22,8 @@ const storage = new Storage();
 const logger = new Logger();
 
 const MIGRATIONS_PATH = "./schema/migrations";
+const MIGRATIONS_DIFF_FROM = "./.migrate/diff/from";
+const MIGRATIONS_DIFF_TO = "./.migrate/diff/to";
 const SNAKE_CASE_PATTERN = /^(?!.*__)[a-z0-9]+(_[a-z0-9]+)*$/;
 
 export const up = async (name?: string): Promise<void> => {
@@ -45,13 +48,21 @@ export const down = async (name?: string): Promise<void> => {
     _validateMigrationName(migrationStatuses, name);
   }
 
+  // Prepare migration diff folders
+  await prepareDiffFolder(MIGRATIONS_DIFF_FROM);
+  await prepareDiffFolder(MIGRATIONS_DIFF_TO);
+
   for (const migrationStatus of migrationStatuses.reverse()) {
+    await rm(`${MIGRATIONS_DIFF_TO}/${migrationStatus.name}`, { force: true });
     if (name !== undefined && migrationStatus.name === name) {
       return;
     }
     if (migrationStatus.applied) {
       await _rollbackMigration(migrationStatus.name);
     }
+    await rm(`${MIGRATIONS_DIFF_FROM}/${migrationStatus.name}`, {
+      force: true,
+    });
   }
 };
 
@@ -90,10 +101,7 @@ export const create = async (
       ].join("");
       const path = `${MIGRATIONS_PATH}/${sortkey}_${name}`;
       await mkdir(path, { recursive: true });
-      return writeFile(
-        `${path}/migration.ts`,
-        await readFile("./src/migrate/template.ts", "utf-8"),
-      );
+      return cp("./src/migrate/template.ts", `${path}/migration.ts`);
     }
     default: {
       throw new Error(`Unknown migration type ${type}.`);
@@ -170,7 +178,38 @@ const _rollbackMigration = async (name: string): Promise<void> => {
   const migrationFiles = await readdir(`${MIGRATIONS_PATH}/${name}`);
 
   if (migrationFiles.includes("migration.sql")) {
-    // FIXME: NOT IMPLEMENTED YET
+    const path = `${MIGRATIONS_PATH}/${name}/migration.ts`;
+    const hasPrevious = (await readdir(MIGRATIONS_DIFF_TO)).length > 0;
+    const contents: string = await new Promise((resolve, reject) => {
+      exec(
+        [
+          "./node_modules/.bin/prisma",
+          "migrate",
+          "diff",
+          `--shadow-database-url="${process.env.WRITE_DB_URL}"`,
+          `--from-migrations="${MIGRATIONS_DIFF_FROM}"`,
+          hasPrevious
+            ? `--to-migrations="${MIGRATIONS_DIFF_TO}"`
+            : "--to-empty",
+          "--script",
+        ].join(" "),
+        (err, stdout) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(stdout);
+          }
+        },
+      );
+    });
+    return client.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(contents);
+      await storage.logForwardMigration(tx, {
+        name,
+        path,
+        context: { logger },
+      });
+    });
   }
 
   if (migrationFiles.includes("migration.ts")) {
@@ -188,4 +227,22 @@ const _rollbackMigration = async (name: string): Promise<void> => {
   }
 
   throw new Error(`Could not find migration file for migration ${name}.`);
+};
+
+const prepareDiffFolder = async (folderName: string): Promise<void> => {
+  await rm(folderName, { recursive: true, force: true });
+  const filesToCopy: string[] = await new Promise((resolve, reject) => {
+    exec(`find ${MIGRATIONS_PATH} -name '*.sql'`, (err, stdout) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(stdout.split("\n").filter((item) => !!item));
+      }
+    });
+  });
+  for (const file of filesToCopy) {
+    const path = dirname(file);
+    await mkdir(path, { recursive: true });
+    await cp(file, file.replace(MIGRATIONS_PATH, folderName));
+  }
 };

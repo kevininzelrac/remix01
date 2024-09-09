@@ -9,7 +9,7 @@
     "build:schema": "prisma-import --force && prisma generate",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
-    "migrate": "tsx ./src/migrate/index.ts",
+    "migrate": "dotenv -e .env -- tsx ./src/migrate/index.ts",
     "migrate:dev": "pnpm run build:schema && prisma migrate dev",
     "migrate:reset": "prisma migrate reset --force",
     "test": "dotenv -e .env.test -- prisma migrate reset --force",
