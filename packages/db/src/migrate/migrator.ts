@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { cp, mkdir, readFile, readdir, rm } from "fs/promises";
+import { cp, mkdir, readFile, readdir, rm, stat } from "fs/promises";
 import { exec } from "child_process";
 import { dirname } from "path";
 import { UTCDate } from "@date-fns/utc";
@@ -22,7 +22,7 @@ const client = new PrismaClient();
 const storage = new Storage();
 const logger = new Logger();
 
-const MIGRATIONS_PATH = "./schema/migrations";
+const MIGRATIONS_PATH = "./schema";
 const MIGRATIONS_DEV = "./.migrate/dev";
 const MIGRATIONS_DIFF_FROM = "./.migrate/diff/from";
 const MIGRATIONS_DIFF_TO = "./.migrate/diff/to";
@@ -51,18 +51,20 @@ export const down = async (name?: string): Promise<void> => {
   }
 
   // Prepare migration diff folders
-  await preparePrismaLikeFolder(MIGRATIONS_DIFF_FROM);
-  await preparePrismaLikeFolder(MIGRATIONS_DIFF_TO);
+  await _preparePrismaLikeFolder(MIGRATIONS_DIFF_FROM);
+  await _preparePrismaLikeFolder(MIGRATIONS_DIFF_TO);
 
   for (const migrationStatus of migrationStatuses.reverse()) {
-    await rm(`${MIGRATIONS_DIFF_TO}/${migrationStatus.name}`, { force: true });
+    await rm(`${MIGRATIONS_DIFF_TO}/migrations/${migrationStatus.name}`, {
+      force: true,
+    });
     if (name !== undefined && migrationStatus.name === name) {
       return;
     }
     if (migrationStatus.applied) {
       await _rollbackMigration(migrationStatus.name);
     }
-    await rm(`${MIGRATIONS_DIFF_FROM}/${migrationStatus.name}`, {
+    await rm(`${MIGRATIONS_DIFF_FROM}/migrations/${migrationStatus.name}`, {
       force: true,
     });
   }
@@ -78,7 +80,8 @@ export const create = async (
 
   switch (type) {
     case MigrationType.SQL: {
-      await preparePrismaLikeFolder(MIGRATIONS_DEV);
+      await _preparePrismaLikeFolder(MIGRATIONS_DEV);
+      /* Create migration files using prisma */
       await new Promise<void>((resolve, reject) => {
         exec(
           [
@@ -99,6 +102,24 @@ export const create = async (
           },
         );
       });
+      const filesToCopy: string[] = await new Promise((resolve, reject) => {
+        exec(
+          `find ${MIGRATIONS_PATH}/migrations -type f \\( -name '*.sql' \\)`,
+          (err, stdout) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(stdout.split("\n").filter((item) => !!item));
+            }
+          },
+        );
+      });
+      for (const file of filesToCopy) {
+        if (await _fileExists(file)) {
+          continue;
+        }
+        await cp(file, file.replace(MIGRATIONS_DEV, MIGRATIONS_PATH));
+      }
       return;
     }
     case MigrationType.TYPESCRIPT: {
@@ -191,7 +212,8 @@ const _rollbackMigration = async (name: string): Promise<void> => {
 
   if (migrationFiles.includes("migration.sql")) {
     const path = `${MIGRATIONS_PATH}/${name}/migration.ts`;
-    const hasPrevious = (await readdir(MIGRATIONS_DIFF_TO)).length > 0;
+    const hasPrevious =
+      (await readdir(`${MIGRATIONS_DIFF_TO}/migrations`)).length > 0;
     const contents: string = await new Promise((resolve, reject) => {
       exec(
         [
@@ -199,9 +221,9 @@ const _rollbackMigration = async (name: string): Promise<void> => {
           "migrate",
           "diff",
           `--shadow-database-url="${process.env.WRITE_DB_URL}"`,
-          `--from-migrations="${MIGRATIONS_DIFF_FROM}"`,
+          `--from-migrations="${MIGRATIONS_DIFF_FROM}/migrations"`,
           hasPrevious
-            ? `--to-migrations="${MIGRATIONS_DIFF_TO}"`
+            ? `--to-migrations="${MIGRATIONS_DIFF_TO}/migrations"`
             : "--to-empty",
           "--script",
         ].join(" "),
@@ -241,11 +263,11 @@ const _rollbackMigration = async (name: string): Promise<void> => {
   throw new Error(`Could not find migration file for migration ${name}.`);
 };
 
-const preparePrismaLikeFolder = async (folderName: string): Promise<void> => {
+const _preparePrismaLikeFolder = async (folderName: string): Promise<void> => {
   await rm(folderName, { recursive: true, force: true });
   const filesToCopy: string[] = await new Promise((resolve, reject) => {
     exec(
-      `find ${MIGRATIONS_PATH} -type f \\( -name '*.sql' -or -name '*.prisma' -or -name '*.toml' \\)`,
+      `find ${MIGRATIONS_PATH} -type f \\( -name '*.sql' -or -name 'schema.prisma' -or -name '*.toml' \\)`,
       (err, stdout) => {
         if (err) {
           reject(err);
@@ -259,5 +281,18 @@ const preparePrismaLikeFolder = async (folderName: string): Promise<void> => {
     const path = dirname(file);
     await mkdir(path, { recursive: true });
     await cp(file, file.replace(MIGRATIONS_PATH, folderName));
+  }
+};
+
+const _fileExists = async (filename: string): Promise<boolean> => {
+  try {
+    await stat(filename);
+    return true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    if (err.code === "ENOENT") {
+      return false;
+    }
+    throw err;
   }
 };
