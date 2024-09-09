@@ -21,3 +21,4 @@ We are also missing the following features:
 - Use PGLite for tests
 - Add Kysely for more flexible queries
 - Add docker build (build one, tag multiple times)
+- Replace existing middleware stuff with effect-ts
