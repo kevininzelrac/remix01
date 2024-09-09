@@ -64,6 +64,7 @@ export const down = async (name?: string): Promise<void> => {
   for (const migrationStatus of migrationStatuses.reverse()) {
     await rm(`${MIGRATIONS_DIFF_TO}/migrations/${migrationStatus.name}`, {
       force: true,
+      recursive: true,
     });
     if (name !== undefined && migrationStatus.name === name) {
       return;
@@ -73,6 +74,7 @@ export const down = async (name?: string): Promise<void> => {
     }
     await rm(`${MIGRATIONS_DIFF_FROM}/migrations/${migrationStatus.name}`, {
       force: true,
+      recursive: true,
     });
   }
 };
