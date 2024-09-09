@@ -1,59 +1,65 @@
-import { MigrationParams, Transaction } from "./types.js";
+import { Client } from "pg";
+import { MigrationParams } from "./types.js";
 
 export class Storage {
   async logForwardMigration(
-    tx: Transaction,
+    client: Client,
     params: MigrationParams,
   ): Promise<void> {
     const timestamp = new Date().toISOString();
     const { logs } = params.context.logger;
-    await tx.$executeRaw`
+    await client.query(
+      `
       INSERT INTO _umzug_migrations (
         migration_name,
         migration_path,
         applied_at,
         logs
       ) VALUES (
-        ${params.name},
-        ${params.path || ""},
-        ${timestamp},
-        ${logs}
+        $1,
+        $2,
+        $3,
+        $4
       )
       ON CONFLICT (migration_name) DO UPDATE
-      SET applied_at = ${timestamp},
-          logs = ${logs},
+      SET applied_at = $3,
+          logs = $4,
           rolled_back_at = NULL
-    `;
+    `,
+      [params.name, params.path || "", timestamp, logs, timestamp],
+    );
     params.context.logger.flush();
   }
 
   async logRollbackMigration(
-    tx: Transaction,
+    client: Client,
     params: MigrationParams,
   ): Promise<void> {
     const timestamp = new Date().toISOString();
     const { logs } = params.context.logger;
-    await tx.$executeRaw`
+    await client.query(
+      `
       UPDATE _umzug_migrations
-      SET rolled_back_at = ${timestamp},
-          rollback_logs = ${logs}
-      WHERE migration_name = ${params.name}
-    `;
+      SET rolled_back_at = $1,
+          rollback_logs = $2
+      WHERE migration_name = $3
+    `,
+      [timestamp, logs, params.name],
+    );
     params.context.logger.flush();
   }
 
-  async getAppliedMigrations(tx: Transaction): Promise<string[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rows: any[] = await tx.$queryRaw`
+  async getAppliedMigrations(client: Client): Promise<string[]> {
+    const { rows } = await client.query(`
       SELECT *
       FROM _umzug_migrations
       WHERE rolled_back_at IS NULL
-    `;
+    `);
     return rows.map((item) => item.migration_name);
   }
 
-  async ensureMigrationTable(tx: Transaction): Promise<void> {
-    await tx.$executeRaw`
+  async ensureMigrationTable(client: Client): Promise<void> {
+    await client.query(`
       CREATE TABLE IF NOT EXISTS _umzug_migrations (
         id SERIAL,
         migration_name TEXT NOT NULL UNIQUE,
@@ -63,6 +69,6 @@ export class Storage {
         rolled_back_at TIMESTAMPTZ,
         rollback_logs JSON
       )
-    `;
+    `);
   }
 }

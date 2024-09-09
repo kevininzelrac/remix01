@@ -1,12 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-
-type Transaction = Omit<
-  PrismaClient,
-  "$connect" | "$disconnect" | "$transaction" | "$extends" | "$on" | "$use"
->;
+import type { Client } from "pg";
 
 type Params = {
-  client: Transaction;
+  client: Client;
   logger: {
     debug: (message: Record<string, unknown>) => void;
     info: (message: Record<string, unknown>) => void;

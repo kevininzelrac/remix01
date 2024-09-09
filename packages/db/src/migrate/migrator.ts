@@ -1,15 +1,15 @@
-import { PrismaClient } from "@prisma/client";
 import { cp, mkdir, readFile, readdir, rm, stat } from "fs/promises";
 import { exec } from "child_process";
 import { dirname } from "path";
 import { UTCDate } from "@date-fns/utc";
 
 import { Storage } from "./storage.js";
-import { MigrationType, Transaction } from "./types.js";
+import { MigrationType } from "./types.js";
 import { Logger } from "./logger.js";
+import { Client } from "pg";
 
 type Params = {
-  client: Transaction;
+  client: Client;
   logger: {
     debug: (message: Record<string, unknown>) => void;
     info: (message: Record<string, unknown>) => void;
@@ -18,7 +18,8 @@ type Params = {
   };
 };
 
-const client = new PrismaClient();
+// FIXME: IMPLEMENT THIS
+const client = {} as Client;
 const storage = new Storage();
 const logger = new Logger();
 
@@ -127,6 +128,7 @@ export const create = async (
       }
       return;
     }
+
     case MigrationType.TYPESCRIPT: {
       const timestamp = new UTCDate();
       const sortkey = [
@@ -141,6 +143,7 @@ export const create = async (
       await mkdir(path, { recursive: true });
       return cp("./src/migrate/template.ts", `${path}/migration.ts`);
     }
+
     default: {
       throw new Error(`Unknown migration type ${type}.`);
     }
@@ -187,8 +190,8 @@ const _applyMigration = async (name: string): Promise<void> => {
   if (migrationFiles.includes("migration.sql")) {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.sql`;
     const contents = await readFile(path, "utf-8");
-    return client.$transaction(async (tx) => {
-      await tx.$executeRawUnsafe(contents);
+    return _useTransaction(async (tx) => {
+      await tx.query(contents);
       await storage.logForwardMigration(tx, {
         name,
         path,
@@ -201,7 +204,7 @@ const _applyMigration = async (name: string): Promise<void> => {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const up: (params: Params) => Promise<void> = require(path).up;
-    return client.$transaction(async (tx) => {
+    return _useTransaction(async (tx) => {
       await up({ client: tx, logger });
       await storage.logForwardMigration(tx, {
         name,
@@ -243,9 +246,9 @@ const _rollbackMigration = async (name: string): Promise<void> => {
         },
       );
     });
-    return client.$transaction(async (tx) => {
-      await tx.$executeRawUnsafe(contents);
-      await storage.logForwardMigration(tx, {
+    return _useTransaction(async (tx) => {
+      await tx.query(contents);
+      await storage.logRollbackMigration(client, {
         name,
         path,
         context: { logger },
@@ -257,7 +260,7 @@ const _rollbackMigration = async (name: string): Promise<void> => {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const down: (params: Params) => Promise<void> = require(path).up;
-    return client.$transaction(async (tx) => {
+    return _useTransaction(async (tx) => {
       await down({ client: tx, logger });
       await storage.logRollbackMigration(tx, {
         name,
@@ -301,5 +304,18 @@ const _fileExists = async (filename: string): Promise<boolean> => {
       return false;
     }
     throw err;
+  }
+};
+
+const _useTransaction = async (
+  callback: (tx: Client) => Promise<void>,
+): Promise<void> => {
+  try {
+    await client.query("BEGIN");
+    await callback(client);
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
   }
 };
