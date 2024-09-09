@@ -1,5 +1,5 @@
 import { cp, mkdir, readFile, readdir, rm, stat } from "fs/promises";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import { dirname } from "path";
 import { UTCDate } from "@date-fns/utc";
 
@@ -89,24 +89,32 @@ export const create = async (
       await _preparePrismaLikeFolder(MIGRATIONS_DEV);
       /* Create migration files using prisma */
       await new Promise<void>((resolve, reject) => {
-        exec(
+        const child = spawn(
+          "./node_modules/.bin/prisma",
           [
-            "CI=true",
-            "./node_modules/.bin/prisma",
             "migrate",
             "dev",
             "--create-only",
-            `--name=${name}`,
+            `--name="${name}"`,
             `--schema="${MIGRATIONS_DEV}/schema.prisma"`,
-          ].join(" "),
-          (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
+          ],
+          {
+            stdio: "inherit",
+            shell: true,
           },
         );
+
+        child.on("exit", (code) => {
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(new Error(`Process exited with code ${code}`));
+          }
+        });
+
+        child.on("error", (error) => {
+          reject(new Error(`Failed to start process: ${error.message}`));
+        });
       });
       const filesToCopy: string[] = await new Promise((resolve, reject) => {
         exec(
