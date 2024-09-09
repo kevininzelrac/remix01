@@ -9,6 +9,7 @@
     "build:schema": "prisma-import --force && prisma generate",
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
+    "migrate": "tsx ./src/migrate/index.ts",
     "migrate:dev": "pnpm run build:schema && prisma migrate dev",
     "migrate:reset": "prisma migrate reset --force",
     "test": "dotenv -e .env.test -- prisma migrate reset --force",
@@ -17,8 +18,11 @@
   },
   "dependencies": {
     "@app/utils": "*",
+    "@inquirer/prompts": "^5.5.0",
     "@prisma/client": "^5.6.0",
-    "@prisma/extension-read-replicas": "^0.3.0"
+    "@prisma/extension-read-replicas": "^0.3.0",
+    "commander": "^12.1.0",
+    "umzug": "^3.8.1"
   },
   "devDependencies": {
     "@app/config": "*",
