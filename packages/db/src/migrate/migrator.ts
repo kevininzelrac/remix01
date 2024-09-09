@@ -22,13 +22,15 @@ const client = new PrismaClient();
 const storage = new Storage();
 const logger = new Logger();
 
-const MIGRATIONS_PATH = "./schema";
+const SCHEMA_PATH = "./schema";
 const MIGRATIONS_DEV = "./.migrate/dev";
 const MIGRATIONS_DIFF_FROM = "./.migrate/diff/from";
 const MIGRATIONS_DIFF_TO = "./.migrate/diff/to";
 const SNAKE_CASE_PATTERN = /^(?!.*__)[a-z0-9]+(_[a-z0-9]+)*$/;
 
 export const up = async (name?: string): Promise<void> => {
+  await storage.ensureMigrationTable(client);
+
   const migrationStatuses = await _getAllMigrationStatuses();
   if (name !== undefined) {
     _validateMigrationName(migrationStatuses, name);
@@ -45,6 +47,8 @@ export const up = async (name?: string): Promise<void> => {
 };
 
 export const down = async (name?: string): Promise<void> => {
+  await storage.ensureMigrationTable(client);
+
   const migrationStatuses = await _getAllMigrationStatuses();
   if (name !== undefined) {
     _validateMigrationName(migrationStatuses, name);
@@ -115,7 +119,7 @@ export const create = async (
         );
       });
       for (const file of filesToCopy) {
-        const target = file.replace(MIGRATIONS_DEV, MIGRATIONS_PATH);
+        const target = file.replace(MIGRATIONS_DEV, SCHEMA_PATH);
         if (await _fileExists(target)) {
           continue;
         }
@@ -133,7 +137,7 @@ export const create = async (
         timestamp.getMinutes().toString().padStart(2, "0"),
         timestamp.getSeconds().toString().padStart(2, "0"),
       ].join("");
-      const path = `${MIGRATIONS_PATH}/migrations/${sortkey}_${name}`;
+      const path = `${SCHEMA_PATH}/migrations/${sortkey}_${name}`;
       await mkdir(path, { recursive: true });
       return cp("./src/migrate/template.ts", `${path}/migration.ts`);
     }
@@ -144,6 +148,8 @@ export const create = async (
 };
 
 export const pending = async (): Promise<string[]> => {
+  await storage.ensureMigrationTable(client);
+
   const migrationStatuses = await _getAllMigrationStatuses();
   return migrationStatuses
     .filter((item) => !item.applied)
@@ -156,7 +162,7 @@ type MigrationStatus = {
 };
 
 const _getAllMigrationStatuses = async (): Promise<MigrationStatus[]> => {
-  const allMigrations = (await readdir("./schema/migrations")).sort();
+  const allMigrations = (await readdir(`${SCHEMA_PATH}/migrations`)).sort();
   const executedMigrations = new Set(
     await storage.getAppliedMigrations(client),
   );
@@ -176,10 +182,10 @@ const _validateMigrationName = (
 };
 
 const _applyMigration = async (name: string): Promise<void> => {
-  const migrationFiles = await readdir(`${MIGRATIONS_PATH}/${name}`);
+  const migrationFiles = await readdir(`${SCHEMA_PATH}/migrations/${name}`);
 
   if (migrationFiles.includes("migration.sql")) {
-    const path = `${MIGRATIONS_PATH}/${name}/migration.sql`;
+    const path = `${SCHEMA_PATH}/migrations/${name}/migration.sql`;
     const contents = await readFile(path, "utf-8");
     return client.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(contents);
@@ -192,7 +198,7 @@ const _applyMigration = async (name: string): Promise<void> => {
   }
 
   if (migrationFiles.includes("migration.ts")) {
-    const path = `${MIGRATIONS_PATH}/${name}/migration.ts`;
+    const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const up: (params: Params) => Promise<void> = require(path).up;
     return client.$transaction(async (tx) => {
@@ -209,10 +215,10 @@ const _applyMigration = async (name: string): Promise<void> => {
 };
 
 const _rollbackMigration = async (name: string): Promise<void> => {
-  const migrationFiles = await readdir(`${MIGRATIONS_PATH}/${name}`);
+  const migrationFiles = await readdir(`${SCHEMA_PATH}/migrations/${name}`);
 
   if (migrationFiles.includes("migration.sql")) {
-    const path = `${MIGRATIONS_PATH}/${name}/migration.ts`;
+    const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
     const hasPrevious =
       (await readdir(`${MIGRATIONS_DIFF_TO}/migrations`)).length > 0;
     const contents: string = await new Promise((resolve, reject) => {
@@ -248,7 +254,7 @@ const _rollbackMigration = async (name: string): Promise<void> => {
   }
 
   if (migrationFiles.includes("migration.ts")) {
-    const path = `${MIGRATIONS_PATH}/${name}/migration.ts`;
+    const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const down: (params: Params) => Promise<void> = require(path).up;
     return client.$transaction(async (tx) => {
@@ -268,7 +274,7 @@ const _preparePrismaLikeFolder = async (folderName: string): Promise<void> => {
   await rm(folderName, { recursive: true, force: true });
   const filesToCopy: string[] = await new Promise((resolve, reject) => {
     exec(
-      `find ${MIGRATIONS_PATH} -type f \\( -name '*.sql' -or -name 'schema.prisma' -or -name '*.toml' \\)`,
+      `find ${SCHEMA_PATH} -type f \\( -name '*.sql' -or -name 'schema.prisma' -or -name '*.toml' \\)`,
       (err, stdout) => {
         if (err) {
           reject(err);
@@ -281,7 +287,7 @@ const _preparePrismaLikeFolder = async (folderName: string): Promise<void> => {
   for (const file of filesToCopy) {
     const path = dirname(file);
     await mkdir(path, { recursive: true });
-    await cp(file, file.replace(MIGRATIONS_PATH, folderName));
+    await cp(file, file.replace(SCHEMA_PATH, folderName));
   }
 };
 

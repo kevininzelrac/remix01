@@ -5,7 +5,6 @@ export class Storage {
     tx: Transaction,
     params: MigrationParams,
   ): Promise<void> {
-    await this._ensureMigrationTable(tx);
     const timestamp = new Date().toISOString();
     const { logs } = params.context.logger;
     await tx.$executeRaw`
@@ -32,7 +31,6 @@ export class Storage {
     tx: Transaction,
     params: MigrationParams,
   ): Promise<void> {
-    await this._ensureMigrationTable(tx);
     const timestamp = new Date().toISOString();
     const { logs } = params.context.logger;
     await tx.$executeRaw`
@@ -45,7 +43,6 @@ export class Storage {
   }
 
   async getAppliedMigrations(tx: Transaction): Promise<string[]> {
-    await this._ensureMigrationTable(tx);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rows: any[] = await tx.$queryRaw`
       SELECT *
@@ -55,7 +52,7 @@ export class Storage {
     return rows.map((item) => item.migration_name);
   }
 
-  private async _ensureMigrationTable(tx: Transaction): Promise<void> {
+  async ensureMigrationTable(tx: Transaction): Promise<void> {
     await tx.$executeRaw`
       CREATE TABLE IF NOT EXISTS _umzug_migrations (
         id SERIAL,
@@ -64,7 +61,7 @@ export class Storage {
         applied_at TIMESTAMPTZ NOT NULL,
         logs JSON NOT NULL,
         rolled_back_at TIMESTAMPTZ,
-        rollback_logs JSON,
+        rollback_logs JSON
       )
     `;
   }
