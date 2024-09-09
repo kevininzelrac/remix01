@@ -245,7 +245,7 @@ const _rollbackMigration = async (name: string): Promise<void> => {
           "./node_modules/.bin/prisma",
           "migrate",
           "diff",
-          `--shadow-database-url="${process.env.WRITE_DB_URL}"`,
+          `--shadow-database-url="${process.env.SHADOW_DB_URL}"`,
           `--from-migrations="${MIGRATIONS_DIFF_FROM}/migrations"`,
           hasPrevious
             ? `--to-migrations="${MIGRATIONS_DIFF_TO}/migrations"`
