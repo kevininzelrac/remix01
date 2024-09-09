@@ -104,7 +104,7 @@ export const create = async (
       });
       const filesToCopy: string[] = await new Promise((resolve, reject) => {
         exec(
-          `find ${MIGRATIONS_PATH}/migrations -type f \\( -name '*.sql' \\)`,
+          `find ${MIGRATIONS_DEV}/migrations -type f \\( -name '*.sql' \\)`,
           (err, stdout) => {
             if (err) {
               reject(err);
@@ -115,10 +115,11 @@ export const create = async (
         );
       });
       for (const file of filesToCopy) {
-        if (await _fileExists(file)) {
+        const target = file.replace(MIGRATIONS_DEV, MIGRATIONS_PATH);
+        if (await _fileExists(target)) {
           continue;
         }
-        await cp(file, file.replace(MIGRATIONS_DEV, MIGRATIONS_PATH));
+        await cp(file, target);
       }
       return;
     }
@@ -132,7 +133,7 @@ export const create = async (
         timestamp.getMinutes().toString().padStart(2, "0"),
         timestamp.getSeconds().toString().padStart(2, "0"),
       ].join("");
-      const path = `${MIGRATIONS_PATH}/${sortkey}_${name}`;
+      const path = `${MIGRATIONS_PATH}/migrations/${sortkey}_${name}`;
       await mkdir(path, { recursive: true });
       return cp("./src/migrate/template.ts", `${path}/migration.ts`);
     }
