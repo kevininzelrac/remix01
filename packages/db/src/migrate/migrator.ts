@@ -211,8 +211,7 @@ const _applyMigration = async (name: string): Promise<void> => {
 
   if (migrationFiles.includes("migration.ts")) {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const up: (params: Params) => Promise<void> = require(path).up;
+    const up: (params: Params) => Promise<void> = (await import(path)).up;
     return _useTransaction(async (tx) => {
       await up({ client: tx, logger });
       await storage.logForwardMigration(tx, {
@@ -267,8 +266,7 @@ const _rollbackMigration = async (name: string): Promise<void> => {
 
   if (migrationFiles.includes("migration.ts")) {
     const path = `${SCHEMA_PATH}/migrations/${name}/migration.ts`;
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const down: (params: Params) => Promise<void> = require(path).up;
+    const down: (params: Params) => Promise<void> = (await import(path)).down;
     return _useTransaction(async (tx) => {
       await down({ client: tx, logger });
       await storage.logRollbackMigration(tx, {

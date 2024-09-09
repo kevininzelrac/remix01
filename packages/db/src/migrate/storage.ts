@@ -26,7 +26,7 @@ export class Storage {
           logs = $4,
           rolled_back_at = NULL
     `,
-      [params.name, params.path || "", timestamp, logs, timestamp],
+      [params.name, params.path || "", timestamp, logs],
     );
     params.context.logger.flush();
   }
