@@ -9,9 +9,6 @@
     "format": "eslint . --max-warnings=0 --fix",
     "lint": "eslint . --max-warnings=0",
     "start": "remix-serve ./build/server/index.js",
-    "test:env": "dotenv -e .env.test -- npx prisma migrate reset --force",
-    "test:jest": "dotenv -e .env.test -- npx jest",
-    "test": "npm run test:env && npm run test:jest",
     "typecheck": "tsc --build"
   },
   "dependencies": {

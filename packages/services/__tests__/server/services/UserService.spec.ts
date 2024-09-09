@@ -6,11 +6,11 @@ import {
   expect,
   it,
 } from "@jest/globals";
-import { databaseService } from "__tests__/utils/database.js";
-import { UserService } from "@app/services/models/UserService";
 import { WizardStep } from "@app/utils/constants/wizard";
 
-// FIXME: Move this into @app/services instead
+import { databaseService } from "../../utils/database.js";
+import { UserService } from "../../../src/models/UserService.js";
+
 describe("UserService", () => {
   let userService: UserService;
 

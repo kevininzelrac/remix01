@@ -3,7 +3,7 @@
 ## Runnig scripts
 
 ```
-pnpm run -r --stream <script name>
+pnpm run -r --stream --color <script name>
 ```
 
 ## VS Code Setup

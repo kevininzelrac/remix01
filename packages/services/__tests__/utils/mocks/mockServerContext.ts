@@ -1,4 +1,4 @@
-import type { ServerContext } from "@app/services/types/ServerContext";
+import type { ServerContext } from "../../../src/types/ServerContext.js";
 import { mockLoggerService } from "./mockLoggerService.js";
 
 export const mockServerContext: ServerContext = {
