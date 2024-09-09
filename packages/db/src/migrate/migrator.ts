@@ -175,7 +175,9 @@ type MigrationStatus = {
 };
 
 const _getAllMigrationStatuses = async (): Promise<MigrationStatus[]> => {
-  const allMigrations = (await readdir(`${SCHEMA_PATH}/migrations`)).sort();
+  const allMigrations = (await readdir(`${SCHEMA_PATH}/migrations`))
+    .filter((item) => item !== "migration_lock.toml")
+    .sort();
   const executedMigrations = new Set(
     await storage.getAppliedMigrations(client),
   );
