@@ -78,7 +78,7 @@ export const create = async (
     case MigrationType.SQL: {
       return new Promise((resolve, reject) => {
         exec(
-          `./node_modules/.bin/prisma migrate dev --create-only --name ${name}`,
+          `CI=true ./node_modules/.bin/prisma migrate dev --create-only --name ${name}`,
           (err) => {
             if (err) {
               reject(err);
