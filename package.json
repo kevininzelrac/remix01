@@ -8,8 +8,6 @@
     "dev": "",
     "format": "",
     "lint": "",
-    "migrate:dev": "pnpm run migrate:dev -w packages/db",
-    "migrate:reset": "pnpm run migrate:reset -w packages/db",
     "test": "",
     "typecheck": ""
   },
