@@ -171,6 +171,9 @@ importers:
       '@app/utils':
         specifier: '*'
         version: link:../utils
+      '@date-fns/utc':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@inquirer/prompts':
         specifier: ^5.5.0
         version: 5.5.0
@@ -487,6 +490,9 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@date-fns/utc@1.2.0':
+    resolution: {integrity: sha512-YLq+crMPJiBmIdkRmv9nZuZy1mVtMlDcUKlg4mvI0UsC/dZeIaGoGB5p/C4FrpeOhZ7zBTK03T58S0DFkRNMnw==}
 
   '@emnapi/runtime@1.2.0':
     resolution: {integrity: sha512-bV21/9LQmcQeCPEg3BDFtvwL6cwiTMksYNWQQ4KOxCZikEGalWtenoZ0wCiukJINlGCIi2KXx01g4FoH/LxpzQ==}
@@ -5516,6 +5522,8 @@ snapshots:
       to-fast-properties: 2.0.0
 
   '@bcoe/v8-coverage@0.2.3': {}
+
+  '@date-fns/utc@1.2.0': {}
 
   '@emnapi/runtime@1.2.0':
     dependencies:

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@app/utils": "*",
+    "@date-fns/utc": "^1.2.0",
     "@inquirer/prompts": "^5.5.0",
     "@prisma/client": "^5.6.0",
     "@prisma/extension-read-replicas": "^0.3.0",

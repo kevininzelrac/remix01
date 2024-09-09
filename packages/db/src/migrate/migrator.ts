@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { cp, mkdir, readFile, readdir, rm } from "fs/promises";
 import { exec } from "child_process";
 import { dirname } from "path";
+import { UTCDate } from "@date-fns/utc";
 
 import { Storage } from "./storage.js";
 import { MigrationType, Transaction } from "./types.js";
@@ -90,7 +91,7 @@ export const create = async (
       });
     }
     case MigrationType.TYPESCRIPT: {
-      const timestamp = new Date();
+      const timestamp = new UTCDate();
       const sortkey = [
         timestamp.getFullYear().toString().padStart(4, "0"),
         (timestamp.getMonth() + 1).toString().padStart(2, "0"),
