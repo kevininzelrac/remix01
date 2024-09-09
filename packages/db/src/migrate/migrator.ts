@@ -23,6 +23,7 @@ const storage = new Storage();
 const logger = new Logger();
 
 const MIGRATIONS_PATH = "./schema/migrations";
+const MIGRATIONS_DEV = "./.migrate/dev";
 const MIGRATIONS_DIFF_FROM = "./.migrate/diff/from";
 const MIGRATIONS_DIFF_TO = "./.migrate/diff/to";
 const SNAKE_CASE_PATTERN = /^(?!.*__)[a-z0-9]+(_[a-z0-9]+)*$/;
@@ -50,8 +51,8 @@ export const down = async (name?: string): Promise<void> => {
   }
 
   // Prepare migration diff folders
-  await prepareDiffFolder(MIGRATIONS_DIFF_FROM);
-  await prepareDiffFolder(MIGRATIONS_DIFF_TO);
+  await preparePrismaLikeFolder(MIGRATIONS_DIFF_FROM);
+  await preparePrismaLikeFolder(MIGRATIONS_DIFF_TO);
 
   for (const migrationStatus of migrationStatuses.reverse()) {
     await rm(`${MIGRATIONS_DIFF_TO}/${migrationStatus.name}`, { force: true });
@@ -77,9 +78,18 @@ export const create = async (
 
   switch (type) {
     case MigrationType.SQL: {
-      return new Promise((resolve, reject) => {
+      await preparePrismaLikeFolder(MIGRATIONS_DEV);
+      await new Promise<void>((resolve, reject) => {
         exec(
-          `CI=true ./node_modules/.bin/prisma migrate dev --create-only --name ${name}`,
+          [
+            "CI=true",
+            "./node_modules/.bin/prisma",
+            "migrate",
+            "dev",
+            "--create-only",
+            `--name=${name}`,
+            `--schema="${MIGRATIONS_DEV}/schema.prisma"`,
+          ].join(" "),
           (err) => {
             if (err) {
               reject(err);
@@ -89,6 +99,7 @@ export const create = async (
           },
         );
       });
+      return;
     }
     case MigrationType.TYPESCRIPT: {
       const timestamp = new UTCDate();
@@ -230,16 +241,19 @@ const _rollbackMigration = async (name: string): Promise<void> => {
   throw new Error(`Could not find migration file for migration ${name}.`);
 };
 
-const prepareDiffFolder = async (folderName: string): Promise<void> => {
+const preparePrismaLikeFolder = async (folderName: string): Promise<void> => {
   await rm(folderName, { recursive: true, force: true });
   const filesToCopy: string[] = await new Promise((resolve, reject) => {
-    exec(`find ${MIGRATIONS_PATH} -name '*.sql'`, (err, stdout) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(stdout.split("\n").filter((item) => !!item));
-      }
-    });
+    exec(
+      `find ${MIGRATIONS_PATH} -type f \\( -name '*.sql' -or -name '*.prisma' -or -name '*.toml' \\)`,
+      (err, stdout) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(stdout.split("\n").filter((item) => !!item));
+        }
+      },
+    );
   });
   for (const file of filesToCopy) {
     const path = dirname(file);
