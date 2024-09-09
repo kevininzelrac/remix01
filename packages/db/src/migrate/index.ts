@@ -3,7 +3,7 @@
  */
 import { Command } from "commander";
 import { confirm } from "@inquirer/prompts";
-import { create, down, pending, up } from "./migrator.js";
+import { client, create, down, pending, up } from "./migrator.js";
 import { MigrationType } from "./types.js";
 
 const program = new Command();
@@ -82,4 +82,9 @@ function isMigrationType(type: string): type is MigrationType {
   return Object.values(MigrationType).includes(type as any);
 }
 
-void program.parseAsync();
+try {
+  await client.connect();
+  await program.parseAsync();
+} finally {
+  await client.end();
+}

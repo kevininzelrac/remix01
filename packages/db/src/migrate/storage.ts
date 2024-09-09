@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import type { Client } from "pg";
 import { MigrationParams } from "./types.js";
 
 export class Storage {
@@ -10,7 +10,7 @@ export class Storage {
     const { logs } = params.context.logger;
     await client.query(
       `
-      INSERT INTO _umzug_migrations (
+      INSERT INTO _migration_log (
         migration_name,
         migration_path,
         applied_at,
@@ -39,7 +39,7 @@ export class Storage {
     const { logs } = params.context.logger;
     await client.query(
       `
-      UPDATE _umzug_migrations
+      UPDATE _migration_log
       SET rolled_back_at = $1,
           rollback_logs = $2
       WHERE migration_name = $3
@@ -52,7 +52,7 @@ export class Storage {
   async getAppliedMigrations(client: Client): Promise<string[]> {
     const { rows } = await client.query(`
       SELECT *
-      FROM _umzug_migrations
+      FROM _migration_log
       WHERE rolled_back_at IS NULL
     `);
     return rows.map((item) => item.migration_name);
@@ -60,7 +60,7 @@ export class Storage {
 
   async ensureMigrationTable(client: Client): Promise<void> {
     await client.query(`
-      CREATE TABLE IF NOT EXISTS _umzug_migrations (
+      CREATE TABLE IF NOT EXISTS _migration_log (
         id SERIAL,
         migration_name TEXT NOT NULL UNIQUE,
         migration_path TEXT NOT NULL,

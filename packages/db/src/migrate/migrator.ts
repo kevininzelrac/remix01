@@ -6,10 +6,10 @@ import { UTCDate } from "@date-fns/utc";
 import { Storage } from "./storage.js";
 import { MigrationType } from "./types.js";
 import { Logger } from "./logger.js";
-import { Client } from "pg";
+import pg from "pg";
 
 type Params = {
-  client: Client;
+  client: pg.Client;
   logger: {
     debug: (message: Record<string, unknown>) => void;
     info: (message: Record<string, unknown>) => void;
@@ -18,8 +18,9 @@ type Params = {
   };
 };
 
-// FIXME: IMPLEMENT THIS
-const client = {} as Client;
+export const client = new pg.Client({
+  connectionString: process.env.WRITE_DB_URL,
+});
 const storage = new Storage();
 const logger = new Logger();
 
@@ -308,7 +309,7 @@ const _fileExists = async (filename: string): Promise<boolean> => {
 };
 
 const _useTransaction = async (
-  callback: (tx: Client) => Promise<void>,
+  callback: (tx: pg.Client) => Promise<void>,
 ): Promise<void> => {
   try {
     await client.query("BEGIN");
