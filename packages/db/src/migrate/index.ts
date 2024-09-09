@@ -33,7 +33,7 @@ program
   .command("up")
   .description("Execute pending migrations")
   .option(
-    "--to",
+    "--to <to>",
     "Name of migration to execute up to. If not supplied, runs all migrations.",
   )
   .action((opts: { to?: string }) => up(opts.to));
@@ -42,7 +42,7 @@ program
   .command("down")
   .description("Revert executed migrations")
   .option(
-    "--to",
+    "--to <to>",
     "Name of migration to revert to. If not supplied reverts all migrations.",
   )
   .action(async (opts: { to?: string }) => {
