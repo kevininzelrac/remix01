@@ -21,6 +21,15 @@ services:
       - POSTGRES_USER=test_user
       - POSTGRES_DB=test_db
 
+  postgres-shadow:
+    image: postgres:14-alpine
+    ports:
+      - 33892:5432
+    environment:
+      - POSTGRES_PASSWORD=shadow_secret
+      - POSTGRES_USER=shadow_user
+      - POSTGRES_DB=shadow_db
+
 volumes:
   postgres_db:
     driver: local

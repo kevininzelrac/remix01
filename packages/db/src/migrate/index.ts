@@ -48,7 +48,7 @@ program
   .action(async (opts: { to?: string }) => {
     if (
       opts.to === undefined &&
-      (await !confirm({
+      !(await confirm({
         message: "Do you wish to revert all migrations?",
         default: false,
       }))
